@@ -6,23 +6,49 @@
 <style>
   body{font-family:Inter,system-ui,sans-serif;background:#FFFFFF;color:#37352F;padding:0;margin:0}
   #konten-utama{visibility:hidden;padding:40px;max-width:600px;margin:0 auto}
-  input{padding:8px;border:1px solid #E9E9E7;border-radius:6px;width:100%;margin:6px 0;box-sizing:border-box}
-  button{padding:10px 16px;background:#2383E2;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:10px}
+  label.mode{display:inline-flex;align-items:center;gap:6px;margin-right:18px;font-size:14px;cursor:pointer}
+  input[type=text]{padding:8px;border:1px solid #E9E9E7;border-radius:6px;width:100%;margin:6px 0 14px;box-sizing:border-box;font-family:inherit;font-size:14px}
+  .field-label{font-size:13px;color:#787774;margin-top:4px}
+  button{padding:10px 16px;background:#2383E2;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:6px;font-size:14px}
   button:hover{background:#1a6fc4}
   .opsi{display:block;margin:6px 0;padding:10px 14px;background:#F7F6F3;border:1px solid #E9E9E7;border-radius:6px;cursor:pointer}
   .opsi:hover{background:#EFEFED}
   #status{margin-top:14px;font-size:13px;color:#787774}
   a{color:#2383E2}
+  .kelompok-hint{font-size:12px;color:#787774;margin-top:-10px;margin-bottom:14px}
 </style>
 </head>
 <body>
   <div id="konten-utama">
     <h1>🌐 Kuis: Jaringan Komputer & Internet</h1>
 
-    <div id="form-nama">
-      <p>Nama:</p>
-      <input type="text" id="nama" placeholder="Masukkan nama kamu">
+    <div id="form-info">
+      <p style="font-weight:600;margin-bottom:8px">Mode pengerjaan:</p>
+      <label class="mode"><input type="radio" name="mode" value="individu" checked onchange="ubahMode()"> Individu</label>
+      <label class="mode"><input type="radio" name="mode" value="kelompok" onchange="ubahMode()"> Kelompok</label>
+
+      <p class="field-label">Kelas</p>
+      <input type="text" id="kelas" placeholder="Contoh: XI IPA 1">
+
+      <div id="field-individu">
+        <p class="field-label">Nama</p>
+        <input type="text" id="nama" placeholder="Nama lengkap">
+        <p class="field-label">NIS</p>
+        <input type="text" id="nis" placeholder="Nomor Induk Siswa">
+        <p class="field-label">No. Absen</p>
+        <input type="text" id="absen" placeholder="Contoh: 12">
+      </div>
+
+      <div id="field-kelompok" style="display:none">
+        <p class="field-label">Nama Kelompok</p>
+        <input type="text" id="namaKelompok" placeholder="Contoh: Kelompok 3 - Cahaya">
+        <p class="field-label">Anggota Kelompok</p>
+        <input type="text" id="anggota" placeholder="Pisahkan dengan koma: Andi, Budi, Citra">
+        <p class="kelompok-hint">Skor akan tercatat atas nama kelompok, bukan perorangan.</p>
+      </div>
+
       <button onclick="mulaiKuis()">Mulai Kuis</button>
+      <p id="pesan-error" style="color:#D33;font-size:13px;margin-top:8px"></p>
     </div>
 
     <div id="kuis" style="display:none">
@@ -42,12 +68,46 @@
   <script src="../config.js"></script>
   <script src="../guard.js"></script>
   <script>
-    let namaSiswa = "";
     let skor = 0;
+    let dataPeserta = {};
+
+    function ubahMode(){
+      const mode = document.querySelector('input[name=mode]:checked').value;
+      document.getElementById('field-individu').style.display = mode === 'individu' ? 'block' : 'none';
+      document.getElementById('field-kelompok').style.display = mode === 'kelompok' ? 'block' : 'none';
+    }
 
     function mulaiKuis(){
-      namaSiswa = document.getElementById('nama').value || "Tanpa Nama";
-      document.getElementById('form-nama').style.display = 'none';
+      const mode = document.querySelector('input[name=mode]:checked').value;
+      const kelas = document.getElementById('kelas').value.trim();
+      const errEl = document.getElementById('pesan-error');
+
+      if(!kelas){
+        errEl.textContent = "Kelas wajib diisi.";
+        return;
+      }
+
+      if(mode === 'individu'){
+        const nama = document.getElementById('nama').value.trim();
+        const nis = document.getElementById('nis').value.trim();
+        const absen = document.getElementById('absen').value.trim();
+        if(!nama){
+          errEl.textContent = "Nama wajib diisi.";
+          return;
+        }
+        dataPeserta = { mode:"Individu", nama, nis, absen, kelas, anggota:"" };
+      } else {
+        const namaKelompok = document.getElementById('namaKelompok').value.trim();
+        const anggota = document.getElementById('anggota').value.trim();
+        if(!namaKelompok){
+          errEl.textContent = "Nama kelompok wajib diisi.";
+          return;
+        }
+        dataPeserta = { mode:"Kelompok", nama:namaKelompok, nis:"", absen:"", kelas, anggota };
+      }
+
+      errEl.textContent = "";
+      document.getElementById('form-info').style.display = 'none';
       document.getElementById('kuis').style.display = 'block';
     }
 
@@ -65,11 +125,16 @@
           mode: "no-cors",
           headers: { "Content-Type": "text/plain" },
           body: JSON.stringify({
-            nama: namaSiswa,
+            waktu: new Date().toISOString(),
+            mode: dataPeserta.mode,
+            nama: dataPeserta.nama,
+            nis: dataPeserta.nis,
+            absen: dataPeserta.absen,
+            kelas: dataPeserta.kelas,
+            anggota: dataPeserta.anggota,
             materi: "Jaringan Komputer & Internet",
             skor: skor,
-            total: 1,
-            waktu: new Date().toISOString()
+            total: 1
           })
         });
         status.textContent = "✅ Hasil terkirim ke spreadsheet guru. Terima kasih!";

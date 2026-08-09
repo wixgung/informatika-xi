@@ -32,10 +32,19 @@ Penjelasan kolom:
 - **Tampilkan** — blok kolom ini → **Insert → Checkbox**. Centang = materi tampil & bisa dibuka siswa.
 
 ### Tab "HasilKuis"
-Header saja, terisi otomatis setiap siswa submit kuis:
+Header saja, terisi otomatis setiap siswa (atau kelompok) submit kuis:
 
-| Waktu | Nama | Materi | Skor | Total |
-|---|---|---|---|---|
+| Waktu | Mode | Nama | NIS | No Absen | Kelas | Anggota Kelompok | Materi | Skor | Total |
+|---|---|---|---|---|---|---|---|---|---|
+
+Penjelasan:
+- **Mode** — otomatis terisi `Individu` atau `Kelompok`, tergantung pilihan siswa saat mulai kuis.
+- **Nama** — nama siswa (mode individu) atau nama kelompok (mode kelompok).
+- **NIS** dan **No Absen** — hanya terisi untuk mode individu, kosong untuk mode kelompok.
+- **Anggota Kelompok** — daftar nama anggota (dipisah koma), hanya terisi untuk mode kelompok.
+- **Kelas** — selalu diminta, di kedua mode.
+
+Dengan susunan ini Anda bisa langsung **Sort/Filter** di Sheet berdasarkan Kelas, Mode, atau Materi untuk merekap nilai.
 
 ## 2. Pasang Apps Script
 
@@ -74,7 +83,18 @@ function doPost(e) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName("HasilKuis");
   const data = JSON.parse(e.postData.contents);
-  sheet.appendRow([data.waktu, data.nama, data.materi, data.skor, data.total]);
+  sheet.appendRow([
+    data.waktu,
+    data.mode,
+    data.nama,
+    data.nis || "",
+    data.absen || "",
+    data.kelas || "",
+    data.anggota || "",
+    data.materi,
+    data.skor,
+    data.total
+  ]);
   return ContentService.createTextOutput(JSON.stringify({ status: "ok" }))
     .setMimeType(ContentService.MimeType.JSON);
 }
@@ -112,6 +132,15 @@ dengan URL asli dari langkah 3. Upload ulang ke GitHub. Setelah ini, **tidak ada
 4. Centang kolom **Tampilkan** kapan pun materi itu siap dibuka untuk siswa.
 
 Tidak ada lagi file JSON atau kode portal yang perlu diedit untuk menambah materi — semuanya lewat Sheet, kecuali file HTML materinya sendiri yang memang harus diupload.
+
+## 6. Menerapkan form data siswa (NIS/Absen/Kelas/Kelompok) ke kuis lain
+
+File `modules/kuis-jaringan-komputer.html` sudah jadi contoh lengkapnya. Untuk kuis baru yang Anda buat sendiri, cara tercepat:
+
+1. Copy file `kuis-jaringan-komputer.html`, ganti nama sesuai kuis baru Anda.
+2. Ganti `MODUL_ID` di bagian bawah file dengan ID kuis yang baru.
+3. Ganti isi soal (elemen `#soal` dan pilihan `.opsi`), sesuaikan logika `jawab()` dan hitungan skor totalnya kalau soal lebih dari satu.
+4. Bagian form data siswa (mode Individu/Kelompok, field Kelas/Nama/NIS/Absen/Anggota) dan fungsi `kirimHasil()` **tidak perlu diubah** — tinggal dipakai apa adanya karena sudah otomatis mengirim ke kolom yang sama di tab HasilKuis.
 
 ## Catatan jujur soal batasan
 
