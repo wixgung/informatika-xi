@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Kuis Jaringan Komputer</title>
+<style>
+  body{font-family:Inter,system-ui,sans-serif;background:#FFFFFF;color:#37352F;padding:0;margin:0}
+  #konten-utama{visibility:hidden;padding:40px;max-width:600px;margin:0 auto}
+  input{padding:8px;border:1px solid #E9E9E7;border-radius:6px;width:100%;margin:6px 0;box-sizing:border-box}
+  button{padding:10px 16px;background:#2383E2;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:10px}
+  button:hover{background:#1a6fc4}
+  .opsi{display:block;margin:6px 0;padding:10px 14px;background:#F7F6F3;border:1px solid #E9E9E7;border-radius:6px;cursor:pointer}
+  .opsi:hover{background:#EFEFED}
+  #status{margin-top:14px;font-size:13px;color:#787774}
+  a{color:#2383E2}
+</style>
+</head>
+<body>
+  <div id="konten-utama">
+    <h1>🌐 Kuis: Jaringan Komputer & Internet</h1>
+
+    <div id="form-nama">
+      <p>Nama:</p>
+      <input type="text" id="nama" placeholder="Masukkan nama kamu">
+      <button onclick="mulaiKuis()">Mulai Kuis</button>
+    </div>
+
+    <div id="kuis" style="display:none">
+      <p id="soal">Perangkat apa yang menghubungkan beberapa jaringan berbeda?</p>
+      <div class="opsi" onclick="jawab(false)">Switch</div>
+      <div class="opsi" onclick="jawab(true)">Router</div>
+      <div class="opsi" onclick="jawab(false)">Hub</div>
+      <p id="skor">Skor: 0 / 1</p>
+      <button onclick="kirimHasil()">Kirim Hasil</button>
+      <p id="status"></p>
+    </div>
+
+    <p><a href="../index.html">&larr; Kembali ke Portal</a></p>
+  </div>
+
+  <script>const MODUL_ID = "INF-202";</script>
+  <script src="../config.js"></script>
+  <script src="../guard.js"></script>
+  <script>
+    let namaSiswa = "";
+    let skor = 0;
+
+    function mulaiKuis(){
+      namaSiswa = document.getElementById('nama').value || "Tanpa Nama";
+      document.getElementById('form-nama').style.display = 'none';
+      document.getElementById('kuis').style.display = 'block';
+    }
+
+    function jawab(benar){
+      if(benar) skor++;
+      document.getElementById('skor').textContent = `Skor: ${skor} / 1`;
+    }
+
+    async function kirimHasil(){
+      const status = document.getElementById('status');
+      status.textContent = "Mengirim...";
+      try{
+        await fetch(CONTROL_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({
+            nama: namaSiswa,
+            materi: "Jaringan Komputer & Internet",
+            skor: skor,
+            total: 1,
+            waktu: new Date().toISOString()
+          })
+        });
+        status.textContent = "✅ Hasil terkirim ke spreadsheet guru. Terima kasih!";
+      }catch(err){
+        status.textContent = "⚠️ Gagal mengirim. Periksa koneksi internet.";
+      }
+    }
+  </script>
+</body>
+</html>
