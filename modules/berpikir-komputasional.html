@@ -365,6 +365,15 @@
 <script>const MODUL_ID = INF-101;</script>
 <script src="../config.js"></script>
 <script src="../guard.js"></script>
+<script>
+  // Pengaman: kalau guard.js/config.js tidak berhasil dimuat (mis. file dibuka
+  // langsung di luar folder repo untuk sekadar preview), jangan biarkan konten
+  // terkunci selamanya di layar kosong — tampilkan otomatis setelah 1.5 detik.
+  setTimeout(function(){
+    const el = document.getElementById('konten-utama');
+    if (el && el.style.visibility === 'hidden') el.style.visibility = 'visible';
+  }, 1500);
+</script>
 
 <script>
 /* ============ STATE ============ */
