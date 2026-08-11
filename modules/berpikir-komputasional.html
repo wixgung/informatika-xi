@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Ekspedisi Berpikir Komputasional — LKPD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B2038;
+    --navy-2:#123152;
+    --navy-3:#1B4066;
+    --card:#F3F6FA;
+    --ink:#0B2038;
+    --ink-soft:#4A5C72;
+    --ink-light:#E8EFF7;
+    --coral:#FF6B57;
+    --coral-d:#C94B3B;
+    --gold:#FFB627;
+    --gold-d:#C98A0A;
+    --violet:#8C7AE6;
+    --violet-d:#6250B8;
+    --mint:#2FCB8C;
+    --mint-d:#1D9C69;
+    --boss:#4EA1FF;
+    --boss-d:#2C74C9;
+    --line:rgba(232,239,247,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at top, var(--navy-3) 0%, var(--navy) 55%, #071426 100%);
+    color:var(--ink-light);
+    font-family:'Nunito',sans-serif;
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+  h1,h2,h3{font-family:'Baloo 2',cursive;margin:0;}
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--mint);
+    opacity:0.85;
+  }
+  /* ---------- HEADER / IDENTITY BAR ---------- */
+  .idbar{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+    background:var(--navy-2);border:1px solid var(--line);border-radius:14px;
+    padding:10px 18px;margin-bottom:22px;font-size:14px;
+  }
+  .idbar b{color:var(--ink-light);}
+  .idbar span{color:var(--ink-soft);}
+  .score-pill{
+    background:var(--gold);color:#2B1D00;font-family:'Space Mono',monospace;font-weight:700;
+    padding:6px 14px;border-radius:100px;font-size:14px;white-space:nowrap;
+  }
+
+  /* ---------- SCREENS ---------- */
+  .screen{display:none;animation:fadeIn .5s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---------- COVER ---------- */
+  .cover{
+    text-align:center;padding:40px 20px 30px;
+  }
+  .cover .eyebrow{display:block;margin-bottom:10px;}
+  .cover h1{font-size:clamp(30px,6vw,46px);line-height:1.1;color:#fff;}
+  .cover h1 span{color:var(--gold);}
+  .cover p.lede{max-width:560px;margin:16px auto 0;color:var(--ink-soft);font-size:16px;line-height:1.6;}
+  .compass{
+    width:120px;height:120px;margin:26px auto 10px;position:relative;
+  }
+  .compass svg{width:100%;height:100%;animation:spin 14s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+  .idform{
+    background:var(--navy-2);border:1px solid var(--line);border-radius:18px;
+    padding:22px;max-width:460px;margin:26px auto 0;text-align:left;
+  }
+  .idform label{display:block;font-size:12px;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin:12px 0 6px;}
+  .idform label:first-child{margin-top:0;}
+  .idform input{
+    width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+    background:var(--navy);color:#fff;font-family:'Nunito';font-size:15px;
+  }
+  .idform select{
+    width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+    background:var(--navy);color:#fff;font-family:'Nunito';font-size:15px;
+    appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23E8EFF7'><path d='M5 7l5 6 5-6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;background-size:16px;
+  }
+  .idform select:focus{outline:2px solid var(--mint);}
+  .idform select option{background:var(--navy);color:#fff;}
+  .idform input:focus{outline:2px solid var(--mint);}
+  .goal-box{
+    background:var(--navy-2);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;max-width:640px;margin:22px auto 0;text-align:left;font-size:14.5px;color:var(--ink-light);line-height:1.6;
+  }
+  .goal-box b{color:var(--mint);}
+
+  .btn{
+    font-family:'Baloo 2';font-weight:700;font-size:17px;border:none;cursor:pointer;
+    padding:14px 34px;border-radius:100px;color:#04150e;
+    background:linear-gradient(135deg,var(--mint),#57e0a8);
+    box-shadow:0 8px 22px rgba(47,203,140,0.35);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(47,203,140,0.45);}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;transform:none;}
+  .btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink-light);box-shadow:none;}
+  .btn.small{padding:9px 20px;font-size:14px;}
+
+  /* ---------- MAP / PATH ---------- */
+  .mapcard{
+    background:var(--navy-2);border:1px solid var(--line);border-radius:20px;padding:26px 18px 10px;margin-bottom:22px;
+  }
+  .maptitle{text-align:center;color:#fff;font-size:20px;margin-bottom:6px;}
+  .mapsub{text-align:center;color:var(--ink-soft);font-size:13px;margin-bottom:18px;}
+  .path-svg{width:100%;height:auto;display:block;}
+  .node-label{font-family:'Baloo 2';font-size:12.5px;fill:var(--ink-light);}
+  .node-sub{font-family:'Space Mono';font-size:9px;fill:var(--ink-soft);}
+
+  /* ---------- STAGE HEADER ---------- */
+  .stage-hero{
+    border-radius:20px;padding:26px 24px;margin-bottom:18px;color:#04150e;position:relative;overflow:hidden;
+  }
+  .stage-hero .kicker{font-family:'Space Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:0.75;}
+  .stage-hero h2{font-size:clamp(24px,4vw,32px);margin:4px 0 8px;}
+  .stage-hero p{font-size:15px;line-height:1.5;max-width:640px;margin:0;}
+  .stage-hero .icon{position:absolute;right:18px;top:18px;font-size:56px;opacity:0.85;}
+
+  .content-card{
+    background:var(--card);color:var(--ink);border-radius:18px;padding:22px 24px;margin-bottom:16px;
+  }
+  .content-card h3{font-size:18px;margin-bottom:8px;}
+  .content-card p{line-height:1.65;font-size:15px;margin:0 0 8px;}
+  .example-box{
+    border-left:5px solid; border-radius:10px; padding:12px 16px; background:rgba(0,0,0,0.035); margin-top:12px;
+  }
+  .example-box b{display:block;font-family:'Space Mono';font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+
+  .game-card{
+    background:var(--navy-2);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-bottom:16px;
+  }
+  .game-card h4{color:#fff;font-size:16px;margin:0 0 4px;font-family:'Baloo 2';}
+  .game-card .qtext{font-size:15.5px;color:var(--ink-light);margin:10px 0 14px;line-height:1.5;}
+  .options{display:grid;gap:10px;}
+  .opt{
+    text-align:left;background:var(--navy);border:1.5px solid var(--line);color:var(--ink-light);
+    padding:12px 16px;border-radius:12px;cursor:pointer;font-family:'Nunito';font-size:14.5px;font-weight:600;
+    transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--mint);}
+  .opt.correct{background:rgba(47,203,140,0.18);border-color:var(--mint);color:#bdf5dd;}
+  .opt.wrong{background:rgba(255,107,87,0.18);border-color:var(--coral);color:#ffd2cb;}
+  .opt.disabled{pointer-events:none;}
+  .feedback{margin-top:12px;padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.5;display:none;}
+  .feedback.show{display:block;}
+  .feedback.ok{background:rgba(47,203,140,0.15);color:#bdf5dd;}
+  .feedback.bad{background:rgba(255,107,87,0.15);color:#ffd2cb;}
+
+  .order-pool, .order-slots{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+  .chip{
+    background:var(--navy);border:1.5px solid var(--line);color:var(--ink-light);
+    padding:9px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;font-family:'Nunito';
+  }
+  .chip.used{opacity:0.3;pointer-events:none;}
+  .order-slots{margin:14px 0;min-height:46px;background:rgba(255,255,255,0.03);border:1px dashed var(--line);border-radius:12px;padding:8px;}
+  .slot-item{background:var(--mint-d);color:#04150e;padding:8px 12px;border-radius:8px;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:6px;}
+  .slot-item .n{font-family:'Space Mono';opacity:0.8;}
+
+  .stagenav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+
+  /* ---------- FINAL ---------- */
+  .badge-wrap{text-align:center;padding:20px 10px 6px;}
+  .badge{width:150px;margin:0 auto;}
+  .badge-title{font-size:26px;color:#fff;margin-top:14px;}
+  .badge-sub{color:var(--ink-soft);font-size:15px;margin-top:4px;}
+  .scoreline{font-family:'Space Mono';font-size:15px;color:var(--gold);margin-top:10px;}
+  textarea{
+    width:100%;min-height:90px;border-radius:12px;border:1px solid var(--line);
+    background:var(--navy);color:#fff;padding:12px 14px;font-family:'Nunito';font-size:14.5px;resize:vertical;
+  }
+  .reflect-q{margin-top:16px;}
+  .reflect-q label{font-weight:700;color:var(--ink-light);font-size:14.5px;display:block;margin-bottom:6px;}
+
+  .footer-note{text-align:center;color:var(--ink-soft);font-size:12px;margin-top:30px;line-height:1.6;}
+
+  @media print{
+    body{background:#fff;color:#000;}
+    .btn,.idbar,.mapcard,.game-card .opt{display:none !important;}
+  }
+  @media (max-width:520px){
+    .stage-hero .icon{display:none;}
+  }
+
+  /* ---------- MODE TOGGLE (Individu/Kelompok) ---------- */
+  .mode-toggle{display:flex;gap:8px;margin-top:2px;}
+  .mode-btn{
+    flex:1;text-align:center;background:var(--navy);border:1.5px solid var(--line);color:var(--ink-soft);
+    padding:10px 8px;border-radius:10px;cursor:pointer;font-family:'Nunito';font-size:14px;font-weight:700;
+    transition:all .15s ease;
+  }
+  .mode-btn.active{border-color:var(--mint);color:#bdf5dd;background:rgba(47,203,140,0.15);}
+  .idform-warn{
+    margin-top:12px;padding:10px 12px;border-radius:10px;font-size:13.5px;line-height:1.5;
+    background:rgba(255,107,87,0.15);color:#ffd2cb;display:none;
+  }
+  .idform-warn.show{display:block;}
+  .kirim-status{margin-top:14px;font-size:13.5px;line-height:1.5;padding:10px 14px;border-radius:10px;display:inline-block;}
+  .kirim-status.pending{background:rgba(255,182,39,0.15);color:#FFE1A0;}
+  .kirim-status.ok{background:rgba(47,203,140,0.15);color:#bdf5dd;}
+  .kirim-status.bad{background:rgba(255,107,87,0.15);color:#ffd2cb;}
+
+  /* ---------- RESPONSIVE: STAGE NAV & FORM BUTTONS ---------- */
+  .stagenav{flex-wrap:wrap;gap:12px;}
+  @media (max-width:560px){
+    .stagenav{flex-direction:column-reverse;align-items:stretch;}
+    .stagenav .btn{width:100%;text-align:center;}
+    .idform input, .idform .mode-btn{font-size:16px;}
+    .game-card .qtext{font-size:15px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="konten-utama" style="visibility:hidden">
+
+  <div class="idbar" id="idbar" style="display:none;">
+    <div><b id="hdrName">Peserta Didik</b> · <span id="hdrClass">-</span></div>
+    <div class="score-pill">⭐ <span id="hdrScore">0</span> / <span id="hdrMax">0</span> poin</div>
+  </div>
+
+  <!-- ================= COVER ================= -->
+  <section class="screen active" id="screen-cover">
+    <div class="cover">
+      <span class="eyebrow">LKPD · Informatika · Permainan Edukatif</span>
+      <h1>Ekspedisi <span>Berpikir Komputasional</span></h1>
+      <p class="lede">Jelajahi 4 pulau fondasi berpikir komputasional, kumpulkan poin di setiap pos, lalu taklukkan tantangan akhir tentang karakteristiknya. Siap berangkat?</p>
+
+      <div class="compass" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#FFB627" stroke-width="2.5" stroke-dasharray="4 6"/>
+          <polygon points="50,14 58,50 50,86 42,50" fill="#FF6B57"/>
+          <polygon points="14,50 50,42 86,50 50,58" fill="#2FCB8C"/>
+          <circle cx="50" cy="50" r="7" fill="#F3F6FA"/>
+        </svg>
+      </div>
+
+      <div class="idform">
+        <label>Mode pengerjaan</label>
+        <div class="mode-toggle" id="modeToggle">
+          <button type="button" class="mode-btn active" data-mode="individu">👤 Individu</button>
+          <button type="button" class="mode-btn" data-mode="kelompok">👥 Kelompok</button>
+        </div>
+
+        <div id="fieldsIndividu">
+          <label for="inpName">Nama peserta didik</label>
+          <input id="inpName" type="text" placeholder="Tulis namamu...">
+          <label for="inpNis">NIS</label>
+          <input id="inpNis" type="text" placeholder="Nomor Induk Siswa">
+          <label for="inpAbsen">No. absen</label>
+          <input id="inpAbsen" type="text" placeholder="Contoh: 12">
+        </div>
+
+        <div id="fieldsKelompok" style="display:none;">
+          <label for="inpNamaKelompok">Nama kelompok</label>
+          <input id="inpNamaKelompok" type="text" placeholder="Contoh: Kelompok 3">
+          <label for="inpAnggota">Anggota kelompok (pisahkan dengan koma)</label>
+          <input id="inpAnggota" type="text" placeholder="Contoh: Ani, Budi, Citra">
+        </div>
+
+        <label for="inpClass">Kelas</label>
+        <select id="inpClass">
+          <option value="">-- Pilih kelas --</option>
+          <option value="XI 7 P2">XI 7 P2</option>
+          <option value="XI 8 P2">XI 8 P2</option>
+          <option value="XI 9 P2">XI 9 P2</option>
+        </select>
+
+        <div class="idform-warn" id="idformWarn"></div>
+      </div>
+
+      <div class="goal-box">
+        <p><b>🎯 Tujuan Pembelajaran:</b> Peserta didik mampu menjelaskan dan menerapkan empat fondasi berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, dan algoritma) serta mengidentifikasi karakteristik berpikir komputasional dalam pemecahan masalah sehari-hari.</p>
+        <p style="margin-top:10px;"><b>📋 Petunjuk pengerjaan:</b> (1) Isi identitas di atas. (2) Klik "Mulai Ekspedisi". (3) Baca materi singkat di setiap pos, lalu selesaikan tantangannya. (4) Kamu bisa mencoba lagi jika jawaban belum tepat. (5) Selesaikan seluruh pos untuk membuka lencana akhir dan isi refleksi.</p>
+      </div>
+
+      <div style="margin-top:26px;">
+        <button class="btn" id="btnStart">🚀 Mulai Ekspedisi</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LOCKED (sudah pernah mengumpulkan) ================= -->
+  <section class="screen" id="screen-locked">
+    <div class="cover">
+      <div style="font-size:56px;">🔒</div>
+      <h1 style="font-size:clamp(24px,5vw,34px);color:#fff;">Hasil Sudah Tercatat</h1>
+      <p class="lede" id="lockedMsg">Data untuk materi ini sudah tercatat di spreadsheet guru. Setiap peserta hanya dapat mengumpulkan hasil satu kali.</p>
+      <div style="margin-top:22px;">
+        <button class="btn ghost" id="btnLockedBack">⬅️ Kembali</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MAP ================= -->
+  <section class="screen" id="screen-map">
+    <div class="mapcard">
+      <div class="maptitle">🗺️ Peta Ekspedisi</div>
+      <div class="mapsub">Klik pos yang sudah terbuka untuk melanjutkan perjalanan</div>
+      <div id="mapSvgHolder"></div>
+    </div>
+  </section>
+
+  <!-- ================= STAGE TEMPLATE (rendered by JS) ================= -->
+  <section class="screen" id="screen-stage">
+    <div id="stageContent"></div>
+  </section>
+
+  <!-- ================= FINAL ================= -->
+  <section class="screen" id="screen-final">
+    <div class="stage-hero" style="background:linear-gradient(135deg,#FFB627,#FF6B57);">
+      <span class="kicker">Pos 5 — Selesai</span>
+      <h2>Ekspedisi Tuntas!</h2>
+      <p>Lihat pencapaianmu dan tuliskan refleksimu di bawah ini.</p>
+      <div class="icon">🏆</div>
+    </div>
+
+    <div class="content-card">
+      <div class="badge-wrap">
+        <div class="badge" id="badgeSvg"></div>
+        <div class="badge-title" id="badgeTitle" style="color:var(--ink);">-</div>
+        <div class="badge-sub" id="badgeSub">-</div>
+        <div class="scoreline" id="finalScoreLine" style="color:var(--coral-d);">-</div>
+        <div>
+          <span class="kirim-status pending" id="kirimStatus">⏳ Mengirim hasil ke guru...</span>
+        </div>
+      </div>
+
+      <div class="reflect-q">
+        <label>1. Menurutmu, fondasi berpikir komputasional mana yang paling sering kamu gunakan tanpa sadar dalam kehidupan sehari-hari? Jelaskan dengan contoh nyata!</label>
+        <textarea id="reflect1" placeholder="Tulis jawabanmu di sini..."></textarea>
+      </div>
+      <div class="reflect-q">
+        <label>2. Pilih satu masalah sehari-hari, lalu coba selesaikan menggunakan keempat fondasi berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, algoritma)!</label>
+        <textarea id="reflect2" placeholder="Tulis jawabanmu di sini..."></textarea>
+      </div>
+
+      <div style="text-align:center;margin-top:20px;">
+        <button class="btn" id="btnPrint">🖨️ Cetak / Simpan sebagai PDF</button>
+      </div>
+    </div>
+
+    <div class="footer-note">Ekspedisi Berpikir Komputasional — LKPD Informatika · Dibuat untuk mendukung pembelajaran berbasis permainan.</div>
+  </section>
+
+</div>
+
+<script>const MODUL_ID = INF-101;</script>
+<script src="../config.js"></script>
+<script src="../guard.js"></script>
+
+<script>
+/* ============ STATE ============ */
+const state = {
+  name:'', kelas:'', nis:'', absen:'', anggota:'', mode:'Individu',
+  current:0, score:0, maxScore:0,
+  unlocked:[true,false,false,false,false],
+  completed:[false,false,false,false,false],
+  answers:{},      // gid -> {chosen} — jawaban yang SUDAH benar & sudah dihitung poinnya
+  terkirim:false,  // hasil sudah berhasil dikirim ke spreadsheet
+};
+
+/* ============ DATA ============ */
+const stages = [
+  {
+    key:'dekomposisi', title:'Dekomposisi', kicker:'Pos 1',
+    color:'var(--coral)', colorD:'var(--coral-d)', icon:'🧩',
+    materi:'Dekomposisi adalah kemampuan memecah masalah besar dan rumit menjadi bagian-bagian kecil yang lebih sederhana, sehingga lebih mudah dipahami dan diselesaikan satu per satu.',
+    example:{label:'Contoh', text:'Merencanakan pesta ulang tahun terasa rumit jika dipikirkan sekaligus. Tapi jika dipecah menjadi: menyusun daftar tamu, memilih tempat, memesan makanan, menyiapkan dekorasi, dan menyusun hiburan — setiap bagian jadi mudah dikerjakan.'},
+    example2:{label:'Contoh di dunia digital', text:'Aplikasi belanja online dipecah menjadi modul-modul: login, katalog produk, keranjang belanja, pembayaran, dan pengiriman.'},
+    challenges:[
+      {type:'mcq', q:'Seorang siswa ingin membuat mading kelas. Manakah langkah yang menunjukkan penerapan dekomposisi?', options:['Langsung menempel semua kertas tanpa rencana','Memecah tugas menjadi: mencari bahan, menulis artikel, mendesain tata letak, dan menempel hasil akhir','Menunggu teman lain menyelesaikan semuanya','Meniru mading kelas sebelah persis sama'], correct:1, feedback:'Tepat! Dekomposisi memecah tugas besar (membuat mading) menjadi bagian-bagian kecil yang lebih mudah dikerjakan.'},
+      {type:'mcq', q:'Manakah pernyataan yang PALING tepat menggambarkan dekomposisi?', options:['Mencari kesamaan pola dari beberapa data','Memecah masalah kompleks menjadi bagian-bagian kecil yang lebih sederhana','Menghilangkan detail yang tidak penting','Menyusun langkah-langkah runtut untuk mencapai solusi'], correct:1, feedback:'Benar! Itulah definisi inti dekomposisi.'},
+      {type:'mcq', q:'Menjelang ujian, Budi merasa kewalahan karena harus belajar 6 mata pelajaran sekaligus. Cara paling tepat menerapkan dekomposisi adalah...', options:['Belajar semua mapel dalam satu malam tanpa jeda','Membagi waktu belajar per mata pelajaran dan per bab kecil setiap harinya','Hanya belajar mapel favorit saja','Menyalin catatan teman tanpa memahami'], correct:1, feedback:'Tepat! Memecah beban belajar menjadi bagian-bagian kecil per mapel/bab adalah contoh dekomposisi.'},
+      {type:'mcq', q:'Manakah CONTOH dekomposisi dalam memasak nasi goreng?', options:['Memasukkan semua bahan sekaligus tanpa urutan','Memecah proses menjadi: menyiapkan bahan, menumis bumbu, mencampur nasi, dan menyajikan','Membeli nasi goreng di warung terdekat','Menebak takaran bumbu tanpa mengukur'], correct:1, feedback:'Benar! Memecah proses memasak menjadi tahapan-tahapan kecil adalah penerapan dekomposisi.'},
+      {type:'mcq', q:'Aplikasi pemesanan makanan online dipecah menjadi fitur pencarian restoran, keranjang pesanan, pembayaran, dan pelacakan pengiriman. Ini adalah contoh penerapan...', options:['Pengenalan pola','Abstraksi','Dekomposisi','Algoritma'], correct:2, feedback:'Tepat! Aplikasi besar dipecah menjadi modul/fitur kecil yang lebih mudah dikembangkan — itulah dekomposisi.'}
+    ]
+  },
+  {
+    key:'pola', title:'Pengenalan Pola', kicker:'Pos 2',
+    color:'var(--gold)', colorD:'var(--gold-d)', icon:'🔎',
+    materi:'Pengenalan pola adalah kemampuan menemukan kesamaan, keteraturan, atau tren dari beberapa masalah maupun kumpulan data, sehingga solusi yang sama bisa digunakan untuk kasus-kasus serupa.',
+    example:{label:'Contoh', text:'Deret bilangan 2, 4, 6, 8, ... memiliki pola "+2" pada setiap sukunya, sehingga kita bisa menebak angka berikutnya tanpa menghitung dari awal.'},
+    example2:{label:'Contoh di dunia digital', text:'Aplikasi belanja daring mengenali pola kebiasaan belanja pelanggan, lalu merekomendasikan produk yang mirip dengan yang pernah dibeli sebelumnya.'},
+    challenges:[
+      {type:'mcq', q:'Kelompok bilangan berikut: 3, 6, 9, 12, ... Angka selanjutnya adalah?', options:['13','14','15','16'], correct:2, feedback:'Benar! Polanya adalah +3 setiap suku, jadi setelah 12 adalah 15.'},
+      {type:'mcq', q:'Seorang guru menyadari bahwa siswa yang sering telat mengumpulkan tugas biasanya baru mulai mengerjakan H-1. Ini adalah contoh dari...', options:['Abstraksi','Algoritma','Pengenalan pola','Dekomposisi'], correct:2, feedback:'Tepat! Guru menemukan pola kebiasaan dari beberapa kejadian serupa.'},
+      {type:'mcq', q:'Kasir minimarket menyadari bahwa penjualan payung selalu meningkat setiap musim hujan tiba. Kemampuan ini termasuk...', options:['Dekomposisi','Pengenalan pola','Abstraksi','Algoritma'], correct:1, feedback:'Benar! Menemukan keterkaitan/kesamaan kejadian dari waktu ke waktu adalah pengenalan pola.'},
+      {type:'mcq', q:'Deret bilangan berikut: 5, 10, 15, 20, ... Angka selanjutnya adalah?', options:['22','23','24','25'], correct:3, feedback:'Tepat! Polanya +5 setiap suku, jadi setelah 20 adalah 25.'},
+      {type:'mcq', q:'Aplikasi musik merekomendasikan lagu baru berdasarkan genre yang sering kamu dengarkan. Aplikasi ini bekerja dengan menerapkan...', options:['Algoritma saja tanpa data','Pengenalan pola dari kebiasaan mendengarkan','Abstraksi tampilan aplikasi','Dekomposisi fitur aplikasi'], correct:1, feedback:'Benar! Sistem mengenali pola kebiasaan pengguna untuk memberi rekomendasi yang sesuai.'}
+    ]
+  },
+  {
+    key:'abstraksi', title:'Abstraksi', kicker:'Pos 3',
+    color:'var(--violet)', colorD:'var(--violet-d)', icon:'🎯',
+    materi:'Abstraksi adalah kemampuan berfokus pada informasi yang benar-benar relevan dengan masalah yang dihadapi, sambil mengabaikan detail-detail yang tidak penting.',
+    example:{label:'Contoh', text:'Peta rute kereta hanya menampilkan jalur dan nama stasiun, tanpa detail bentuk bangunan atau jalan raya di sekitarnya — karena penumpang hanya butuh tahu rute perjalanan.'},
+    example2:{label:'Contoh di dunia digital', text:'Ikon "keranjang belanja" pada aplikasi mewakili fitur menyimpan barang yang ingin dibeli. Pengguna tidak perlu tahu kode program di baliknya untuk bisa menggunakannya.'},
+    challenges:[
+      {type:'mcq', q:'Saat menggambar denah evakuasi sekolah, informasi yang PALING penting untuk ditampilkan adalah...', options:['Warna cat setiap ruangan','Jalur keluar, pintu darurat, dan titik kumpul','Merek meja dan kursi di kelas','Nama-nama guru yang mengajar di tiap ruangan'], correct:1, feedback:'Benar! Abstraksi berarti memilih informasi yang relevan (jalur evakuasi), bukan detail yang tidak diperlukan.'},
+      {type:'mcq', q:'Manakah yang merupakan contoh penerapan abstraksi?', options:['Menyusun ulang tugas menjadi langkah kecil','Menyamakan dua soal yang polanya mirip','Ikon tombol "play" tanpa perlu tahu proses pemutaran video di baliknya','Mengurutkan langkah membuat kopi'], correct:2, feedback:'Tepat! Ikon "play" menyembunyikan detail teknis dan hanya menampilkan fungsi yang relevan bagi pengguna.'},
+      {type:'mcq', q:'Saat membuat ringkasan sebuah buku, kamu hanya menuliskan ide pokok tiap bab tanpa menyalin seluruh kalimat dalam buku. Ini menerapkan...', options:['Algoritma','Dekomposisi','Pengenalan pola','Abstraksi'], correct:3, feedback:'Benar! Memilih inti/ide pokok dan mengabaikan detail yang tidak penting adalah abstraksi.'},
+      {type:'mcq', q:'Rambu lalu lintas dibuat dalam bentuk simbol sederhana (bukan foto detail) agar pengendara cepat memahami maksudnya. Ini contoh dari...', options:['Abstraksi','Algoritma','Dekomposisi','Pengenalan pola'], correct:0, feedback:'Tepat! Simbol sederhana menyampaikan informasi penting tanpa detail yang tidak perlu — itulah abstraksi.'},
+      {type:'mcq', q:'Manakah tindakan berikut yang BUKAN merupakan contoh abstraksi?', options:['Menggunakan ikon amplop untuk mewakili fitur pesan','Menampilkan hanya nama jalan utama pada peta wisata','Mencatat seluruh detail teknis mesin mobil saat menjelaskan cara menyetir ke pemula','Menyingkat nama panjang instansi menjadi sebuah singkatan yang dikenal umum'], correct:2, feedback:'Benar! Mencatat semua detail teknis yang tidak relevan bagi pemula justru bertentangan dengan prinsip abstraksi.'}
+    ]
+  },
+  {
+    key:'algoritma', title:'Algoritma', kicker:'Pos 4',
+    color:'var(--mint)', colorD:'var(--mint-d)', icon:'📶',
+    materi:'Algoritma adalah kumpulan langkah-langkah yang disusun secara runtut, logis, dan jelas untuk menyelesaikan suatu masalah atau melakukan suatu tugas tertentu.',
+    example:{label:'Contoh', text:'Langkah membuat mi instan: (1) rebus air, (2) masukkan mi, (3) tunggu ± 3 menit, (4) tiriskan, (5) campur bumbu, (6) sajikan.'},
+    example2:{label:'Contoh di dunia digital', text:'Algoritma login aplikasi: masukkan username & password → sistem memeriksa data → jika cocok, masuk ke beranda; jika tidak, tampilkan pesan kesalahan.'},
+    challenges:[
+      {type:'order', q:'Urutkan langkah algoritma "mencuci tangan dengan benar" dengan mengklik chip di bawah sesuai urutan yang tepat!', items:['Basahi tangan dengan air','Gunakan sabun dan gosok seluruh permukaan tangan','Bilas tangan hingga bersih','Keringkan tangan dengan lap/tisu bersih'], correctOrder:[0,1,2,3], feedback:'Tepat! Itulah urutan algoritma mencuci tangan yang benar.'},
+      {type:'mcq', q:'Ciri utama sebuah algoritma yang baik adalah...', options:['Boleh diselesaikan dengan urutan langkah bebas, tidak harus runtut','Langkah-langkahnya jelas, runtut, dan berhingga (pasti berakhir)','Semakin banyak langkah, semakin baik','Tidak perlu memikirkan hasil akhir'], correct:1, feedback:'Benar! Algoritma yang baik memiliki langkah yang jelas, runtut, dan pasti selesai.'},
+      {type:'mcq', q:'Manakah yang merupakan contoh algoritma dalam kehidupan sehari-hari?', options:['Menebak-nebak jawaban ujian tanpa berpikir','Langkah-langkah menyalakan komputer: tekan tombol power, tunggu booting, masukkan kata sandi, tunggu hingga layar utama muncul','Membeli barang secara acak di toko','Menyimpan seluruh detail tanpa memilih yang penting'], correct:1, feedback:'Tepat! Serangkaian langkah yang jelas dan berurutan untuk menyalakan komputer adalah contoh algoritma.'},
+      {type:'mcq', q:'Diagram alir (flowchart) biasa digunakan dalam berpikir komputasional untuk...', options:['Menyembunyikan detail yang tidak penting','Menggambarkan langkah-langkah penyelesaian masalah secara visual dan berurutan','Mencari kesamaan dari beberapa data','Memecah masalah menjadi bagian kecil'], correct:1, feedback:'Benar! Flowchart adalah alat bantu visual untuk menuliskan algoritma secara runtut.'},
+      {type:'mcq', q:'Resep masakan yang mencantumkan langkah bernomor 1, 2, 3, dan seterusnya adalah bentuk penerapan dari...', options:['Pengenalan pola','Abstraksi','Algoritma','Dekomposisi'], correct:2, feedback:'Tepat! Langkah-langkah yang tersusun urut dan jelas adalah ciri khas algoritma.'}
+    ]
+  },
+  {
+    key:'boss', title:'Karakteristik Berpikir Komputasional', kicker:'Pos 5 — Tantangan Akhir',
+    color:'var(--boss)', colorD:'var(--boss-d)', icon:'🏁',
+    materi:'Setelah mengenal keempat fondasinya, berpikir komputasional juga memiliki karakteristik yang menjadi ciri khasnya ketika diterapkan dalam menyelesaikan masalah:',
+    charList:[
+      {n:'Logis', d:'Penyelesaian masalah didasarkan pada penalaran yang masuk akal dan runtut, bukan tebakan semata.'},
+      {n:'Algoritmis', d:'Solusi disusun dalam langkah-langkah yang jelas, berurutan, dan dapat diikuti orang lain.'},
+      {n:'Sistematis & Terstruktur', d:'Proses berpikir dilakukan secara bertahap dan terorganisir, tidak melompat-lompat.'},
+      {n:'Efektif & Efisien', d:'Solusi mampu menyelesaikan masalah dengan penggunaan waktu dan sumber daya yang optimal.'},
+      {n:'Generalisasi', d:'Solusi yang ditemukan dapat diterapkan kembali pada masalah lain yang serupa di kemudian hari.'},
+    ],
+    challenges:[
+      {type:'mcq', q:'Andi menyelesaikan soal ujian dengan cara menebak-nebak jawaban tanpa alasan yang jelas. Hal ini bertentangan dengan karakteristik...', options:['Logis','Generalisasi','Efisien','Algoritmis'], correct:0, feedback:'Benar! Berpikir logis berarti solusi didasarkan pada penalaran yang masuk akal, bukan tebakan.'},
+      {type:'mcq', q:'Setelah menemukan cara membagi tugas kelompok yang efektif, Rani menggunakan cara yang sama untuk tugas kelompok berikutnya. Ini menunjukkan karakteristik...', options:['Sistematis','Generalisasi','Algoritmis','Logis'], correct:1, feedback:'Tepat! Generalisasi berarti solusi bisa digunakan kembali untuk masalah serupa.'},
+      {type:'mcq', q:'Menyusun jadwal belajar per jam, per mata pelajaran, secara bertahap dan rapi adalah contoh karakteristik...', options:['Efektif & efisien','Generalisasi','Sistematis & terstruktur','Logis'], correct:2, feedback:'Benar! Prosesnya bertahap dan terorganisir, ciri dari sistematis & terstruktur.'},
+      {type:'mcq', q:'Memilih rute tercepat ke sekolah agar tidak terlambat dan hemat waktu adalah contoh karakteristik...', options:['Efektif & efisien','Algoritmis','Logis','Generalisasi'], correct:0, feedback:'Tepat! Memilih solusi paling optimal dari segi waktu/tenaga adalah ciri efektif & efisien.'},
+      {type:'mcq', q:'Menuliskan resep masakan sebagai daftar langkah bernomor 1, 2, 3, ... adalah penerapan karakteristik...', options:['Generalisasi','Algoritmis','Sistematis','Efisien'], correct:1, feedback:'Benar! Menuliskan langkah bernomor yang jelas dan berurutan adalah ciri algoritmis.'},
+    ]
+  }
+];
+
+// compute max score: 10 pts per challenge
+stages.forEach(s=>{ state.maxScore += s.challenges.length*10; });
+
+/* ============ HELPERS ============ */
+function $(id){return document.getElementById(id);}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function updateHeader(){
+  $('hdrName').textContent = state.name || 'Peserta Didik';
+  $('hdrClass').textContent = state.kelas || '-';
+  $('hdrScore').textContent = state.score;
+  $('hdrMax').textContent = state.maxScore;
+}
+
+/* ============ COVER: MODE TOGGLE ============ */
+let selectedMode = 'individu';
+document.querySelectorAll('.mode-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMode = btn.getAttribute('data-mode');
+    $('fieldsIndividu').style.display = selectedMode==='individu' ? 'block' : 'none';
+    $('fieldsKelompok').style.display = selectedMode==='kelompok' ? 'block' : 'none';
+  });
+});
+
+function showFormWarn(msg){
+  const w = $('idformWarn');
+  w.textContent = '⚠️ ' + msg;
+  w.classList.add('show');
+}
+function clearFormWarn(){
+  $('idformWarn').classList.remove('show');
+}
+
+/* Cek apakah data untuk materi ini sudah pernah tercatat di HasilKuis.
+   Individu -> dicek dari NIS + Kelas. Kelompok (tidak punya NIS) -> dicek dari Nama kelompok + Kelas. */
+async function sudahMengumpulkan({mode, nis, nama, kelas}){
+  if(typeof CONTROL_URL === 'undefined' || typeof MODUL_ID === 'undefined') return false;
+  try{
+    const url = CONTROL_URL + '?cekHasil=1&materi=' + encodeURIComponent(MODUL_ID)
+      + '&mode=' + encodeURIComponent(mode)
+      + '&nis=' + encodeURIComponent(nis || '')
+      + '&nama=' + encodeURIComponent(nama || '')
+      + '&kelas=' + encodeURIComponent(kelas)
+      + '&t=' + Date.now();
+    const res = await fetch(url);
+    const data = await res.json();
+    return !!data.sudah;
+  }catch(err){
+    console.warn('Gagal memeriksa status pengumpulan hasil, lanjut tanpa cek.', err);
+    return false; // gagal cek (mis. offline) -> tidak menghalangi siswa
+  }
+}
+
+function localSudahSubmit(){
+  try{
+    return typeof MODUL_ID !== 'undefined' && localStorage.getItem('hasil_terkirim_' + MODUL_ID) === '1';
+  }catch(e){ return false; }
+}
+function tandaiLocalSubmit(){
+  try{ if(typeof MODUL_ID !== 'undefined') localStorage.setItem('hasil_terkirim_' + MODUL_ID, '1'); }catch(e){}
+}
+
+/* ============ COVER: START ============ */
+$('btnStart').addEventListener('click', async ()=>{
+  clearFormWarn();
+  const kelas = $('inpClass').value.trim();
+  let nama='', nis='', absen='', anggota='';
+
+  if(selectedMode==='individu'){
+    nama = $('inpName').value.trim();
+    nis = $('inpNis').value.trim();
+    absen = $('inpAbsen').value.trim();
+    if(!nama || !nis || !kelas){ showFormWarn('Nama, NIS, dan Kelas wajib diisi.'); return; }
+  } else {
+    nama = $('inpNamaKelompok').value.trim();
+    anggota = $('inpAnggota').value.trim();
+    if(!nama || !kelas || !anggota){ showFormWarn('Nama kelompok, Kelas, dan Anggota kelompok wajib diisi.'); return; }
+  }
+
+  if(localSudahSubmit()){
+    $('lockedMsg').textContent = 'Perangkat ini sudah pernah digunakan untuk mengumpulkan hasil ekspedisi ini.';
+    showScreen('screen-locked');
+    return;
+  }
+
+  const btn = $('btnStart');
+  const originalText = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Memeriksa data...';
+  const sudah = await sudahMengumpulkan({mode: selectedMode, nis, nama, kelas});
+  btn.disabled = false; btn.textContent = originalText;
+
+  if(sudah){
+    const identitas = selectedMode==='individu' ? `NIS "${nis}"` : `kelompok "${nama}"`;
+    $('lockedMsg').textContent = `Data dengan ${identitas} (Kelas ${kelas}) sudah tercatat mengumpulkan hasil untuk materi ini. Hubungi guru jika kamu merasa ini keliru.`;
+    showScreen('screen-locked');
+    return;
+  }
+
+  state.name = nama;
+  state.kelas = kelas;
+  state.nis = nis;
+  state.absen = absen;
+  state.anggota = anggota;
+  state.mode = selectedMode==='individu' ? 'Individu' : 'Kelompok';
+
+  $('idbar').style.display='flex';
+  updateHeader();
+  renderMap();
+  showScreen('screen-map');
+});
+
+$('btnLockedBack').addEventListener('click', ()=> showScreen('screen-cover'));
+
+/* ============ MAP RENDER ============ */
+function renderMap(){
+  const n = stages.length;
+  const w = 900, h = 200;
+  const positions = [];
+  for(let i=0;i<n;i++){
+    const x = 70 + i*((w-140)/(n-1));
+    const y = 100 + (i%2===0? -30: 30);
+    positions.push({x,y});
+  }
+  let path = `M ${positions[0].x} ${positions[0].y}`;
+  for(let i=1;i<n;i++){ path += ` Q ${(positions[i-1].x+positions[i].x)/2} ${positions[i].y+(i%2===0?40:-40)}, ${positions[i].x} ${positions[i].y}`; }
+
+  let nodes = '';
+  positions.forEach((p,i)=>{
+    const s = stages[i];
+    const state_class = state.completed[i] ? 'completed' : (state.unlocked[i] ? 'current' : 'locked');
+    const solidColors = ['#C94B3B','#C98A0A','#6250B8','#1D9C69','#2C74C9'];
+    const nodeFill = state.completed[i] ? solidColors[i] : '#16324F';
+    const stroke = 'rgba(232,239,247,0.25)';
+    nodes += `
+      <g class="mapnode" data-idx="${i}" style="cursor:${state.unlocked[i]?'pointer':'default'}">
+        <circle cx="${p.x}" cy="${p.y}" r="34" fill="${nodeFill}" stroke="${state.unlocked[i]?'#FFB627':stroke}" stroke-width="${state.unlocked[i]?3:1.5}" opacity="${state.unlocked[i]?1:0.5}"/>
+        <text x="${p.x}" y="${p.y+8}" text-anchor="middle" font-size="26">${state.completed[i]?'✅':(state.unlocked[i]?s.icon:'🔒')}</text>
+        <text class="node-label" x="${p.x}" y="${p.y+56}" text-anchor="middle">${s.title.length>16? s.title.slice(0,14)+'…': s.title}</text>
+        <text class="node-sub" x="${p.x}" y="${p.y+70}" text-anchor="middle">${s.kicker}</text>
+      </g>`;
+  });
+
+  const svg = `
+  <svg class="path-svg" viewBox="0 0 ${w} ${h+40}" xmlns="http://www.w3.org/2000/svg">
+    <path d="${path}" fill="none" stroke="rgba(232,239,247,0.35)" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/>
+    ${nodes}
+  </svg>`;
+  $('mapSvgHolder').innerHTML = svg;
+
+  document.querySelectorAll('.mapnode').forEach(g=>{
+    g.addEventListener('click', ()=>{
+      const idx = parseInt(g.getAttribute('data-idx'));
+      if(state.unlocked[idx]){ openStage(idx); }
+    });
+  });
+}
+
+/* ============ STAGE RENDER ============ */
+function openStage(idx){
+  state.current = idx;
+  const s = stages[idx];
+  let html = `
+    <div class="stage-hero" style="background:${s.color};">
+      <span class="kicker">${s.kicker}</span>
+      <h2 style="color:#04150e;">${s.icon} ${s.title}</h2>
+      <p style="color:#04150e;">${s.materi}</p>
+    </div>
+    <div class="content-card">`;
+
+  if(s.example){
+    html += `<div class="example-box" style="border-color:${s.colorD};">
+      <b style="color:${s.colorD};">${s.example.label}</b>${s.example.text}
+    </div>`;
+  }
+  if(s.example2){
+    html += `<div class="example-box" style="border-color:${s.colorD};margin-top:10px;">
+      <b style="color:${s.colorD};">${s.example2.label}</b>${s.example2.text}
+    </div>`;
+  }
+  if(s.charList){
+    html += `<div style="margin-top:14px;display:grid;gap:10px;">`;
+    s.charList.forEach((c,i)=>{
+      html += `<div class="example-box" style="border-color:${s.colorD};">
+        <b style="color:${s.colorD};">${i+1}. ${c.n}</b>${c.d}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+
+  s.challenges.forEach((c,ci)=>{
+    html += renderChallenge(s, c, idx, ci);
+  });
+
+  html += `
+    <div class="stagenav">
+      <button class="btn ghost small" id="btnBackMap">⬅️ Kembali ke peta</button>
+      <button class="btn small" id="btnNextStage" disabled>Lanjut ke pos berikutnya ➜</button>
+    </div>`;
+
+  $('stageContent').innerHTML = html;
+  attachChallengeHandlers(idx);
+  checkStageCompletion(idx);
+
+  $('btnBackMap').addEventListener('click', ()=>{ renderMap(); showScreen('screen-map'); });
+  $('btnNextStage').addEventListener('click', ()=>{
+    if(idx+1 < stages.length){
+      state.unlocked[idx+1] = true;
+      renderMap();
+      showScreen('screen-map');
+    } else {
+      renderFinal();
+      showScreen('screen-final');
+    }
+  });
+
+  showScreen('screen-stage');
+}
+
+function renderChallenge(s, c, stageIdx, ci){
+  const gid = `s${stageIdx}c${ci}`;
+  const answered = state.answers[gid]; // sudah pernah dijawab benar sebelumnya (dipertahankan lintas kunjungan)
+
+  if(c.type==='mcq'){
+    let opts = '';
+    c.options.forEach((o,oi)=>{
+      let cls = 'opt';
+      if(answered){
+        cls += ' disabled';
+        if(oi===c.correct) cls += ' correct';
+        else if(oi===answered.chosen) cls += ' wrong';
+      }
+      opts += `<button class="${cls}" data-gid="${gid}" data-oi="${oi}">${String.fromCharCode(65+oi)}. ${o}</button>`;
+    });
+    const fb = answered ? `<div class="feedback show ok" id="fb-${gid}">✅ ${c.feedback}</div>` : `<div class="feedback" id="fb-${gid}"></div>`;
+    return `
+    <div class="game-card" id="game-${gid}" data-type="mcq" data-correct="${c.correct}" data-stage="${stageIdx}" data-solved="${answered?'true':'false'}">
+      <h4>🎮 Tantangan ${ci+1}</h4>
+      <div class="qtext">${c.q}</div>
+      <div class="options">${opts}</div>
+      ${fb}
+    </div>`;
+  }
+  if(c.type==='order'){
+    let pool = '';
+    c.items.forEach((it,i)=>{
+      pool += `<div class="chip${answered?' used':''}" data-gid="${gid}" data-i="${i}">${it}</div>`;
+    });
+    let slots = '';
+    if(answered){
+      slots = answered.chosen.map((i,pos)=>`<span class="slot-item"><span class="n">${pos+1}.</span> ${c.items[i]}</span>`).join('');
+    }
+    const fb = answered ? `<div class="feedback show ok" id="fb-${gid}">✅ ${c.feedback}</div>` : `<div class="feedback" id="fb-${gid}"></div>`;
+    return `
+    <div class="game-card" id="game-${gid}" data-type="order" data-correct='${JSON.stringify(c.correctOrder)}' data-stage="${stageIdx}" data-solved="${answered?'true':'false'}">
+      <h4>🎮 Tantangan ${ci+1}</h4>
+      <div class="qtext">${c.q}</div>
+      <div class="order-pool" id="pool-${gid}">${pool}</div>
+      <div class="order-slots" id="slots-${gid}">${slots}</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn ghost small" id="reset-${gid}" ${answered?'disabled':''}>↺ Ulangi urutan</button>
+        <button class="btn small" id="check-${gid}" ${answered?'disabled':''}>✅ Periksa urutan</button>
+      </div>
+      ${fb}
+    </div>`;
+  }
+}
+
+function attachChallengeHandlers(stageIdx){
+  const s = stages[stageIdx];
+  s.challenges.forEach((c, ci)=>{
+    const gid = `s${stageIdx}c${ci}`;
+    if(c.type==='mcq'){
+      const card = $(`game-${gid}`);
+      card.querySelectorAll('.opt').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          if(card.getAttribute('data-solved')==='true') return;
+          const oi = parseInt(btn.getAttribute('data-oi'));
+          const correct = parseInt(card.getAttribute('data-correct'));
+          const fb = $(`fb-${gid}`);
+          if(oi===correct){
+            btn.classList.add('correct');
+            card.querySelectorAll('.opt').forEach(b=>b.classList.add('disabled'));
+            card.setAttribute('data-solved','true');
+            fb.textContent = '✅ ' + c.feedback;
+            fb.className = 'feedback show ok';
+            if(!state.answers[gid]){
+              state.answers[gid] = {chosen:oi};
+              state.score += 10;
+              updateHeader();
+            }
+            checkStageCompletion(stageIdx);
+          } else {
+            btn.classList.add('wrong');
+            fb.textContent = '❌ Belum tepat, coba lagi ya!';
+            fb.className = 'feedback show bad';
+          }
+        });
+      });
+    }
+    if(c.type==='order'){
+      const gidSel = gid;
+      let chosen = [];
+      const pool = $(`pool-${gidSel}`);
+      const slots = $(`slots-${gidSel}`);
+      const card = $(`game-${gidSel}`);
+      function renderSlots(){
+        slots.innerHTML = chosen.map((i,pos)=>`<span class="slot-item"><span class="n">${pos+1}.</span> ${c.items[i]}</span>`).join('');
+      }
+      pool.querySelectorAll('.chip').forEach(chip=>{
+        chip.addEventListener('click', ()=>{
+          if(card.getAttribute('data-solved')==='true') return;
+          if(chip.classList.contains('used')) return;
+          const i = parseInt(chip.getAttribute('data-i'));
+          chosen.push(i);
+          chip.classList.add('used');
+          renderSlots();
+        });
+      });
+      $(`reset-${gidSel}`).addEventListener('click', ()=>{
+        if(card.getAttribute('data-solved')==='true') return;
+        chosen = [];
+        pool.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('used'));
+        renderSlots();
+      });
+      $(`check-${gidSel}`).addEventListener('click', ()=>{
+        if(card.getAttribute('data-solved')==='true') return;
+        const fb = $(`fb-${gidSel}`);
+        const correctOrder = JSON.parse(card.getAttribute('data-correct'));
+        const ok = chosen.length===correctOrder.length && chosen.every((v,i)=>v===correctOrder[i]);
+        if(ok){
+          fb.textContent = '✅ ' + c.feedback;
+          fb.className = 'feedback show ok';
+          card.setAttribute('data-solved','true');
+          if(!state.answers[gid]){
+            state.answers[gid] = {chosen: chosen.slice()};
+            state.score += 10;
+            updateHeader();
+          }
+          checkStageCompletion(stageIdx);
+        } else {
+          fb.textContent = '❌ Urutan belum tepat, klik "Ulangi urutan" lalu coba lagi!';
+          fb.className = 'feedback show bad';
+        }
+      });
+    }
+  });
+}
+
+function checkStageCompletion(stageIdx){
+  const s = stages[stageIdx];
+  const allSolved = s.challenges.every((c,ci)=> $(`game-s${stageIdx}c${ci}`).getAttribute('data-solved')==='true');
+  if(allSolved){
+    state.completed[stageIdx] = true;
+    const btn = $('btnNextStage');
+    if(btn){
+      btn.disabled = false;
+      btn.textContent = stageIdx+1 < stages.length ? 'Lanjut ke pos berikutnya ➜' : '🏁 Lihat hasil akhir';
+    }
+  }
+}
+
+/* ============ FINAL ============ */
+function renderFinal(){
+  const pct = Math.round((state.score/state.maxScore)*100);
+  let title='Petualang Pemula', sub='Terus berlatih menerapkan berpikir komputasional, ya!', color='var(--mint)';
+  if(pct>=90){ title='🏆 Ahli Komputasional'; sub='Luar biasa! Kamu memahami keempat fondasi dan karakteristiknya dengan sangat baik.'; color='var(--gold)'; }
+  else if(pct>=70){ title='🥈 Penjelajah Handal'; sub='Bagus sekali! Pemahamanmu tentang berpikir komputasional sudah cukup kuat.'; color='var(--boss)'; }
+
+  const badgeFill = pct>=90 ? '#FFB627' : (pct>=70 ? '#4EA1FF' : '#2FCB8C');
+  $('badgeSvg').innerHTML = `
+    <svg viewBox="0 0 100 100"><polygon points="50,5 61,38 96,38 68,58 79,92 50,72 21,92 32,58 4,38 39,38" fill="${badgeFill}"/></svg>`;
+  $('badgeTitle').textContent = title;
+  $('badgeSub').textContent = sub;
+  $('finalScoreLine').textContent = `Skor akhir: ${state.score} / ${state.maxScore} poin (${pct}%)`;
+
+  kirimHasil();
+}
+
+function setKirimStatus(msg, kind){
+  const el = $('kirimStatus');
+  if(!el) return;
+  el.textContent = msg;
+  el.className = 'kirim-status ' + (kind || 'pending');
+}
+
+/* Kirim hasil kuis ke tab HasilKuis lewat Apps Script Web App (CONTROL_URL) */
+async function kirimHasil(){
+  if(state.terkirim) return; // sudah pernah terkirim, jangan kirim dobel
+
+  if(typeof CONTROL_URL === 'undefined'){
+    setKirimStatus('⚠️ CONTROL_URL belum diset (config.js) — hasil tidak tersimpan ke spreadsheet.', 'bad');
+    return;
+  }
+
+  setKirimStatus('⏳ Mengirim hasil ke guru...', 'pending');
+
+  const payload = {
+    waktu: new Date().toLocaleString('id-ID'),
+    mode: state.mode,
+    nama: state.name,
+    nis: state.nis,
+    absen: state.absen,
+    kelas: state.kelas,
+    anggota: state.anggota,
+    materi: (typeof MODUL_ID !== 'undefined') ? MODUL_ID : '',
+    skor: state.score,
+    total: state.maxScore
+  };
+
+  try{
+    await fetch(CONTROL_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // hindari preflight CORS di Apps Script
+      body: JSON.stringify(payload)
+    });
+    state.terkirim = true;
+    tandaiLocalSubmit();
+    setKirimStatus('✅ Hasil berhasil dikirim & tersimpan di spreadsheet guru.', 'ok');
+  }catch(err){
+    console.warn('Gagal mengirim hasil ke spreadsheet.', err);
+    setKirimStatus('⚠️ Gagal mengirim hasil (periksa koneksi internet). Klik "Coba kirim lagi" di bawah.', 'bad');
+    showRetryKirim();
+  }
+}
+
+function showRetryKirim(){
+  if($('btnRetryKirim')) return; // sudah ada
+  const btn = document.createElement('button');
+  btn.id = 'btnRetryKirim';
+  btn.className = 'btn small';
+  btn.style.marginTop = '10px';
+  btn.textContent = '🔄 Coba kirim lagi';
+  btn.addEventListener('click', async ()=>{
+    btn.disabled = true; btn.textContent = 'Mengirim...';
+    await kirimHasil();
+    if(!state.terkirim){ btn.disabled=false; btn.textContent='🔄 Coba kirim lagi'; }
+    else btn.remove();
+  });
+  $('kirimStatus').insertAdjacentElement('afterend', btn);
+}
+
+$('btnPrint').addEventListener('click', ()=> window.print());
+</script>
+</body>
+</html>
