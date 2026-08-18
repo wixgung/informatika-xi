@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informatika XI — Pertemuan 1: Pengenalan C++</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0E14;
+  --bg-soft:#0E121C;
+  --surface:#161B27;
+  --surface-2:#1D2333;
+  --surface-3:#242B3D;
+  --border:#2A3145;
+  --border-soft:#1E2434;
+  --text:#E7EAF3;
+  --text-dim:#97A0B8;
+  --text-faint:#5C6478;
+  --amber:#F0A860;
+  --amber-soft:rgba(240,168,96,.12);
+  --mint:#7FDBB6;
+  --mint-soft:rgba(127,219,182,.12);
+  --violet:#9CA8FF;
+  --violet-soft:rgba(156,168,255,.12);
+  --coral:#FF6B6B;
+  --coral-soft:rgba(255,107,107,.12);
+  --font-display:'Space Grotesk', sans-serif;
+  --font-body:'Inter', sans-serif;
+  --font-mono:'JetBrains Mono', monospace;
+  --sidebar-w:280px;
+  --statusbar-h:34px;
+  --topbar-h:56px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:var(--statusbar-h);
+}
+::selection{background:var(--amber-soft); color:var(--amber);}
+a{color:var(--violet);}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:700; margin:0 0 .5em; letter-spacing:-.01em;}
+p{margin:0 0 1em; color:var(--text-dim);}
+strong{color:var(--text); font-weight:600;}
+code{font-family:var(--font-mono); font-size:.9em; background:var(--surface-2); color:var(--mint); padding:.15em .4em; border-radius:4px;}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:var(--bg-soft);}
+::-webkit-scrollbar-thumb{background:var(--surface-3); border-radius:6px;}
+
+/* ---------- TOPBAR ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  height:var(--topbar-h);
+  display:flex; align-items:center; gap:12px;
+  padding:0 18px;
+  background:var(--bg-soft);
+  border-bottom:1px solid var(--border-soft);
+}
+.topbar .dots{display:flex; gap:6px;}
+.topbar .dots span{width:11px; height:11px; border-radius:50%; display:inline-block;}
+.topbar .dots span:nth-child(1){background:#FF6B6B;}
+.topbar .dots span:nth-child(2){background:#F0A860;}
+.topbar .dots span:nth-child(3){background:#7FDBB6;}
+.topbar .filename{
+  font-family:var(--font-mono); font-size:13px; color:var(--text-dim);
+}
+.topbar .filename b{color:var(--text); font-weight:500;}
+.menu-toggle{
+  margin-left:auto; display:none;
+  background:var(--surface-2); border:1px solid var(--border);
+  color:var(--text); font-family:var(--font-mono); font-size:12px;
+  padding:7px 12px; border-radius:6px; cursor:pointer;
+}
+
+/* ---------- LAYOUT ---------- */
+.shell{display:flex; min-height:calc(100vh - var(--topbar-h) - var(--statusbar-h));}
+
+.sidebar{
+  width:var(--sidebar-w); flex-shrink:0;
+  background:var(--bg-soft);
+  border-right:1px solid var(--border-soft);
+  position:sticky; top:var(--topbar-h);
+  height:calc(100vh - var(--topbar-h));
+  overflow-y:auto;
+  padding:18px 0 30px;
+}
+.sidebar .group-label{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--text-faint);
+  padding:6px 20px; margin-top:10px;
+}
+.sidebar nav a{
+  display:flex; align-items:center; gap:9px;
+  padding:8px 20px; font-family:var(--font-mono); font-size:13px;
+  color:var(--text-dim); text-decoration:none; border-left:2px solid transparent;
+  transition:.15s;
+}
+.sidebar nav a:hover{background:var(--surface); color:var(--text);}
+.sidebar nav a.active{
+  background:var(--surface-2); color:var(--amber); border-left-color:var(--amber);
+}
+.sidebar nav a .num{color:var(--text-faint); font-size:11px; width:16px; flex-shrink:0;}
+.sidebar nav a.active .num{color:var(--amber);}
+
+main{flex:1; min-width:0; padding:0 0 60px;}
+.section{
+  max-width:880px; margin:0 auto; padding:64px 32px 20px; scroll-margin-top:80px;
+}
+.eyebrow{
+  font-family:var(--font-mono); font-size:12px; color:var(--amber);
+  text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+.eyebrow::before{content:''; width:18px; height:1px; background:var(--amber);}
+.section h2{font-size:clamp(24px,3.4vw,34px);}
+.lead{font-size:17px; color:var(--text-dim);}
+.term{color:var(--text); font-style:normal; font-weight:600;}
+.term-note{font-size:13.5px; color:var(--text-faint);}
+
+/* ---------- HERO ---------- */
+.hero{
+  max-width:880px; margin:0 auto; padding:70px 32px 40px;
+}
+.terminal{
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  overflow:hidden; box-shadow:0 20px 60px -20px rgba(0,0,0,.6);
+}
+.terminal .bar{
+  display:flex; align-items:center; gap:6px; padding:10px 14px;
+  background:var(--surface-2); border-bottom:1px solid var(--border);
+}
+.terminal .bar span{width:10px; height:10px; border-radius:50%;}
+.terminal .bar span:nth-child(1){background:#FF6B6B;}
+.terminal .bar span:nth-child(2){background:#F0A860;}
+.terminal .bar span:nth-child(3){background:#7FDBB6;}
+.terminal .bar .tt{margin-left:8px; font-family:var(--font-mono); font-size:12px; color:var(--text-faint);}
+.terminal .body{padding:22px 20px; font-family:var(--font-mono); font-size:14.5px; min-height:130px;}
+.terminal .line{color:var(--text-dim); white-space:pre-wrap;}
+.terminal .prompt{color:var(--mint);}
+.terminal .out{color:var(--amber);}
+.cursor{display:inline-block; width:8px; height:16px; background:var(--amber); vertical-align:middle; animation:blink 1s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+.hero h1{
+  font-size:clamp(28px,4.6vw,42px); margin-top:26px; line-height:1.15;
+}
+.hero h1 .hl{color:var(--amber);}
+.hero .sub{font-size:16.5px; color:var(--text-dim); max-width:640px;}
+.hero-tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:18px;}
+.tag{
+  font-family:var(--font-mono); font-size:12px; color:var(--text-dim);
+  border:1px solid var(--border); padding:5px 10px; border-radius:20px;
+}
+
+/* ---------- CARDS / GRID ---------- */
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  padding:22px; margin:14px 0;
+}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+.mini-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px;
+}
+.mini-card .ic{font-family:var(--font-mono); color:var(--amber); font-size:13px; margin-bottom:8px;}
+.mini-card h4{font-size:15px; margin-bottom:6px;}
+.mini-card p{font-size:14px; margin:0;}
+
+/* ---------- TIMELINE (sejarah) ---------- */
+.timeline{position:relative; margin:26px 0; padding-left:26px; border-left:1px solid var(--border);}
+.tl-item{position:relative; padding-bottom:26px;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{
+  content:''; position:absolute; left:-31px; top:4px; width:10px; height:10px;
+  border-radius:50%; background:var(--bg); border:2px solid var(--amber);
+}
+.tl-year{font-family:var(--font-mono); color:var(--amber); font-size:13px; font-weight:600;}
+.tl-item h4{font-size:16px; margin:4px 0 4px;}
+.tl-item p{font-size:14.5px; margin:0;}
+
+/* ---------- TABLE ---------- */
+.table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:10px; margin:18px 0;}
+table{width:100%; border-collapse:collapse; font-size:14px; min-width:560px;}
+th,td{padding:12px 14px; text-align:left; border-bottom:1px solid var(--border-soft);}
+thead th{
+  background:var(--surface-2); font-family:var(--font-mono); font-size:12px;
+  text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint);
+}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface);}
+td.lang-c{color:var(--coral); font-family:var(--font-mono); font-weight:600;}
+td.lang-cpp{color:var(--amber); font-family:var(--font-mono); font-weight:600;}
+td.lang-cs{color:var(--violet); font-family:var(--font-mono); font-weight:600;}
+
+/* ---------- CODE BLOCK (tidak bisa disalin) ---------- */
+.code-block{
+  background:#0D1119; border:1px solid var(--border); border-radius:10px;
+  overflow:hidden; margin:18px 0;
+}
+.code-head{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:9px 14px; background:var(--surface-2); border-bottom:1px solid var(--border);
+  font-family:var(--font-mono); font-size:12px; color:var(--text-faint);
+}
+.no-copy-badge{
+  font-family:var(--font-mono); font-size:10.5px; color:var(--coral);
+  border:1px solid var(--coral); padding:3px 8px; border-radius:20px;
+}
+.code-body{padding:16px 0; overflow-x:auto; user-select:none; -webkit-user-select:none; -moz-user-select:none;}
+.code-line{
+  display:flex; padding:1px 18px; font-family:var(--font-mono); font-size:14px; white-space:pre;
+}
+.code-line .ln{
+  width:28px; flex-shrink:0; color:var(--text-faint); user-select:none; text-align:right; margin-right:16px;
+}
+.tk-pre{color:var(--violet);}
+.tk-kw{color:var(--amber);}
+.tk-type{color:#7FB3DB;}
+.tk-str{color:var(--mint);}
+.tk-fn{color:#C9A0FF;}
+.tk-com{color:var(--text-faint); font-style:italic;}
+.tk-punc{color:var(--text-dim);}
+
+/* console output mockup */
+.console-block{
+  background:#050607; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin:14px 0 18px;
+}
+.console-head{
+  padding:9px 14px; background:var(--surface-2); border-bottom:1px solid var(--border);
+  font-family:var(--font-mono); font-size:12px; color:var(--text-faint);
+  display:flex; align-items:center; gap:8px;
+}
+.console-head::before{content:'▶'; color:var(--mint); font-size:10px;}
+.console-body{padding:18px 20px; font-family:var(--font-mono); font-size:14px; color:#D9DCE3; overflow-x:auto;}
+.console-body .cline{margin-bottom:4px; white-space:pre;}
+.console-body .cmeta{color:var(--text-faint); margin-top:10px; font-size:12.5px;}
+
+/* line-by-line explanation */
+.explain-list{margin:24px 0;}
+.explain-item{
+  display:grid; grid-template-columns:44px minmax(0,1fr); gap:14px;
+  padding:14px 0; border-top:1px solid var(--border-soft); max-width:100%;
+}
+.explain-item:first-child{border-top:none;}
+.explain-item .badge{
+  font-family:var(--font-mono); font-size:12px; color:var(--amber);
+  background:var(--amber-soft); width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+}
+.explain-item code.line-code{
+  display:block; background:var(--surface-2); padding:6px 10px; border-radius:6px;
+  margin-bottom:6px; color:var(--mint); font-size:13px; width:fit-content;
+}
+.explain-item p{margin:0; font-size:14.5px;}
+
+/* try-it prompt */
+.try-it{
+  display:flex; align-items:center; gap:10px; background:var(--mint-soft); border:1px dashed var(--mint);
+  color:var(--mint); border-radius:8px; padding:10px 14px; font-size:13.5px; margin:10px 0 22px;
+}
+
+/* ---------- QUIZ ---------- */
+.quiz-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin:18px 0;
+}
+.q-progress{font-family:var(--font-mono); font-size:12px; color:var(--text-faint); margin-bottom:10px;}
+.q-text{font-size:16.5px; font-weight:600; margin-bottom:18px; font-family:var(--font-display);}
+.q-text code{font-size:.85em;}
+.q-options{display:grid; gap:10px;}
+.q-opt{
+  text-align:left; background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+  padding:13px 16px; border-radius:8px; font-family:var(--font-body); font-size:14.5px; cursor:pointer;
+  transition:.15s;
+}
+.q-opt code{background:transparent; padding:0; color:inherit; font-size:.95em;}
+.q-opt:hover{border-color:var(--violet);}
+.q-opt.correct{border-color:var(--mint); background:var(--mint-soft); color:var(--mint);}
+.q-opt.wrong{border-color:var(--coral); background:var(--coral-soft); color:var(--coral);}
+.q-opt:disabled{cursor:default;}
+
+/* soal isian singkat */
+.q-isian-input{
+  width:100%; padding:12px 14px; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface-2); color:var(--text); font-family:var(--font-mono); font-size:15px;
+  margin-bottom:12px; box-sizing:border-box;
+}
+.q-isian-input:focus{outline:none; border-color:var(--violet);}
+.q-isian-input.correct{border-color:var(--mint); background:var(--mint-soft); color:var(--mint);}
+.q-isian-input.wrong{border-color:var(--coral); background:var(--coral-soft); color:var(--coral);}
+
+/* soal mencocokkan */
+.match-row{display:flex; align-items:center; gap:12px; margin-bottom:10px; flex-wrap:wrap;}
+.match-term{
+  font-family:var(--font-mono); font-size:13px; background:var(--surface-2); padding:8px 12px;
+  border-radius:8px; min-width:120px; flex-shrink:0; text-align:center;
+}
+.match-select{
+  flex:1; min-width:180px; padding:9px 10px; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface-2); color:var(--text); font-family:var(--font-body); font-size:13.5px;
+}
+.match-select:focus{outline:none; border-color:var(--violet);}
+.match-select.match-correct{border-color:var(--mint);}
+.match-select.match-wrong{border-color:var(--coral);}
+
+/* kunci latihan */
+.lock-box{
+  background:var(--surface); border:1px dashed var(--border); border-radius:12px;
+  padding:44px 24px; text-align:center; max-width:480px; margin:20px auto; max-width:100%;
+}
+.lock-box .lock-icon{font-size:38px; margin-bottom:10px;}
+.lock-box p{font-size:14px;}
+.lock-form{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; justify-content:center;}
+.lock-form input{
+  flex:1; min-width:180px; padding:11px 14px; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface-2); color:var(--text); font-family:var(--font-mono); font-size:14px;
+}
+.lock-form input:focus{outline:none; border-color:var(--amber);}
+.lock-err{color:var(--coral); font-size:13px; margin-top:12px; display:none;}
+.q-explain{
+  margin-top:14px; padding:12px 14px; border-radius:8px; background:var(--bg-soft);
+  border:1px dashed var(--border); font-size:13.5px; color:var(--text-dim); display:none;
+}
+.q-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+.btn{
+  font-family:var(--font-mono); font-size:13px; border-radius:7px; padding:9px 16px;
+  border:1px solid var(--border); background:var(--surface-2); color:var(--text); cursor:pointer;
+}
+.btn:hover{border-color:var(--amber); color:var(--amber);}
+.btn.primary{background:var(--amber); border-color:var(--amber); color:#1a1305; font-weight:600;}
+.btn.primary:hover{opacity:.9; color:#1a1305;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+.quiz-result{display:none; text-align:center; padding:30px 20px;}
+.quiz-result .score{font-family:var(--font-display); font-size:44px; color:var(--amber);}
+
+/* semicolon game */
+.game-wrap{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:22px; margin:18px 0; max-width:100%; box-sizing:border-box;}
+.game-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;}
+.game-stat{font-family:var(--font-mono); font-size:13px; color:var(--text-dim);}
+.game-stat b{color:var(--amber);}
+.game-line{
+  display:flex; align-items:flex-start; gap:12px; padding:10px 14px; margin-bottom:8px;
+  background:var(--surface-2); border:1px solid var(--border); border-radius:8px; cursor:pointer;
+  font-family:var(--font-mono); font-size:14px; transition:.12s; max-width:100%; overflow:hidden;
+}
+.game-line:hover{border-color:var(--violet);}
+.game-line .gln{color:var(--text-faint); width:18px; flex-shrink:0; margin-top:1px;}
+.game-line .gcode{flex:1; min-width:0; white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word;}
+.game-line.picked{border-color:var(--amber); background:var(--amber-soft);}
+.game-line.correct{border-color:var(--mint); background:var(--mint-soft);}
+.game-line.incorrect{border-color:var(--coral); background:var(--coral-soft);}
+.game-actions{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;}
+.game-feedback{margin-top:14px; font-size:14px; color:var(--text-dim); display:none; padding:12px 14px; border-radius:8px; background:var(--bg-soft); border:1px dashed var(--border);}
+
+/* puzzle kode (susun urutan baris) */
+.puzzle-line{
+  display:flex; align-items:center; gap:10px; padding:9px 12px; margin-bottom:8px;
+  background:var(--surface-2); border:1px solid var(--border); border-radius:8px;
+  font-family:var(--font-mono); font-size:13.5px; max-width:100%;
+}
+.puzzle-line .pcode{flex:1; min-width:0; white-space:pre-wrap; word-break:break-word;}
+.puzzle-line .pbtns{display:flex; gap:4px; flex-shrink:0;}
+.puzzle-line .pbtns button{
+  width:28px; height:28px; border-radius:6px; border:1px solid var(--border); background:var(--surface-3);
+  color:var(--text-dim); cursor:pointer; font-size:13px; line-height:1;
+}
+.puzzle-line .pbtns button:hover{border-color:var(--violet); color:var(--violet);}
+.puzzle-line .pbtns button:disabled{opacity:.3; cursor:not-allowed;}
+.puzzle-line.correct{border-color:var(--mint); background:var(--mint-soft);}
+.puzzle-line.wrong{border-color:var(--coral); background:var(--coral-soft);}
+
+/* ---------- LATIHAN (instruksi saja) ---------- */
+.task-box{
+  background:var(--surface);
+  border:1px solid var(--border); border-left:3px solid var(--mint);
+  border-radius:10px; padding:20px 22px; margin:18px 0;
+}
+.task-box h4{color:var(--mint); font-size:14px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.05em;}
+.checklist{list-style:none; padding:0; margin:14px 0;}
+.checklist li{display:flex; align-items:flex-start; gap:10px; padding:6px 0; font-size:14.5px; line-height:1.55; color:var(--text-dim); max-width:100%;}
+.checklist li .bullet{color:var(--amber); flex-shrink:0; line-height:inherit;}
+.checklist li > span:last-child{flex:1 1 auto; min-width:0; overflow-wrap:break-word; word-break:break-word;}
+.steps{list-style:none; counter-reset:step; padding:0; margin:14px 0 0; display:grid; gap:10px; max-width:100%;}
+.steps li{
+  counter-increment:step; display:flex; align-items:flex-start; gap:12px;
+  font-size:14.5px; line-height:1.55; color:var(--text-dim); max-width:100%;
+}
+.steps li::before{
+  content:counter(step); flex-shrink:0; width:24px; height:24px; border-radius:50%;
+  background:var(--amber-soft); color:var(--amber); font-family:var(--font-mono); font-size:12px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;
+}
+.steps li span{flex:1 1 auto; min-width:0; overflow-wrap:break-word; word-break:break-word;}
+.steps li code{word-break:break-word; overflow-wrap:break-word;}
+.submit-box{
+  background:var(--amber-soft); border:1px solid var(--amber); border-radius:10px; padding:18px 20px; margin:18px 0;
+}
+.submit-box h4{color:var(--amber); font-size:14px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.05em;}
+.submit-box ol{margin:10px 0 0; padding-left:20px; font-size:14.5px; color:var(--text-dim);}
+.submit-box ol li{margin-bottom:6px;}
+
+/* ---------- IDE GUIDE ---------- */
+.ide-shot{width:100%; border-radius:10px; border:1px solid var(--border); display:block;}
+.callout-list{margin:20px 0; display:grid; gap:12px;}
+.callout{
+  display:grid; grid-template-columns:34px minmax(0,1fr); gap:14px; align-items:start;
+  background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; max-width:100%;
+}
+.callout > div:last-child{min-width:0; overflow-wrap:break-word; word-break:break-word;}
+.callout.highlight{border-color:var(--amber); background:var(--amber-soft);}
+.callout .cnum{
+  width:30px; height:30px; border-radius:50%; background:var(--violet-soft); color:var(--violet);
+  font-family:var(--font-mono); font-weight:700; display:flex; align-items:center; justify-content:center; font-size:13px;
+}
+.callout.highlight .cnum{background:var(--amber); color:#1a1305;}
+.callout h4{font-size:14.5px; margin-bottom:4px;}
+.callout h4 .key{
+  font-family:var(--font-mono); font-size:11px; background:var(--surface-3); color:var(--text-dim);
+  padding:2px 7px; border-radius:5px; margin-left:6px;
+}
+.callout.highlight h4 .key{background:var(--amber); color:#1a1305; font-weight:700;}
+.callout p{font-size:13.5px; margin:0;}
+
+/* ---------- SUMBER / REFERENSI ---------- */
+.sources{
+  max-width:880px; margin:0 auto; padding:40px 32px 80px;
+  border-top:1px solid var(--border-soft);
+}
+.sources h3{font-size:15px; font-family:var(--font-mono); color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em;}
+.sources ul{list-style:none; padding:0; margin:14px 0 0; display:grid; gap:8px;}
+.sources li{font-size:13.5px; color:var(--text-dim);}
+.sources li a{color:var(--violet); text-decoration:none;}
+.sources li a:hover{text-decoration:underline;}
+.sources .note{margin-top:14px; font-size:12.5px; color:var(--text-faint);}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed; bottom:calc(var(--statusbar-h) + 16px); left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--surface-3); border:1px solid var(--amber); color:var(--amber);
+  font-family:var(--font-mono); font-size:13px; padding:10px 18px; border-radius:8px;
+  opacity:0; transition:.25s; pointer-events:none; z-index:200;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+/* ---------- STATUS BAR ---------- */
+.statusbar{
+  position:fixed; left:0; right:0; bottom:0; height:var(--statusbar-h); z-index:60;
+  background:var(--amber); color:#1a1305;
+  font-family:var(--font-mono); font-size:12px; font-weight:600;
+  display:flex; align-items:center; padding:0 16px; gap:22px; overflow-x:auto; white-space:nowrap;
+}
+.statusbar span b{font-weight:700;}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:900px){
+  .grid2,.grid3{grid-template-columns:1fr;}
+  .sidebar{
+    position:fixed; top:var(--topbar-h); left:0; height:calc(100vh - var(--topbar-h));
+    width:78vw; max-width:300px; transform:translateX(-100%); transition:.2s; z-index:70;
+    box-shadow:20px 0 40px rgba(0,0,0,.4);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .menu-toggle{display:block;}
+  .section{padding:46px 20px 10px;}
+  .hero{padding:40px 20px 20px;}
+  .sources{padding:40px 20px 80px;}
+}
+@media (max-width:520px){
+  .statusbar{font-size:10px; gap:12px;}
+  .game-line{font-size:12.5px; padding:9px 11px; gap:8px;}
+  .console-body{font-size:12.5px; padding:14px 16px;}
+}
+
+/* ---------- Guard loading (cek status Tampilkan dari Sheet) ---------- */
+#guard-loading{
+  position:fixed; inset:0; background:var(--bg); z-index:999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  font-family:var(--font-mono); color:var(--text-dim); font-size:13px;
+}
+#guard-loading .spin{
+  width:34px; height:34px; border-radius:50%;
+  border:3px solid var(--surface-2); border-top-color:var(--amber);
+  animation:guardspin .8s linear infinite;
+}
+@keyframes guardspin{to{transform:rotate(360deg);}}
+
+/* ---------- Form identitas / kirim hasil ---------- */
+.idform{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0 20px;}
+@media (max-width:600px){.idform{grid-template-columns:1fr;}}
+.field label{
+  display:block; font-family:var(--font-mono); font-size:11px; text-transform:uppercase;
+  letter-spacing:.06em; margin-bottom:6px; color:var(--text-faint);
+}
+.field input{
+  width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px;
+  background:var(--surface-2); color:var(--text); font-family:var(--font-body); font-size:14px;
+}
+.field input:focus{outline:none; border-color:var(--amber);}
+.mode-btn.active{background:var(--amber); border-color:var(--amber); color:#1a1305; font-weight:700;}
+.hidden{display:none !important;}
+#submitResult{
+  margin-top:16px; padding:14px 16px; border-radius:8px; background:var(--mint-soft);
+  border:1px solid var(--mint); color:var(--mint); font-size:13.5px; display:none;
+}
+
+/* ---------- Tujuan Pembelajaran (CP & ATP) ---------- */
+.tp-box{
+  background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--violet);
+  border-radius:10px; padding:20px 22px; margin:0 0 14px; max-width:100%;
+}
+.tp-box h4{
+  font-family:var(--font-mono); font-size:12px; color:var(--violet); text-transform:uppercase;
+  letter-spacing:.06em; margin-bottom:10px;
+}
+.tp-box p{font-size:13.5px; margin-bottom:10px;}
+.tp-box ol{margin:8px 0 0; padding-left:20px;}
+.tp-box ol li{font-size:13.5px; color:var(--text-dim); margin-bottom:6px; line-height:1.55;}
+</style>
+</head>
+<body>
+
+<div id="guard-loading">
+  <div class="spin"></div>
+  <div>Memuat materi…</div>
+</div>
+
+<div id="konten-utama" style="visibility:hidden">
+
+<div class="topbar">
+  <div class="dots"><span></span><span></span><span></span></div>
+  <div class="filename"><a href="../index.html" style="color:inherit; text-decoration:none; opacity:.7;">📘 Informatika XI</a> &nbsp;›&nbsp; <b>Pertemuan 1 — Pengenalan C++</b></div>
+  <button class="menu-toggle" id="menuToggle">☰ Daftar Isi</button>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="group-label">Daftar Isi</div>
+    <nav id="sidenav">
+      <a href="#beranda" data-target="beranda"><span class="num">00</span>Beranda</a>
+      <a href="#pengenalan" data-target="pengenalan"><span class="num">01</span>Apa itu C++</a>
+      <a href="#sejarah" data-target="sejarah"><span class="num">02</span>Sejarah Singkat</a>
+      <a href="#perbandingan" data-target="perbandingan"><span class="num">03</span>C vs C++ vs C#</a>
+      <a href="#ide" data-target="ide"><span class="num">04</span>Mengenal Dev-C++</a>
+      <a href="#struktur" data-target="struktur"><span class="num">05</span>Struktur Program</a>
+      <a href="#helloworld" data-target="helloworld"><span class="num">06</span>Hello World</a>
+      <a href="#materi" data-target="materi"><span class="num">07</span>Hal Penting Lainnya</a>
+      <a href="#kuis" data-target="kuis"><span class="num">08</span>Uji Pemahaman</a>
+      <a href="#latihan" data-target="latihan"><span class="num">09</span>Latihan</a>
+    </nav>
+  </aside>
+
+  <main>
+
+    <!-- ============ HERO / BERANDA ============ -->
+    <section class="hero" id="beranda">
+      <div class="terminal">
+        <div class="bar"><span></span><span></span><span></span><div class="tt">Dev-C++ — Console</div></div>
+        <div class="body" id="bootTerminal"></div>
+      </div>
+      <h1>Pertemuan 1: Mengenal <span class="hl">C++</span></h1>
+      <p class="sub">Halo! Di pertemuan pertama ini kita akan belajar apa itu C++, sedikit sejarahnya, cara pakai aplikasi Dev-C++, sampai menulis program pertamamu: <code>Hello World</code>. Baca pelan-pelan, coba setiap contoh kodenya sendiri ya.</p>
+      <div class="hero-tags">
+        <span class="tag">Pengenalan C++</span>
+        <span class="tag">Dev-C++</span>
+        <span class="tag">Hello World</span>
+        <span class="tag">Latihan Mandiri</span>
+      </div>
+    </section>
+
+    <!-- ============ TUJUAN PEMBELAJARAN ============ -->
+    <section class="section" style="padding-top:0;">
+      <div class="tp-box">
+        <h4>🎯 Tujuan Pembelajaran</h4>
+        <p>Setelah mengikuti pertemuan ini, kamu diharapkan mampu:</p>
+        <ol>
+          <li>Menjelaskan konsep dasar dan sejarah singkat bahasa pemrograman C++.</li>
+          <li>Mengidentifikasi struktur dasar program C++ (preprocessor directive, fungsi <code>main</code>, blok kode, statement) sesuai aturan penulisan (sintaks) yang benar.</li>
+          <li>Menulis dan menjalankan program C++ sederhana menggunakan Dev-C++ sesuai struktur yang telah dipelajari.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 01 PENGENALAN ============ -->
+    <section class="section" id="pengenalan">
+      <div class="eyebrow">01 · Pengenalan</div>
+      <h2>Apa itu C++?</h2>
+      <p class="lead">C++ adalah salah satu <span class="term">bahasa pemrograman</span> — cara kita "berbicara" dengan komputer supaya komputer melakukan apa yang kita mau, lewat kode yang kita tulis.</p>
+      <p>C++ terkenal karena programnya bisa berjalan dengan sangat cepat. Karena itu, C++ banyak dipakai untuk membuat hal-hal yang butuh performa tinggi, misalnya game, aplikasi komputer, sampai sistem di dalam perangkat elektronik.</p>
+      <p class="term-note">Istilah <span class="term">"bahasa pemrograman"</span>: sekumpulan aturan penulisan yang dipahami komputer, mirip seperti bahasa Indonesia atau Inggris, tapi khusus untuk memberi perintah ke komputer.</p>
+
+      <div class="grid3">
+        <div class="mini-card">
+          <div class="ic">01</div>
+          <h4>Cepat &amp; Ringan</h4>
+          <p>Program C++ diubah langsung menjadi bahasa yang dimengerti mesin, sehingga jalannya cepat.</p>
+        </div>
+        <div class="mini-card">
+          <div class="ic">02</div>
+          <h4>Banyak Dipakai</h4>
+          <p>Dipakai untuk membuat game, aplikasi desktop, sampai sistem operasi.</p>
+        </div>
+        <div class="mini-card">
+          <div class="ic">03</div>
+          <h4>Bahasa Dasar</h4>
+          <p>Cocok untuk belajar cara berpikir terstruktur sebelum lanjut ke bahasa lain.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 SEJARAH ============ -->
+    <section class="section" id="sejarah">
+      <div class="eyebrow">02 · Sejarah</div>
+      <h2>Sejarah Singkat C++</h2>
+      <p class="lead">Kenapa namanya "C++"? Yuk lihat perjalanan singkatnya.</p>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">1979</div>
+          <h4>Awal Mula</h4>
+          <p>Seorang peneliti bernama <strong>Bjarne Stroustrup</strong> mulai mengembangkan versi baru dari bahasa C, dengan nama sementara "C with Classes".</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1983</div>
+          <h4>Nama "C++" Muncul</h4>
+          <p>Namanya diganti menjadi <strong>C++</strong>. Simbol <code>++</code> dalam C++ artinya "tambah 1" — jadi namanya kurang lebih berarti "C, tapi satu langkah lebih maju".</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1985</div>
+          <h4>Dirilis ke Publik</h4>
+          <p>C++ mulai bisa dipakai secara luas oleh para pembuat program di seluruh dunia.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1998 – sekarang</div>
+          <h4>Terus Diperbarui</h4>
+          <p>C++ terus mendapat pembaruan (versi baru) sampai sekarang, supaya makin mudah dipakai dan makin canggih.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 PERBANDINGAN ============ -->
+    <section class="section" id="perbandingan">
+      <div class="eyebrow">03 · Perbandingan</div>
+      <h2>C vs C++ vs C#: Apa Bedanya?</h2>
+      <p class="lead">Ketiga nama ini mirip dan sering bikin bingung, padahal berbeda.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Aspek</th><th>C</th><th>C++</th><th>C#</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Tahun rilis</td><td class="lang-c">1972</td><td class="lang-cpp">1985</td><td class="lang-cs">2000</td></tr>
+            <tr><td>Pembuat</td><td class="lang-c">Dennis Ritchie</td><td class="lang-cpp">Bjarne Stroustrup</td><td class="lang-cs">Microsoft</td></tr>
+            <tr><td>Cara kerja</td><td>Berurutan langkah demi langkah</td><td>Bisa berurutan, bisa juga dikelompokkan jadi "objek" (OOP)</td><td>Dikelompokkan jadi "objek" (OOP), gaya modern</td></tr>
+            <tr><td>Kecepatan program</td><td>Sangat cepat</td><td>Sangat cepat</td><td>Cepat, sedikit lebih lambat dari C++</td></tr>
+            <tr><td>Biasa dipakai untuk</td><td>Sistem di dalam perangkat elektronik</td><td>Game, aplikasi performa tinggi</td><td>Aplikasi Windows, game dengan Unity</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="term-note">Istilah <span class="term">OOP (Object-Oriented Programming)</span>: cara menulis kode dengan mengelompokkan data dan perintah menjadi satu paket yang disebut "objek", supaya kode besar lebih rapi. Kamu akan mempelajarinya lebih dalam di pertemuan berikutnya.</p>
+    </section>
+
+    <!-- ============ 04 PANDUAN IDE ============ -->
+    <section class="section" id="ide">
+      <div class="eyebrow">04 · Alat yang Dipakai</div>
+      <h2>Mengenal Dev-C++</h2>
+      <p class="lead">Kita menulis dan menjalankan kode C++ memakai aplikasi bernama <strong>Dev-C++</strong>. Supaya kode bisa berjalan, kode harus melalui proses <span class="term">compile</span> — yaitu proses komputer memeriksa dan menerjemahkan tulisan kodemu menjadi bahasa yang dimengerti mesin. Semua perintah untuk itu ada di menu <strong>Execute</strong>, seperti gambar di bawah ini:</p>
+
+      <img class="ide-shot" id="ideShot" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB34AAAQBCAIAAABKQbxbAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAASdEVYdFNvZnR3YXJlAEdyZWVuc2hvdF5VCAUAALlxSURBVHhe7P0LuG3nQdD9Li768DxeiiiUm4o3tCqGWIknVVDzqQcLor2gkqN82QRCdT+oh6ifnzkVL0kbpF8aMIfKYR+ISjh+ZIeWSDbBdoMRvxB62XuXhh3btLvWFkKBkqZNm9qmXecd433nGO8Yc4wxx1hrrrXn2OP3e95nZ85xeceYc82x9tr/zs61tw8AANtz4cKFV77ylbcxH694xSt+8id/Mn39AABgS6RnAAC26dSpU6loMh933nnnxz72sfQlBACAbZCeAQDYmieeeOJf/at/lXIm83H77be/613vSl9FAADYBukZAICtectb3uLTNuboFa94Rfjapa8iAABsQ1d6/tSnfv3Nb/r5f/bP/vNf+/r//A1/453feftHfv6tYWFaCwAAPd7znvd853d+Z8qZzMcrX/nKd7zjHemrCAAA29BIzx//wAfe9Z3fefbLv/xHf8tvvuczPv3uT/+07//0T/s3n/7pP/kFn3fxz/+5J/71dz/7wSfTpgAAsOYTn/jEXXfdlXIm8/Fd3/VdTz31VPoqAgDANtTp+aPveMcb/9yf/fHP/IzXfuZn/MhnfHqVnl/zaZ/2bz7zM37u8z/3LV/03Le/+K987JLPgAMAoNfZs2df8YpXpKLJTPzQD/1Q+voBAMCWpPT8zOOP/1+/63f+5G/8zM70/N2f9mk/+Tmf/ZYveu5bvvjzf/6PX/WM30ACAECPj3zkI695zWtS0WQO7rjjjl/5lV9JXz8AANiSIj1//AMf+Pk/f91/+bzPPfu5v+PMb/5Nr/30T/uRz/iMH/mc3/bDv+N3/Lvf8dtPffZn/79/62898wXPjen5wvP+wHv+xkv/55O/HvcHAICWd77znbfffnvqmuy2V77ylW9605vSVw4AgIn2BqWNdkM4nze/+c3pzpqwausnXEz3i7e/8sK1/7ePvve9H/qFX/jAzz3yX//SV9/3W37Lr73pTU+94x2//guPvut1r3vjK257/3/4/5374i942wuu+ei73vU//pev/J8/+P+J+zc9fucL9m46k+4kZ27ae8Gdj6c7o4Q99tamiaZP1nlOXcvGKfZsmHY6Bzj/LTr4w95k7Wk5kofZPMpRPJLsCOsPoHxdRpfxiwgAc3H27NlXvvKVqW6yq8LX6LWvfW36mgEAMN1ef64dWHVZvLmMy+HPdD8zsOow9vY/9amfv/rL3/pnvuqj73nPQ1/6pT/3l//y0+95z0/8sT/69Lvf/VN/7evv+eIv/oHnPvf0ddd97L3/4/zzfv9/v/n/+eE3vfF/XP2HP/L/eEnYMc1RK8pduwiOqa0D2zRXHSDdts6p6ocHT8+HaJ4HOP8tOuTJD1ibOT7NWzxYcYTGhGdu2vZDKQ4x8NXJDlg8um0fHQCuQI899ti//tf/OjVOds8dd9zh/c4AAAdW1K9+cYO45e54c1di7ly4FXtPv/GNb3zObynS87vf/YbP+ewHP+dzPvKe//5fvu5rn373u9//cz/33gd/4s233vrvfttnf/j8uf/2V772A6/70Xd/28n3f/kf/LVrv/zpc29Jc9SKeNdOcmNq68A2zVVjJmtpnFNqhuk/B9D1CCc4wPlv0SFPfkDXzMWybR2umOuIn7hJT87BX0AAsDAf+chH7r333u/6ru/yDujd8YpXvCJ8Re6+++4nnngifZ0AAJhuoCzvbHoO3twMza2727X3S//snz7yGz8zpufXf87n/PQf/NJnnnjiJ//E859+97t/4rrrvv8zP/M1n/EZD372b3nvP/9nv3rPD33oTW9825f+vg9e82Xv+oNf8ovf+co0R60r39W1Na4t/iylpUXFq5Q7V3sMrIqquVofgVDv+II7z3Sf09qycboeYaE8seJQUbFJfXL1DvH86zU9DyZbHg8YH1CaJ9+wY1HjmRh6KrKdqn02HC7fPRd3S3cqxTT10vXDNdeXGzRPfqW1Ybewe/fepeG1fY+gTzihwdkAgIannnrq0Ucf/Tl2w4ULF3791/3iFgCAw9qbZ3oO3rzKzdWNtGLb9t7117/+kd/4mRe+6k99/IMf/NWzb3jy3FvO/91v+9HnPOdD73z8V974xv/xH//jm/7y17zpCz7v0T/7lf/zV37l1374h37pj/7+93/5Hzr3xZ//rm8+keaoPd7R7+pKV6xtZMeq3jVLXuNe/6piunyG1ZGLm43l69ky23qirkdYKI+TjhofZ+Peapd4Oquza6x6/M6bViedLy9uv+AF1ar2PneWt3r2HXoqynnzVXHF4OFa9zLFivXl2TGym9nhwo1qYc8chfr0hoT968nWDK9N51f/bwdD2448HwAAAAAmSWFmUNp0BwycTFy1U2fb8uYyOgfhRlp0BFJ6/r9+23N+7k/8iUf+9J/+6T/yh+//jb/htZ/1G3/y6i//6T917Vv+9Ave8kXPLcbv+sL/9heu+8Wv+pO/+sf/8KNf8kVhybtuvCHNUSsCXrvJ1Xkx5r2u0thIkM17vauaK+rpWsuL+13ndMB2WBwml51NNuPave7N2k9Jrd6ltUV7gg71vtmBS9nOrVXVs7d+uMYM9YZNPYur3fsOly3vmaIQtupblQkTNM+1YXhtefSe/02gVpxH/kUHAAAAYLH2pOdN9n7xn/6/HvmNn/lffsNnvOXPfNVTb3rT048//u5//I/e/EWf96Yv/Lw3f0EYn/uWL3ru+S/+/Md+7+/8pau+9Ikv+9K3/s4vjDH6F2+/Lc1RK5Jdu9jVdbG5tri3anjNMtm417cq3FpTTL52Cj3ntLYsyeft2KRrtkLfaRaye80VQWNBMXklLW4eMGzec+Id+66da72gmKetXLPxcGuPoLR2qFKxtNy493D1dNkM+dbloo7TyHRNXp/i8NpKdapJ+35DsbJ/LQAAAAALsDfb9PzmY/vAjad/9mff+Ft/8yO/63c+8973vv1bvvniX/qLH/jRH33bn3z+uS967qUb/tb7v+v2d/z+3/2uP/R73/UHv+Td//frfvnVr3rzc3/7W77w887/vt/99FvWz+nxjmBXxcW8Lgb5tvU2hca9vlXhVmeOXFvePGrUt/NmXbMV+k6zkN1rrgiqBeFGljPr7ZoHLLZaP3zPvmsb13N1zxNsPFw1e0P309J/JrW0Td/zWipWdhy0JWw1sNHw2rVDbDrkwCMCAAAAYAEGynJcNbDBZfTmZm5u3d2uvf1PfvKtX37V+T/1gmd+8Rff9Pt/z1u+8Llv/vzffu53f+E7XvR1v/Kvv+fJB3/i7S990YU/8Hsv/sX/5T3/4OYP/tTZx/7q157/Q7//4nVftf+pT6U5MkWxaxa5rNE1Vxb3VnGvapSlxr2+VfnuubXl2QlUupaNs/4Ao77TLGT32geu7vc+N70ran2brG1cH71znkLfXCvN9ZWuxdlj7T1cUD47Xb8LMlPsP7S+FDbqO0YwvHbtEbTurml/IQEAAABYluH0HKX7O+PNXaG5c+FWFI//fbfdeu7qqz7+5JNv+fIve8sXf/47v/Fv/vw1f/yX77zjgz/1Ux/5hUef+Dev+fnnX/U/Xn7Lr933Ix/9b4/90l3fE9b+0qv/j7h/W5HssiZXFLqq+BXr6lXFvdWqZsgrY+SqEvavKtbUq+rftFcsb26UTRA1J52i+Rhq+YkN3GueTnEvrcmfjfI5zFfkByxnWC2Iv2awd9/8AF3Hrieunr3BwzWO1NDeLZ5GtqTncIWw6gVB17SZcoJ8ozM35QcMwjEHJhleG5SnnKYsbset61tn7qx3L05meDYAAAAArmx7m971vGve3J+YB1YdRvEsPPvBJ3/+z1/3xA/9+1//Tz/5az/yH558/X+68Ef+4Fu/+Ln/4+/+nV/+/37/W77gdxRvhf6Cz734F6771R/6d2/63M/5b3/5hZ/49V+P+3coal0lD3TFijoXFveqtat9ytVFi6x3G1gVe2TSsUtw05nmUaNiv/aycbKpkzhP88R675U3i7f4JtlJ1DOHjetdOk4/rFzJNqoWNA6ene/aU5HNU+3RcbhsimzipnybUmuOQtfhSsWKvolzzYOM2WOi7ACr8y8WxSM1jn4EBwcAAABgTlIn6pE22iXhrN7cH5fDqq2fdpruo4899jNf/EX/9ao/du7P/Zm3/O4vessXPfetv+sL/ttVf/jin/jy+EsFwzj3e3/Xzz//y3/+qj/yzDveEfcCAAAAAIB1dcn+yGOP/dyf+lMP/IbP+K+/47e95Yuee+GLP//i7/3i//b7fudbf+cXpPr8hZ/32Nf+Jd0ZAAAAAIBhjTdRf+IDv/b4v/jnZ7/sy37quZ/7c5//uW/73V/4ji/9kkt/6Pe+/Y/8gcf+3Ff90v/xXZ/4wAfSpgAAAAAA0KPj8zs+9eyzv/pf/+tb/9E/ettf/2vv++Ybfv1fveJ/vuVN+5/8ZFoNAAAAAACDtvzR0QAAAAAAID0DAAAAALBl0jMAAAAAAFsmPQMAAAAAsGXSMwAAAAAAWyY9c+X4vrfOfgAAAADAlUF65srxfW/df/Mvz3hIzwAAAABcMaRnrhzSMwAAAADsCOmZK4f0DAAAAAA7QnrmyiE9AwAAAMCOkJ65ckjPAAAAALAjpGeuHNIzAAAAAOyIjvR85qa93E1nqoXxZnH72lc/Xt7cgsdffW080Er33MVm6fiNkzmMxiPdwnx98nM/iOI81/avFm7r2Rip8aQd6IVwdCfcl55f+8/br7Fv/9n2Nrsw+tJz8zlfOehTGGbb4vWbruCuGRunPeVst3iGxTk0D10sac5ebVOe8LSn9bDX9nSdRxzzjI3ZBgAAAGCLutPzcKHYbsIY2W56Nzvg2ZS9LJvwzKuPrsocOk+Fx9ieoGPR8cif7/JJPMactelrPZSe/9aZ1sKjHT98097zX/3a1sJNY+O7nrfyVd/0LE4UXgRBe8r+62vE4bd5hu2nrDyxxvSHujwPtfOBdB5xzDO25a87AAAAwCZLTc/FdMfWYQ6fp8KDbM6wtuDYNJ/vY30eN36tpecxNj2L08TZ2ic28LoYcfhtnmHrTMq71+bX4+FewsXex3shdh5xzDO2zWcVAAAAYISx6Tlf2NqgSCHJQcrGQLsJB0quffWZbLPqBOoNgmkBqNi1b4/uR5QtzRbH048nkubLNywXxW2qxQd5llqnm98Nt/MZs6Onxc19G/fimaU74zQPV0xQ3o0zFZNX02dn0j754ROO8t3D3nHqpOecJ6Xn8lM4bvrudPfxb3/+XrVN9gEdjY/myJbvvfiHw5IzL843+NlXf1k54Xf/rbRNYdOc+ThAeu57koNRz3/9tDae/NFWkxUHyw+/fqaF+mhBfLlkGxVzlJOtJk2yB3KAk6xmXd1pHTc7WHYzblgduXHcYveo+X0pyE61PkTjcM178TDpzjidu2RnXshOo16cbxNv15s1Hh8AAADAdhw2PRfxIl8xtaP0x5dissbMjZRTn2HjzgQxu6zv2veIHn/1Taul5a7V4rD5tdWqxrpw59XFrcahGo9rvOxM4oTVnfwJKM9mdafaJd+iWFjPFO5V84yUT5adSXnkvueheS+fofuEWzukp7F97HUT3/Vc5OYv++ePh9vFBqs3Kee3izcvr/J02Y5XqfpnX/3t/ek57Zi967lvztaYmp4HnuSBVfWzWCxePaEH+8SZ5lzZqcVDdn258i9i4wtaz5Avzs+xWNE4yCj5maWZswPkU2aLG6dfbJNvv7pd3hnxnGfztnYJ96odRsofTiU/QrFB43Bp6/WzWN1tnjgAAADAlmz8NYPd2WJ1O18cdFaRDcrskUnztWYuz2o1dWNde8MpVsfOJhj3iOqtig2au69v39ymZ8pNshNrzpCt6Dn57Phhi5te/epr63v59qPk+4Tbq4fbfIzrM2fnnK1rbVZtVExcP8LK2qwtQ+k5V1XgFIvzgtysyWWeXr3BOd7Ix8j03Ddne0xMz2tPR/0kD6zK1mULDyY/TMdkxaJC41Qap5bd6TzD5tYHPOMwR9qpmi2/UU+YHaw4UH3g+rDZJqVs//aqeq9ssrDRIS/AYrIuq4lac3aferhdP+wgO0MAAACAbTncu56LgNGWB40x6jSSW1uaL2icYefpThIfRZx88BEV51BJB22eaLF747RLzW2Kewc54+qBNqfLnoDek6/2CFuE/672qPecoHGQeveNz0N9sMatNcVuHbuX6j27TXzXczHSh2NUa4u3JLcVmbj7rcrj0nPfnHFtNqal545nafUEDazKb5VftaDruR6h9Upu3a0UJ9M87Wyr6l7+Amqc65rpZ1vMUuxVz7s6Wn7UfH1rRfXQmouDesHqIJlqvmqrsCT8d7U8O954a6dQqGcKt9ZUJ1gdbe3IBzoVAAAAgEGHT89rFWSizpKyPnO+WeMMG3cOqpi9nKX3ERUrup6C5ul3797cpjrWVOmgzdnyc+k+eiHtE/5Tbho2zO5NUx+uoXlWHWfSOM0NJzywfPCMD5Ce4xui48duFKM7MR8+PXfNuTaOPT2Xii9d1ScnSPs1dX99ik1Xa1qHT3cbr5/GuU4/sXVxwvwY8XZ+XkF2ao3zqc9/7Xzq7TpOtZ4vbRb+s5omuzdNfcRMfaSO00jqbZq3S2sLAAAAAA7tcOm5qCCHDRadJWV95nDQarPGGXae7mSr6fseUfMss616V2TGbDNG+VBbv9csfwIGZg6ryl3T6rBP8X/7b040Ts/zvekxZus3n3Df8p5jVyan5xiLiz9XBTm/nY/u5c30nCfmPD33zbk2pqXngSd5YFX3s9j3jA/o2KV/luzE24cv7zdf1fUmBzivLuU0N93UOsbeTTc1zyU7tWKPeuPqNNbOp5ym3G79VPM5wu0tXYD5rJUxz1j26LLTjtr3AQAAALbgsL9msEgWdbPIfhXfaJ0lJShmbh6m2iw/gXLV9GgSjprtVJzDapLuR5QHnXLr1b326Td2z37NYL1NPtVE8WloHK/5bHSffCHumj2EoDXROPnhMoPPQ/MxjznhxvL81wwOnvPE9Nz9awbLj+Co3qT8+Lf/ra7l6dcMFjOsZj7z4rA+T8/1JL1ztsa09Lz+7DWf5IFV6faZm+qneOqroTHlSrGwnCfcyKarFhfWvojF+TRfjPUZxs3rdQf5DlMoz6D5nuxy4uZDyI5b7FCfUXEvrSl2a55c45Hlp9p4gpqHCysPegE2zyzJznztNLJrauDEs1MFAAAA2I7DpucgVozoAP2iKClNqyCSrYn/1/islGQHWm22lmMG5WcdNHbufET12YRF9Rnk55Vku8eNmtsU97LTn6Scev1w+XSdJx8Uy+v75aOZ9owlrcOtdDwP5TGS1pmMPeGkWryasufMh9Jz04t/uMzBjd8EWH/sRvoA6FL9WRyN5dW7mGNxDuK7p7O+/Pxy8Sp5982Zj6npOeh7koPNz3+2RWvfjYoz6dinnLE4w/yrGuQnvfZFLBY05qrPsJTPNfU8V8qDNncup208m9lxi+3rdY0zXJ1/0Py+FGTr2qdaHK5eVG7YOPhYrSNGY56xfJvydvFW8+RAZwIAAAAwrCM9w5FqZbIt6kvPcxkb0/OV6eheEPTwlAMAAADHQHrmeBVv2jyq6iU9z9BRviDoIT0DAAAAx0B65ricSZ8CcHT/537peV7SK8KnPRw76RkAAAA4BtIzVw7pGQAAAAB2hPTMlUN6BgAAAIAdsfchuFJ89889M/eRHgkAAAAAzNzeB+FKcTewe9L1CQAAACyMD9zgyiFywa4JV2W6PrmsfCHgyuYahyVwpQMwR9IzVw7pGXaNfyPtCF8IuLK5xmEJXOkAzJH0zJXjGNJz+qAaYJN4yfg30o442BfiPmAOwtXqmy0sgSsdgDlK6fl973vfz/zMz8TbMFPSM+yOeMnEfyP5K+ay6/vH6vCX5r777nsPsNs607PvunBFkp4BmKOUnsOPp35CZRZe9apXpVtrpGfYHfGSCVdluP2GN7zhp3/6pz/5yU9+6lOfSpfrYgx8yzpOff9YHf7bX3qG3deZnocvbeZoR/42CZzJZSQ9AzBHPnCDmZGeYRbiJROuyre//e3vfe97n3rqqY9//OPS8+VysH+sSs+w+zrTM1cewXed9AwAsyA9MzNT0/PJkyevbtrb29u4qk+KasAm8ZIJV+WP//iP/+zP/ux73/vej3zkI5/85CfT5boY0jNwpKTnhRB810nPADALPuuZmZmanq+++ur9V71w/9Zrn7n56jiqvhxWXX/2unxIz7At8ZIJV+X3f//3/9t/+29/+Id/OCyUni+Xvn+s+qxnmLvO9OwH+yuP4LtOegaAWfBZz8zMQdLzqev373rx/q3X7d9SBOg8Pd987vpbzt0Y/jz58AulZ9iieMmEq/LOO++89dZb//2///dPPfXUs88+my7Xxdjx9Dz8t7/0DLuvMz0PX9rMkeC7TnoGgFnwgRvMzEHS830n9++5sajP5duf8/R816VbTj1xS/jz1os3nnz4hdIzbEu8ZMJVeccdd9x7772PPvqo9HwZHewfq9Iz7L7O9MyVR/BdJz0DwCxIz8zMQdLzAyf3H7h5/74by7c/1305rLrvybvOPnMq/HnXpVtuPnf9AdLz+Vd+Rdhr5YbTafEROn1DfaBw+yteeb68Cb3K10xt9TLNXrxH8MqNl4z0LD0DR0p6XgjBd530DACzsLXPej558uTzuqSuUUqbHtrxHCv81T5J2u1A0hSD0qZbddTP5Mte9rKr1qR5DzrzQdLzPTcWb3wu6nPx9udw6GrV2WdOXdx/IPx56olbbjlXr+qToloSy10W7U7fcBztOSM9M0bX66R89abXa357a+IlE67KO+644/u+7/v+3b/7d4dPz+X3wg3SpoeWphuUNh104H8Yp2OMkHYY1LfZDD/r+aEo3eu2cZuNG1TGbreaM90ZtK0th9dGD33H9c9//vV3p3sdRj66g7u7OIHvOOqjLFlnej7MD/adv4R546qDCROGGcZLu+28zse1cdWwo86sI08juFLTc+tLk5YejfBPpHSYUlo6wsi/9AFgp6S/6ooPhDtceo5/az7T49KlS8973vPilod3PMeKf7WHP0eKex1M3D3O0yduuV1H/UzG+T/84Q/HFBVuRO9+97uvuuqquM1UU9NzOId1G1f1iQ8kKnLd5e6+0jNjdLxOipdvFptbd7chXjLhqrzjjjv+5b/8l9tKz/HPAXHLw4tTxTn7xC2HHewfxukAo6Xd+vVtM/y3f56eH/qO56fvkuueX4TFu4v/30iu3RvTBt0ZNE1fztSnqKjlFMnzr797beu1bdoTbtyg8tDd+ZZDZ9aac2jT5pwDRbY5Z3vL8Ucsn9je9Byf9nr1QMle+/oWZ7X+BVhX7Dj0lHBYnel5+NIednXX72euVuW/nDn+koy46mDC7qfOPnnrfU/EceNdl/rG1TdfPOSxgvGlO+1wUHGG9PN0+RN1NefAqmFHGnzDOVx6OJ3bRoc/k86/ksb8Xday3eckPPyHn9g/dW7/5gfGPhWT5HOG2+9617vCt9xwI1++0QGeJQC47Lb212r4WzP+/NTp7Nmz203Px3Cs8Ff7JGm3A0lTDEqbbkP5PpWrw434TMa76enLHP6ZDPPH0Pwt3/ItFy5cCH+G28GDDz54bOl5u1JUKxSfYTDQ6sr3ka5k25UR8HS1slhTb1pvF1thvSYLh3lGbCXF7KDt0siStV4nhbCo8frt2OSQ4iUTrsotfuBG+b1wg7TpoaXpBqVNB+14eh7WfNdz+RbbUoyJd6d7QbG6TJPXrxbe/R3XP79ZNat22ZUhh9ZFMZIWR413H/qOcpdGVG1vc3e6X825cYNaeUZpy7RdT8BNWzamHNp01Wvb2Tc3POeEI8aj9K0MHgovjThRdXrpXsvq3FeKr3B2Gv2KHTdvxcF1pufDKH5EXPv9zNWq9d/PHFcdTNj9nnvuCd8nN7rlllsOeaygmOGezWMrB8r/qRJ+oq7mHFg1LDwJ6da2hRN48tL+A7eUz88IhzyT4i+tUrpfSosmvowP/5y0/teI2J2vv+eZcDttsSXFhC9/eXmQJHwfDX/GhWmjEaY+RQCwC7b212r4W7MvB1+8ePHY0vMWjxV/ABov7XYgaYpBadNDC/9sePKzPyuMcCM8k+HPZ667NtwN0pNY2sozGeaPrfnCyuE/gmPgp8zwLMXadXRSVAva5a6hTMDV2sa9Yr9V40ulOL/X2Kxqge1VVSPMbxcb5Sv6T4+lyV8nSfFyyV8h23/FxEsmXJXbSs/lN8LN0taHlqYblDYddLB/GKcDjJZ26zdmm3XN9FzrjIkd3bJcVG1Y7lX06PUOObAq6sy05cJ6j85t8rPauEGmPKPsZFrHqq2v6JmxY9NyQdeW7aM3Fkw4YtA4xoYP1xiap2vl+pkEa8dYezClgVPpX/XQgfa64h1Jel77/czVqvXfzxxXHUzY/Z577jk5wrbSc5gq/LlR2uGgwgzxnyrnSp3peX3VsCNKz+HoT17av/jAMaXn8q+s2sDCMQ7/nBQPf//Sxf0Hwks63D6i9FzM9vKX7/+9vxdGuP36178+/FkvjLfHmfT8AMCOSH/PHf6znsNfmZ05+GLpiNLzjTfeGP+sbmzxWPGnn/HSbgeSphgt7XYgMT0/c8stsT5Xt4OtP5PhK1V15/jG5/ijVfzYjVzY7Kpx74Oemp7DvzHCw8yFc9i4qk+KasFQqVsLfVnma+63dm+1X3v6rCvnszf3yA/aLossWfFyqsXXRfEKqV4icYPtvmDiJROuym191nP5zW+ztPWhpekGpU0HbSU9p6WZtGIlLe3Xt83BPuu5MyZ2dctGm4x7FW9Wbu/bvybpbJxFbQyPa5Uce7YpPmk4Lt24QabctvFg1pck+TmUerdcf9o6n8gujQ3HHzGI68KTG/4TNT75eTVx8d9Mx2TlFq3ljWWNDyjJHlXj3Ps3a61pnmbjA0Zan/PRP+FSdKbnw/xgH34cWv/9zNWq9d/PHFcdTNi9+udD+Kns4TXhZ9EHSqdOnTrksYJihgduzT9O5OKNz3vxfdfmHyHywnvq1H5g1eNa78sDq4YdRXoOh47d+eFTx5Gew6t0pLTDJltJz7E7x7fwH0V6LqZaJeZilPU5X/i2vb3yrfajjjj+yQGA3ZH+kis+EO4I0nOZnQvbysHl38uFYzhW/NFnvLTbgaQpVtaXtMS9Dib8syHm5licqxtB+Ml+u89k+ErF6PwVX/EVT372c8KfYUn484N/9s885znPKd8PnYz/CI6p6Tk83pMP7N943/719z0TfpSMP01Wq/b3r8tHtapPimpB0ep6Sl3HqroL17cKvfeaK4LuGRpL12y3JDJfay+nqH7R3HC6Z5NDiJdMuCoP/1nP5be9sdI+B5VmGSftM2gr6XmjtFu/vm2G//Y/dHqO4TNtmjZY66SrBZ2zRp1zt2zcZswkK+sxN38kg9Z3XVl/gCNPacOx+48YlCvD3umjMtofMVKfU7Eynk73e4s7zjU/r3J1/ICSNNHqIPUh0p3+zdKaYua1Vdd/R3lacaf6RPonnLuv/uqvXv9KhJ/NXvKSl6Q7K53pefjSHlb8dLT2+5mrVeu/nzmuOpiwe/yR/oknOtJz+EE0dudga+n54bvyjxOJ6Tn/CJFtpeeYlaO77rqrmnNg1bCtp+dw3AN05+AwZ1L+lbVB2nSEI03PlbTpIRSTVOm5Gs3uHKUd+k16fgBgR2zhb9Mo/GXZysExX0bhR6ttpef9J89Vx8rfpRts91jxp5/x0m4HkqYYLe12UHl9rrrzUTyT4SsV3+wc03Osz+HPD/6Tf/yc5zwnrAreXX4S9JGm51vP7t9ytvhRMjbocFbVqv39F+/vX1/++cJp6Tl7G3JbEfQuS3qWmum29nJacwTvko+XTLgqD/mBG+X3vAnSbgeSphgt7TZox9PzsCNJz+1Surqbb9rWOXfLxm3GTFJZ27hcsLlqbnoUzVXDp1S81bf8GJKwW/95Dx0xaD3b7e0b5zR4Omll0a9L6bOe4+ZrR8nmzW4ObFbMl/8uxWzT9l7llqtE3X/cuQvPcas+hx/MXvKSl/zgD/5gur/SmZ4Po3jJrdm46mDC7n3pOfwUmqpzaZvpOfs4kZieT2UfIbKt9Lxu46phB86snfOHhQfrzsEhg2/5t1avtNE4BzuT8EornvSV/nc9P7m/f9hX3cte9rLiGKX1+lx15/DT0dNPP11ss8nUpwgAdsGh/jbNhb8sjyk9X7wr1ud0mFI6TEl63qgzPYcf67f+TIYvU/FZG6v0/MF/8o/jnzE933///e9efRzHkabnu87t3/Xw/qse3o8NOpxVtSr8/Lm/f3P55/X7+8X/pTSu6pOiWqHxeQUN61U663rNCNh7r12Ss/v5PvXtgRTO4uWvmU5HUJ6l50R6biTIcoN8YefS8jMwknLG1tzl3ZXV4s7j5zZu0FCezt7zr/+O4vldfdzDpr2HD1GsbT5tG06p+GSNu9NnZfTE5/YMa0/dWpxtLmmc0+DplCubVu9RTl+7+FxF5UnHqepDDG4WPVQ+5taa8tDF42m/CXjEhLOW1+fwU1lndw62np6PU/jSVv98yNNzqzsH20zP2ceJxPScf4TIVtLzUTjY3ybxGW49onD3wN05OGR6DuL1ui6tHu3Az8n+xXuK18BdLw63+9PzqfiulLTbgYTd3/72t4er+PTp08VUayN6+umn3//+94cbabd+B3iWAOCyS3/Dbf2znmO7rGw5PZ+7Jdbn1ht145/S87C8O+c34huft/tMhq/RhfIDN57znOL9zjE6xwBdvd85OPL0/PB++FEyjNigw1lVq/b3bw1Tln+e3N8vfgCNq/qkqJYUPbiR9E7fEPNduaIqeY0q3IyAvffKGaopinudM7RuNw56Qz0xC5e/Tjo0Xl9bEy+ZcFUe8rOey+95E6TdDiRNMVrabdDB/mGcDrCSlmbSipW0tF/fNkf8Wc+NzJltUE9Q34oZMd5c9cegzG5rc4d/xweNxWvbtG3coK36gOHnP/877i4/qWJw7/Ijh9eelkz9WFfWl/ToPveOI649dflXIMqe6NYZDD5DaWV85ptPfZxyXVxfH2Jws/howqbPv75U3KkPUNX/oGjQafHghFeE8Fx/9Vd/9ZkzZ/q6c9CZng//g/3xCF+v9fS83p2DbaXn+PnO+Xjxfdfm47pbi9/8kXbYJQfOrE+c2w+jelDhxmG6c3CwM8nF71Hr0urRDvycxO4cXgzh9lGn53AVnz59+nu+53uKqdZGJD0DcGVLf8MVHwi3vfR8cc320/PZF8b6nA6QkZ6HVek5/BmewOp2fONzehJLW0nPsSx3vuu56s7hzyNNz7ecLd7v/KqHi+4cfqYMZ1WtCvOVP1mGP2/e3y/+KR1X9UlRrVZk5VqW7/IVedVrRsDee+XN0/Uc2TtS832a+xd3K/lyFq71Oinlr9Ds5bU98ZIJV6XPek63pkgHGC3t1q9vm+G//Q+dntcqZ50Z4/Jspsa2bV2Tt5b27F++DbhcunGDIeXOA0kzTj6wQbD+ILKH3/RQ6/29Hec+5ojB+ok3ljTOoPtZTlory1lW99cPkqkPMbRZmr56hD3bFtG7PvDgcefubW97W7wRXgxf+ZVfWXXnanmlMz0PX9rDTnb9EuaNqw4m7N5Kz53dOdhWer7+vv0X33UpHxcvXp2P++573uEPFB5LmKRl46phh0nPFx9I9Tk4ZHcODpmey7+1eqWNxplRei7myX/Z4Gq8LayQngG40h3qb9Nc+MuyLz3HX6ax/fS8qs/5G3W3eKz4A9B4abcDSVOMlnY7kPDvhCc/+7Niaw7PXlDd3fozGSa/cOHC+fPnq896Lg+XPuv5/vvvD2ujo0vP5UNs27iqT4pqR6+rFcKcxEsmXJWH/MCNSvnNb7O09aGl6QalTQfteHoedsj03KiTrQ1iNCwqYmNJZ4ctlDu31zYP2TpclG+ycYNerTf5tm1YXSk2yx9D327rT0V8uuotxx5xfc/W5I1TGpx0bWU+0dCe2SH6N1t7yPV5lx95ne+UzTJ03OXoTM+HEX5QXP/9zNWq/bXfzxxXHUzYPfzz4Yknnojpua87B9tKz2cvpY9fi78CJKbn/Nd+XLx481YOFP4MDy0Kj66ac2DVsIP9bRKe1YsPpNYc3/58yO4cHCY9l39lbZA2HWEu6bmYZNWd3xZuN0esz9IzAFewQ/1tmgt/Wcafny42nSttKwcHxd/KVXpuvvd5u8eKP/2Ml3Y7qDTLOGmfgyoy82d9VrgRv2rxbvixPj6NwbaeyTD/+fPnH3zwwZieg7AkiLertzwfaXrerhTVjp70zNzFSyZcldJzujVROsYIaYdBIzdrOUh6Dv/ILj/0IX5AQp4Mm5mwTItrC9ZmrZW7hw1WH/mQ3v4aFqQNVnMWn8fQ3KKac+MGLfkjaWxU5NDVL8UrT6yec6Vc19wybRo/ITkevPvY6TxXv0uv/LCPrLAOH7EpPc+rreNU9VGLqap7qy9B51TlQZuVN1vUdcZp3vwQ/ZvFNY2zbM5drCruNKv7wHGX4yjS8/rvZ65Wrf9+5rjqYMLu4QfRKj3Hytxpi+k5/xUgq/Rc/9qPbaXn+M+iKPxEXc05sGrYgf82CfM/fKrIzXE8cMuhunOwI3+vBbNIz8UMWXeOv1cwqBp0vjDt1m/8kwMAuyP9Dbetz3pO5XIlFszgCNPzqj6Ho9x4441bPFb80adT5wZx4eGl6QalTQ+t+qqFpy6+2Tk+h/HPraTnq1ae85znhD/Dkg9/+MPhdv6W55inw9q02yDpGWYhXjLhqjzkZz3nyu9/G6RNDy1NNyhtOmjH0/O2P+u59vzit781Nmkkw6A1SxkRB6vhQ/kH/hbqpltJNXmlKK5pTbJxg1rMmh2PpIqhxe3W4640s2lxu1B9fnRh+OD5eTa2HD5iS3kC16ffVVgKc6V1QfOLkB5x51TtL1+h8ehaZ1xNuvZ17t6ssSI85cXUq7XNL1rry9474WJ0pufD/GB/ddfvZ65WlYm28fuZ46qDCbtfhvSc/QqQVXoO36jTr/3YbnoOP07Hn6irOQdWDTvw3yZBOMS2unNwmDMp/9aqDSwcYxbp+aH4rucsMX/3d393+d9iSbXQu54BuIKlv+GKD4TbdnqOP1FFW0zPQfEX86nmWNXnLR4r/vTTqXODuPDw0nSD0qaHdpxftSgc8cMf/vCF1Zudw5/nz58/0s963q4U1YBN4iUTrsrDf9Zzpfz+t0Ha9NDSdIPSpoO2+E/0TmnTTfq2HP7bvy89X2blG2PT7R4bt9g8xZEaffStnue4uQ55xJFn3LfZ0N6DUw+uvLJ1pufhS3tYkZ7Xfj9ztWr99zPHVQcTfxCNHfZ40vMtZ/dP3nOpGtfd+vB99z3v4sWbq3HPPcX/zJJ2OKj8ccWfqKs5B1YNO8zfJkE4yla6c3DIMyn/7iqk+6W0aPRfatHB03PZnc9e/3vC7didX3iqyNCxO4dXRfksXffww8XCtNuBhN2r3zFYded/+A//YbjxIz/yI9XC97///WfOnAk30m79pj5FALALDvvDRyX8ZXmx/MV0ne66667tRszyr+m9c69qjGCLx4o/AI2Xdju0NN2gtOmhhWfsOL9qQTjihfLjNVq+93u/V3qGK0m8ZMJVua0P3AjK738bpE0PLU03KG06aFv/RO+UNhph0saVHU3PQKYzPR/G1V2/n7laFb6rtX4/c1x1MOUPoudSXS778oBDHisIM4yUdjioMEPMylH4ibqac2DVsEP+bRKEA4081rDDn0nny/UAr+EDp+dJ0m4HkqYYLe3Wb4tXOgAcmy38/BGFvyyfN2jM36ZTlX9HN2z3WOFv9/HSPtuQZuyXtju06hnrs61nshImvKrHyGONSc8pfQGXT7wYw1UpPadbh5COl0krRjvALoH0DLtv6+k5/Dy2buOqg0lTjJZ223npdJs2rhq2lb9NtsKZXEZbvNIB4Nikn3UO/1nPcDykZ5iFeDGGq3KLn/U8RzvyD+O+f6we7LOegd3RmZ79YH/lEXzXSc8AMAspPRcfCOcnVOZgTHo+OimqAZvESyam52191vMc7Xh6Hv7bX3qG3deZnocvbeZI8F0nPQPALMzm/7kGkfQMsxAvmZiet/WBG3O04+l5mPQMu68zPXPlEXzXSc8AMAvSMzMjPcMsxEtGepaegSMlPS+E4LtOegaAWfBZz8yM9AyzEC+ZmJ591vNl1/ePVZ/1DHPXmZ79YH/lEXzXSc8AMAve9czMTE3PJ0+eTL8+fJy0W48U1YBN4iUT07N3PV92B/vHqvQMu8+7nhdC8F0nPQPALEjPXDk60/Pe3t6ps0/eet8Tcdx416W+cfXNF6Vn2JZ4yUjPO8I/VuHK5hqHJXClAzBHe+EvMLhixNqV29vbu+eee141wi233CI9w7bESyZcld/wDd9w8uTJ22677TWvec0P/MAPxEuV45f+2i//4QoAzFH6uxwA5sO7no+PnxWOWniGY+3KxfR8cgTpGbYoXjLhqvSuZ4Bj5mdOAAB2hPR8fPwz4Kj1pednnnnmUunkyZMPrzl79uwDpVOnTk1Kz6dvCJtnbjidVsBl0npNNl+S51/5Fe0Xab39V7zyfFq2NfGSkZ4Bjp+fOQEA2BGj0nMsCBxGeBqn/jPgPiYaTs9PPNGRnqvuHBwkPdclr7h3BPkOJgivws4XYZWY8/RcpOi0dXFz6//bSbxkwlV5ww03/IN/8A/uvPPOH/qhH7r33nvT5QrA0Qg/Q0rPAADsiJSe3/e+9/3Mz/xMvL0uFgQOIzyN6/8MGH7awz8e0i8vZ5yp6TnvzsHh0nMe8uDy6E7P6ZXaesE27x7ByzdeMuGqfPnLX/6a17zm9a9//S/8wi+EKzFdrocT80q6A8BK+N4YfoaUngEA2BEpPf9MKd5eFwsChxGexvV/Bgw/7cLKVMPpOcjTc6s7B1tIz+luMwDWK+Kt4s+SUM2WNV95LeutOXv5tl/OWxAvGekZ4DiF743hZ0jpGQCAHeEDN45JeBqn/jNAWJlqfHpe787BodJzEfKq6DeUnqviXOwuPrNVzVdeSzMutzdtp+jDi5eM9AxwnML3xvAzpPQMAMCOkJ6PSXgapeejNjI9d3bn4FC/ZrBR8ZpVr5me6xXbb30sXeM12X51bU7PjQWHFi8Z6RngOIXvjeFnSOkZAIAd4bOej0l4Gtf/GeCznrdrID0/8cQTMT33defgEO96bka9VtVrpud6s+23Ppau3ZMbmq/S9qbb/19C4iUjPQMcp/C9MfwMKT0DALAjfNbzMQlP4/o/A4afdmFlqjHpOWXmLof6wI32HemZy6Ddkxsar9HWvfX7hxcvGekZ4DiF743hZ0jpGQCAHeEDN45JeBqn/jNAWJnqcqbnRkhuBsB6O+mZo9V85bW04nJz2+ZrcyviJSM9Axyn8L0x/AwpPQMAsCOk52MSnkbp+agNpOdLly6dO3fuKNNzvB9bXpHxVquKpdIzx6OZk1v6X7BH81qMl4z0DHCcwvfG8DOk9AwAwI7Y5mc9nzx58nldivK2kjbdhnC4NGm/tOkhbOso4Wlc/2eAz3rerr70fPHiuVSXy748YONXM0W1UrvkxeKcAl4szsENp+vgLD1ztCal56B6mbZXbEO8ZKRngOMUvjeGnyGlZwAAdsQ2P+t5b6+Y7Zkely5det7znpc23YbicE+e3b90z/4DV6+Ph28pckra9BCqo+xdf+veqSf2bn147+b7wu1Lp5436SjhmVn/Z8Dw0y6sTNWXnidJu/VIUQ3YJF4y0jPAcQrfG8PPkNIzAAA7YpsfuLG3t3fp0qWzTWFJFG5vNz1fvfLwLXvr49SNmzPiGGGSmM5b6fncuXPhQY0/Sngap/4zQFiZqjM9b1eKasAm8ZKRngGOU/jeGH6GlJ4BANgRW07P66r6vN30fPXVV1/7wF4cn/VZn9XqzmFsMT3H82+l5yKrnz0rPe8U6Rl2R7xkpGeA4xS+N4afIaVnAAB2xDY/63nd3hGn51ftv2rW6dlnPW+X9Ay7I14y0jPAcQrfG8PPkNIzAAA7Yguf9dz5i/jiqnDj7LbTczhc+TEbjfQczS49Dz/twspU0jPsjnjJTErPX/3VX/3QQw+lOysXL158yUteku6slOXZd0hgKSZ9eww/Q0rPAADsiC184Mbe3t65S8+cvfhkHKfOPlnV2HDj7FbT88mTJ69dfc5GlZ6rkdfnWaTnYcLKVFV6TukLuHzixTgpPT/00EOtvBLDyg/+4A+m+ytlefYdEliKSd8ew8+Q0jMAADtiO+k5Fucwbr3viRvvulTV2GLVVtNz9Wbn9RHT830npeflkp5hd8SLcVJ6DvK80hdWgrI8+w4JLMj4b4/hZ0jpGQCAHbGFz3reW6XnW+974njSczVica7G7NKzz3rerio93/nIR49ofPfPPWMYxpgRL8ap6TmIeeXMmTN9YSUoy7PvkMCyjPz2GH6GlJ4BANgRW/is5729vVNnn7zxrktxXH3zxarGhhtnt/1Zz8WHOpeq9JzuZ935qNJz7M4+63lXSc+GsTsjXoyT0vPb3va2eOOhhx76yq/8yiqsVMsrZXn2HRJYiknfHsPPkNIzAAA7YjsfuLGuWnV22+k5+qxmer7v5F7enY8qPWejLM8+cGO3SM+GsTsjXoyT0vN4ZXn2HRKgLXxvDD9DSs8AAOyILaTnAXtHnJ7jaL3feevp+eJKWZsbpOedIj0bxu6MeDFKzwDHKXxvDD9DSs8AAOyILXzWc6WosGvOHk16Dj5rZb07h3EU6Tk4lzl8evZZz9slPRvG7ox4MUrPAMcpfG8MP0NKzwAA7IgtfNZzZW+vmO2Zptidg62n5yIKn3reqVfd2IrOcWwxPYcz73TXXXcdMj0PP+3CylR96fnkyZPF12mE1o7roxXXDMPoG/FilJ4BjlP43hh+hpSeAQDYEdv8wI298g3Cqcuuueuuu7aenovE/KobT91YhObWuOWFRUlMmx7Cto4Snsap/wwQVqbqS8/ha7R/z+YRtHZcH624ZhhG34gXo/QMcJzC98bwM6T0DADAjthyen7eoJGVdqSiFG6SNj2ENNGgtOmg8DRKz0dtID2PfONza8f10YprhmH0jXgxSs8Axyl8bww/Q0rPAADsiG1+1jMDwtO4/s8An/W8XQPpef+BW/df9cL9W6995uarw7h44/NefN+115+9rhovvOfag6Xnl//9a8pqHX3Tt65tsPXxrS+qDxRuf8nffzRfO2K87gXxZPf2XnBna1V7lMfKvOh1rQ2MnRqtr1fz6/voi/5o51e8b/lhR7wYpWeA4xS+N4afIaVnAAB2xDY/65kB4Wlc/2fA8NMurEw1lJ4fvmv/1PX7d714/9br9m+5NqbnW87dePO5608+/MKDpuei2TVy853fdBQJb2AcID1nu7zuBXvXvOh0Y21rFCmzzs1Fs55euo3jG32vhypJt16ffcu3MuLFKD0DHKfwvTH8DCk9AwCwI7b5gRsMCE/j1H8GCCtTbUjP953cv+fGoj6/6oUxPZ964pa7Lt1y68UbTz78wgOk5+L9zn/0X708W3L8oy819o9HX/RHq9yc3+4ezfS8Ew/ZGBjdr4c7v6n8H0iK/+WgkZj7lm9pxItRegY4TuF7Y/gZUnoGAGBHSM/HJDyN0vNR25CeHzi5/8DN+/fduH/q+piezz5z6r4n77rr0i03n7t+enreEOwaH8SR1dsyDr6ufLt0oZjh9L/6knSvfgN1bIj1JFnwzfNiKzVmB+1tyvUuxXHTEcOOHcmy3LidntPd5jum66nipzfE94MPnYZxFKP1emiOvles9Axw5QjfG8PPkNIzAAA7wmc9H5PwNK7/M8BnPW/XQHqOn++cjxffd20+rrv16rBZa8f1UZe19I7ROrTlo0zA1dqyw64CbhFzV0E2leKUldc3qzJie1WVF/PbxWxVoR46vVUXznL2qPRc9OUqJQ+l5+oBFrt7l/Qxjvz1sDakZ4ArX/jeGH6GlJ4BANgR3vV8TMLTOPWfAcLKVAPp+fr79l9816V8XLx4dT7uu+95YbPWjuujLmtDbbeZZcPI3l/ciLmt6hfmXIXa5maN7Jvnxex266BFAu7rjMXMxfk35umMj8VpVBoRuXm4Znqu62f2wI1jGI2vV/uZb77YNi8/7IgXo/QMcJzC98bwM6T0DADAjhiVntkK/ww4agPp+eyl/VvP7t9ydv/mB/ZPPlBk6IsXr97fv35//8X7+y/c37/u4sWbw2atHddHXdYG0nPHqjrU5uG4HXCb6TnbLIzuGerbZUpuWeuJzS5c3w2Tdz+WImWmAt4KlM0zb6bnerOsmBvHMNZeNvlofQWr0bf8sCNejOGqvOOOO+69995HH330qaeeevbZZ9PlCsCR8TMnAAA7Yi/8bMqxCc94usXRiLWr1Yv3yvR817n9ux7ef9XDRYNepeeb9/dPlgH6hZPT80BUvWzpuSeFV6PjnIvsGPT1yjB//ebrxiGaZ37lpuf4jTJoLd/NsfayyUfxtb4s6fkbvuEbTp48edttt73mNa/5gR/4gXipAnCk0t9eAABwWe29/XJLJzJDMaykO+yA8A+t+EVp9eKUnh/eP3WuGHedq9Lzq/b3by3r84snp+eysTY+E6Ma6721LrOtONgMuM303Jg8y775DPXtMZG3c5vsoOujeRr5m6bXzvzKTc9lnC/+DyKtVTs4mq+u1rhs6fkVr3jFv/23//aRRx5573vf+4EPfCAuBwAAAK54l/8DN9KJzEQ66VK8+152xkB6vuXs/sl7LlXjulsfvu++5128eHM17rnn+rBZa8f10YxrRbNrdNs7vykmvKLY1m8QzottKw4Opuc6CBYH6pyhdbtx0Bd1BOVim+yEy12u+ZK+hh43aBfweMJ5eS+fhys9PQfhdmvtro389bA2+hJz3/LDjngxSs8AAACwWDuRnk/PRDjVdNIr733ve9MtjkX5ou01kJ5Hau24PlpxLRXYSlZ1X/73r0kLmx9n0YyDQ+n5S/7+6+rJs/6bz9BKjeFupS9Bdm2zehRrAbrYuLGw3DKdZCzOwTd9a/227is5PQfhbmuDnRqt10NzSM8AAADAsdqV9BzPZluqUrxFccJ00ivS8/GLX45Ofel5i6MV145uDDZE4/hGeMml6rwSlrS2MTpHvBilZwAAAFisXUnPT25VWZ63P2c41XTSK9LzwZSvvYa0Ypy0zxrp2dj6CK+3qjjHG0G43drMWB/xYpSeAQAAYLF2JT3/+laV5Xn7c4ZTTSe9Ij0fQPnC65BWj5P2aZKeja2P8GKrcnN1Owi3W1sarREvRukZAAAAFmtX0vMHtqosz9ufM5xqOukV6Xmq8lXXK200TtoncyWlZ2NHRnilVa05ineDcLu1sZGPeDFKzwAAALBYu5Kef22ryvK8/TnDqaaTXpGeJylfch/c29uLN1ri8rTpOHHHivRsbH2El1nZmRvfKuOSINxubW9UI16M0jMAAAAs1rGl58cfTzfawkmcPn36V7eqLM/bnzOcajrplaNPz73PW3Dmphe84KY7Bzbo9vidxX5n0r1jU77ekr21+lwtSVuPFveKqvTcSmCGceARXmNlZG5/q4wLg3C7tYsRR7wYpWcAAABYrO70fOamVFUy1950ZnLkXCnnu/bVnfuHkzh9+vSvbFVZnrc/ZzjVdNIra+n58TtfsLf3gnYOLh//qNj7eCM1l7NlOzbXltOuHWuzctbW2Tz++Jk7b1pfvE3l660WHli6tVai0w6jpd2kZ+MIRniBhddnEF9subg8CLdbexlhxItRegYAAIDFGkjPN515vHLm1TddGxb11OPNHj9zpi9ch5M4ffr0+7eqLM/bnzOcajrplS2n5/Xt8idube1W0vPjZ4rkvHJ86TkIx6v+zKUdpog7Vun56HyIhQmvrvLS6P5WGVcF4XbagZV4yUjPAAAAsFiD6TndS3r66Vr5fHzoMyIayg3DSRxFJj6KOcOpxhOvHDI9t5+pvu2itbXFgvX03P/0pzWt9HznTTfdWeTtrjdDb1P5emsLjyjdyqQdJgo7Ss9sXXhphVdpEF9m6+LaINxO+1CKl4z0DAAAAIs1IT0//uprV+97Lm/e9Oriz+yt0I+fKd8aHV17U/YO6WzXUr5lOInxmThsn24NKsvz5jlHzhaFCcOppgewMj09x8B7Z/ZW4/ixy+UmtfTkr+Ly8Nqk8f7l5jk0DtfzyRrHn57D2VR/5tIO00nPbF14XZUXTm96DuIGQbiddkN6BgAAgMWbkJ6zhWVKLvPymeoDIcrV1766vPf4mXKDOko30nO25eOPnwknMSYTB8Uht52eR04YhAnDqcZHUDlgei4CcPw4kzPl3XJVcS9uV79vvFgQZxtem+6Ee+lZjXfiqnjIYlUhVej1xnzM6TmcQ7rVvJ22PhDpma0Lr6vighlMz0HcJgi3056LFy8Z6RkAAAAWa2x6jjFztaz9Lua0pLFHPke+fXvLcBLjM3GQ7g8qy/P25wynmk565YDpOd+gWLe6v/a85ysH165143rd2m49jfmo03NQvuQK4YzSrZVqSdr0QDrT88mTJ8PkLRtX9UlRjcUIr6v4woivsQFxsyDcTjsvW7xkpGcAAABYrIH03JZ9hMZaaF4vz3GSPDfH2/FmfLt0KZzExkyczqCUFg0qy/OE9BykRf3ChOFUi0eTOWB6zp+puhF3VOJ85dDaeNib7kzPaVB9qsZ6Ue5pzD2Lt6x4zfXk3bA8bXRQnek5TvvMyqVLl6oTGFjVJ0U1FiO8QsKrIr5UWuLyTmFt2n/B4iUjPQMAAMBidce+FDnLD2iI0opkdHpOy9rpORdOYlImTvcHleV5h9/1nD9TdT9ubBflK4fWlrOuKzZeL8o9jbln8faVL7wOafUh9KXnmJWjs2fPhiUbV/VJUY3FCK+r8KoI4mssqG7H5Z3C2rT/gsVLRnoGAACAxRpMz+neutHpueddz/mW4STGZOIgNp10Z1BZnsem53RnkzBhONV00isT0nNauBZ4s3Xrz3u+cmjtQDZeX9Wz8cAcW1e+9hrSisMZTs/nSp3peX1VnxTVWIzwugqviiC+xvLbQetuLu2/YPGSkZ4BAABgsbaUnjv2yJdk6Xlty3ASYzJxFHZNtwaV5XlUek63RggThlNNJ72ylp47n7rGU3Ek6Xl9XW1t1Q6k5yNyzOn59ImweebE6bSiX9jlmtvPpzvjlEdJUw/sfv72awZPoFi/vnM+4QHObQnC6yp+easbUfmKq5eE22mHy6p8tdSar4i110i+9YhX71TxkpGeAQAAYLG2lZ7TPte++kz5JtwzxQar2Jy2X90r76y23H88nMTp06d/eavK8rz9OcOplo+gtp6eY8Hde0H1cSVnig9drvvxYHouV4Y71Qec5CuH16bD3pme1TNp2+aq+nyWlZ5jVo7uuuuusGTjqj4pqpWKcFcHu+LexnR7yLw7sPuG9BxWB2t75xMe8tyuVOF1FV4V6+JLLqjuph0uq74vYlgeZa+R87efqDYt1m/9qx8vGekZAAAAFmt76blYelMRlaPslxKm7asQ3dwynMRRZOKjmDOcanoAKx3pOXi8/B1/lRfctIrHwVrgXa/LhbRFY+WGta3DZiuKLas14WzuDPutf3Wv4PS8buOqPimqlYpc1yh562m37ZB5d2D34fQcd2ydcJBPeMhzu1KF11V6ZZTyu+WLbrfe+Nz9RUxf+PWvf23Mq3eqeMlIzwAAALBY3en5UOp35Vba6Tkp3oSbPnAj9d0tKcvz5UvPK+Xjm254r41z9h/1YKczI53pebtSVCu1Sl4r/hZ3kzrpxTJYr2qvSXfyufIVzY3KE4iuuf108+hNq/1apzg4OVF4XaUneRWXqyXFa65U3Y27XEaDX8Ti9bLxNbJF8ZKRngEAAGCxjiA9d+h+l3QUTuIoMvFRzBlONZ30ynB65phdzvRcVN063TXuZdsVN+vgXCboek1W/kak52Kqxp3+rFjv1m7PfZNTCa+r4rnNynK1JChedmtt+jIa/CIWr5KB10jvuoOKl4z0DAAAAIt15On58TOvvuna4tM11t/0HIWTOH369BNbVZbn7c8ZTjWd9Ir0vFM60/PJkydjFsxtXNUnRbVSUesqjeDXCoB18G0HvjpRN3fZnJ5bh1ibOZNv2mrPPZNTS6+tZlMOd+OXPa4Kqrtpi8ukeBnUWi+I3tdI8aroe/UcQrxkpGcAAABYrGNJzzfdlH6nYJdwEkeRiY9iznCq6aRXpOed0pme98og+MzKpUuXwpKNq/qkqFbKSl4z6jX7XxTXhjXNvFstaK7ZmJ5bCbljwUqxojVzfbd7cjYJL5v0dV3V53TnctfnwS9iWNnxGimWdr90DiteMtIzAAAALNaRp+eNwkkcRSY+ijnDqaaTXpGed0pfeo5ZOTp79mxYsnFVnxTVSo2Sl9/pTnyFsKZZBqsFzTUb03O41TxEX3oulq/pmLB9BmwQXm/xyYyvvaC6m7a4HAa/iGsvmvjq6H6pbkG8ZKRnAAAAWCzpeawwYTjVdNIr0vNOGU7P50qd6Xl9VZ8U1UrNkpe9nTi72dKOf/X9ZjPMtstX1LfXDpHtkes4lXxR9+SMEF5v4dUSxZdfdTttcTkMfhHbr5Ge18zWxEtGegYAAIDF2pX0/EtbVZbn7c8ZTjWd9Ir0vFMua3qO91P3K27W687ffqJOvdmKbIcyCK9WNLYKdzrrcL5zc49MZwTPDtU3OWOEl1zxtDeFhWn15TD4RSxeJfVrpPO1sVXxkpGeAQAAYLF2JT3/4laV5Xn7c4ZTTSe9Ij3vlL70HLNydNddd4UlG1f1SVGt1Cx5Qdl0VzWvWLvSzLuni82ixu7VHidOFzOldeUu+e5VLCwPFzX2qBUzdtTFcsdy4/7JGSW86tKXoBTuphWXyeAXsXg51K+R7OVTWXsFHUq8ZKRnAAAAWKxdSc+zEE41nfSK9LxT+tLzuo2r+qSoBivpxVdKiyjFS0Z6BgAAgMW6/Ol51qTnndKZnrcrRTVgk3jJSM8AAACwWNLzoUjPO0V6ht0RLxnpGQAAABbr8qfnt89EfL7SSa9IzztFeobdES+ZcFXecccd995776OPPvrUU089++yz6XIFAAAArmh/+2//be96HkV6ngXpGXZHvGTCVflP/+k//Tf/5t+cPXv2scce++///b+Hb5sAAADAle3uu++WnscaSM9xObugSs8pfQGXT7wYw1XpAzcAAABgaaTnCaTnWZCeYXfEi1F6BgAAgAWSnie4YtJzOOe9vb3n7+29eX//yhtVej46KaoBm8RLJlyV337HHd95770/8uijDz311BuffbZ12RqGYRiGYRiGYRiGcSWNKghIz2NJz7MY0jPsjnjJSM+GYRiGYRiGYRiGsahRBQHpeSzpeRbjeNLzY8AI8ZKRng3DMAzDMAzDMAxjUaMKAtLzWNLzLMbxpGdgjHjJSM+GYRiGYRiGYRiGsahRBQHpeSzpeRZDeobdES8Z6dkwDMMwDMMwDMMwFjWqICA9jyU9z2JIz7A74iUjPRuGYRiGYRiGYRjGokYVBKTnsaTnWQzpGXZHvGSkZ8MwDMMwDMMwDMNY1KiCgPQ81rGk53P3vvKGa/ZKN9yblm1bOGfp+TBSVAM2iZeM9GwYhmEYhmEYhmEYixpVEJCexzrS9Hzu3L03XJOacyI9H2hIz7A74iUjPRuGYRiGYRiGYRjGokYVBKTnsY4yPd97Q8zNe9fccO+5V8Y70vOBhvQMuyNeMtKzYRiGYRiGYRiGYSxqVEFAeh7rSN/1fO8N19zwynvPpdvS88HHQHp+2ctedlWX8ulO0qaDUlQDNomXjPRsGIZhGIZhGIZhGIsaVRCQnsc6tl8zKD0fZgyk5/Cow2P/cI93v/vdV111Vdp0UIpqwCbxkpGeDcMwDMMwDMMwDGNRowoC0vNY0vMsxnB6jom504MPPig9w3bFS0Z6NgzDMAzDMAzDMIxFjSoISM9jSc+zGAdLzxcuXJCeYeviJSM9G4ZhGIZhGIZhGMaiRhUEpOexpOdZjAOk5wulA6fn0yfKr1d04nRaevmcv/2adDKFeELFskOf2lYmYVniJSM9G4ZhGIZhGIZhGMaiRhUEpOexpOdZjKnpOXbnIKbnE9944p/83f897dAjRbVCmXmzHHv69tvPp5tTnD6xd82BdmyL2Tk/oRPlHemZyyNeMtKzYRiGYRiGYRiGYSxqVEFAeh5Lep7FmJSeU3UuPfjggy/9Oy9649/4hb/2OSfSDj1SVAuKGLuNZryl9Nx/OtIzl0e8ZKRnwzAMwzAMwzAMw1jUqIKA9DyW9DyLceD0/NIbX/qj/+Le/Rftf9Vv+qtphx4pqhWKD9tYr7GtpasiHNNt8WcpReKOz+uoNglWKblcVk3avJd0n0yp+9BRdrS+5XHaOEm+8kS8A33iJSM9G4ZhGIZhGIZhGMaiRhUEpOexpOdZjPHpOSXn0kv/15f+x1vu3//m/f+wd+ZvvfSGtEOPFNVKMcE2km3QeBdzVWwb2xaduNqmsX3Y7sTqTrlLyr3F7bhVfSs3UJ77D92YKpshP3C4c/vq/OOixslDv3jJSM+GYRiGYRiGYRiGsahRBQHpeSzpeRZjTHq+9RW3fuvf/9ZUnS9ceMmJF997y+n9m/Z/cO8n/tLXbnjLc5CiWiV23UaMzVpyHWwbmTdb3ti8LV+VdunZuujBqwnb+g7dmqpa0TlXffjes4WmeMlIz4ZhGIZhGIZhGIaxqFEFAel5LOl5FmNMev6mrz/x+u97/Q0v+8YLFy789W/++gdu+fH9b93/4b2zf/lrXpw2HZSiWktRZOteWzXdOvPmN4Pi3qrgtgpwXFnJVsWDrFfhQrGuc0XQc+g0XUOxWfdU5W7XZO+Ghk3iJSM9G4ZhGIZhGIZhGMaiRhUEpOexjjI9n3tlVhrXbbdCh3MOcy45PX/LX/iW/f+0/+9P/J9/8Wv+/Bte+VP737J/996Zr/m6v3rVVVelTQelqLauoybnzben/wZp46jswdXdxqpyp773HOcTtvUcujsx9y0vdyvSc99RoC1eMtKzYRiGYRiGYRiGYSxqVEFAeh5Lep7F2JieL1y48L992z9+5I+d33/x/q9+24f3X7j/Q3v/5Wu/+kUPPvjgYdNzI9mWzfh0nnx7+m+Q9+X+rdKqxqJcsSLbNdczad9U3cvTJMV/uk8A2uIlIz0bhmEYhmEYhmEYxqJGFQSk57GO7QM3jlo454Wn55945IEX/smve/1ve3j/t+9/395rv+4lf+X8+fMHSc/nb78mS71lk63vFz35mnbx7ei/QZ6s8+XljKt79Yp8k6Ziosaq0yfKeYs9Og9d7lCtqX/BYWP52q8ZLG5l80GfeMlIz4ZhGIZhGIZhGIaxqFEFAel5LOl5FmM4PV+4cOHB0n+88Nq/+ae/+dv3vvMbX/Itccn3fu/3Tn/Xc1loa80a2y7Evf03tdzVBKs7ZUQORyi3Ko5UT9a811DvXUgbDRy68RjyObPlcXFjkrg23YEe8ZKRng3DMAzDMAzDMAxjUaMKAtLzWNLzLMZwer5qUNggbTooRbWNTjc+phkWKF4y0rNhGIZhGIZhGIZhLGpUQUB6Hkt6nsUYSM/bkqLaBs23FsMixUtGejYMwzAMwzAMwzCMRY0qCEjPY11J6TlovSCumLEL6Tl9VEXz4zdggeIlIz0bhmEYhmEYhmEYxqJGFQSk57Gk51mMXUjPQBQvGenZMAzDMAzDMAzDMBY1qiAgPY91haXnK5X0DLsjXjLhqrzjjjvuvffeRx999Kmnnnr22WfT5QoAAABciaogID2PJT3PQpWeU/oCLp94MUrPAAAAsChVEJCex5KeZ0F6ht0RL0bpGQAAABalCgLS81jS8yxU6fnopKgGbBIvGekZAAAAFqUKAtLzWNLzLEjPsDviJSM9AwAAwKJUQUB6Hkt6ngXpGXZHvGSkZwAAAFiUKghIz2NJz7MgPcPuiJeM9AwAAACLUgUB6Xks6XkWBtLzy172squ67GXSpoNSVAM2iZeM9AwAAACLUgUB6Xks6XkWBtLz3l7xUv9wj3e/+91XXXVV2nRQimrAJvGSkZ4BAABgUaogID2PJT3PwnB6jom504MPPig9w3bFS0Z6BgAAgEWpgoD0PJb0PAsHS88XLlyQnmHr4iUjPQMAAMCiVEFAeh5Lep6FA6TnC6UDp+fTJ8LEKydOp6WXz/nbr0knU4gnVCw79KmNnaTrBC6/xpdpdVrlwnSG4fY1t58vb142B3jqxp925zPQOOYRfK3iJSM9AwAAwKJUQUB6Hkt6noWp6Tl25yCm5xPfeOKf/N3/Pe3QI0W1QpntsmB3+vYDxcutVc+YEfMTOlHeKZYfuiuOmaTvBI5L/zO58Tne2hfhgPqfusEzG3/aXVuWB02HyW9vTbxkpGcAAABYlCoISM9jSc+zMCk9p+pcevDBB1/6d170xr/xC3/tc06kHXqkqBYUsW4buXJL1bP/dIo1h46KmyfZ1vNxcP3P5MbneEtfhAMaeuoGz2z8aXds2fqSbuVl0hQvGekZAAAAFqUKAtLzWNLzLBw4Pb/0xpf+6L+4d/9F+1/1m/5q2qFHimqF0ye63ifaWrqqijHsFX+WUgYsNq7EvapNglUsLJdVkzbvJd0nU+o+dJQdrW95nDZOkq9sHW3gBMKqbPJ6pngrPgdhSevuaoukmiFuVq1Jy+Nuydp5NM8gyRe2Nug67tEpzr3zqVt7UO2nqHXaUdho+MEm7cN2TnYo8ZKRngEAAGBRqiAgPY8lPc/C+PScknPppf/rS//jLffvf/P+f9g787deekPaoUeKaqUYKDuKXr0otsJ0o9FJq22axe/87SdWd8pdUhssbset6lu5dkbM9R66MVU2Q37gcOf21fnHRY2TrwydQFiX7VDPVB7/msbjze7G++unVywe80zmOtfkC/PbPcc9MsOHaJx6+ylqrFwJG60v7NiymCw/7vYfarxkpGcAAABYlCoISM9jSc+zMCY93/qKW7/1739rqs4XLrzkxIvvveX0/k37P7j3E3/paze85TlIUa0SQ2gjxmaVr657ZTSstsmrX2c+jPJVaZeerYeyYd+hW1NVKzrnqg/ffbZDJ9A8UH0CzRNr3+07veZm9Wxre2SKs6ul7fPNs9t9xz0yxcn1H6FxOq2nqH2uUdhofWFxkFo8XDFb/uRVK7YlXjLSMwAAACxKFQSk57Gk51kYk56/6etPvP77Xn/Dy77xwoULf/2bv/6BW358/1v3f3jv7F/+mhenTQelqNbS7HZVEMyyZbNg5glxLR+WRXAlW5XqYWcdLNb1ZcOeQ6fpGorNuqcqd7smS5UtQycQ1mUPoz6d5om17vadXmuz8rz6nslK55p8YX2797hHpjhi/xEap956xporu8684wE21PuUn+PRtckhxEtGegYAAIBFqYKA9DyW9DwLY9Lzt/yFb9n/T/v//sT/+Re/5s+/4ZU/tf8t+3fvnfmar/urV111Vdp0UIpq6zoaaB4KRwbTMgVWd5sxsNip5z3HjQnbeg5dHKqreHYvL3cr0nPPUYZOYP1hxPmbJ9a623d6rc3y4zaPk+tcky+sb/ce98jkD2Fd49Rbz1j34wobrS/s3LKhPfcWxEtGegYAAIBFqYKA9DyW9DwLG9PzhQsX/rdv+8eP/LHz+y/e/9Vv+/D+C/d/aO+/fO1Xv+jBBx88bHpuNMsy9J3OW14z7OW1MY+C/VulVY1FuWJFtmuuZ9K+qbqXp0mK/0w+gWb2rJ+nNOdK825xr/dA3Zs1j5PrXJMvrG/3HvfoFIfseepap9587D2PK2y0vrBzy1x76m2Il4z0DAAAAItSBQHpeSzpeRbGpOefeOSBF/7Jr3v9b3t4/7fvf9/ea7/uJX/l/PnzB0nP52+/Jkt1rXxYlL5r2om0eW9VAsOm1Zp8eTnj6l69It+kqZioser0iXLeYo/OQ5c7VGvqX3DYWL72awaLW9l8maETWO1RbpPNlE3Uutt3es3NinurQxY75BPUwpr15yxf2LrdddwjVR6z46mLa7KTWXuK1h9X2Gj4wXYojjK0/mDiJSM9AwAAwKJUQUB6Hkt6noXh9HzhwoUHS//xwmv/5p/+5m/f+85vfMm3xCXf+73fO/1dz2UurDWjZ55EC/3BtLxTTbC6U5bAVS9shsGBTFjvXUgbDRy68RjyObPlcXFjkri2+YCjzhMIqvniG7fjrs0Ta98tdJ1ec7PiXnWY4k5h7czCPPmji/KFrQ26jnvUVicf1UfNH1Tzsfc8rk5dW+ZHXHvKtiFeMtIzAAAALEoVBKTnsaTnWRhOz1cNChukTQelqLbR+CgIV6h4yUjPAAAAsChVEJCex5KeZ2EgPW9LimobFO8nVZ5ZuHjJSM8AAACwKFUQkJ7Hkp5nYRfSc/qshiP5AAOYk3jJSM8AAACwKFUQkJ7Hkp5nYRfSMxDFS0Z6BgAAgEWpgoD0PJb0PAvSM+yOeMlIzwAAALAoVRCQnseSnmehSs8pfQGXT7wYpWcAAABYlCoISM9jSc+zID3D7ogXo/QMAAAAi1IFAel5LOl5Fqr0fHRSVAM2iZeM9AwAAACLUgUB6Xks6XkWpGfYHfGSkZ4BAABgUaogID2PJT3PwvGk58eAEeIlIz0DAADAolRBQHoeS3qeheNJz8AY8ZKRngEAAGBRqiAgPY8lPc+C9Ay7I14y0jMAAAAsShUEpOexpOdZkJ5hd8RLRnoGAACARamCgPQ8lvQ8C9Iz7I54yUjPAAAAsChVEJCex5KeZ0F6ht0RLxnpGQAAABalCgLS81jS8yxIz7A74iUjPQMAAMCiVEFAeh5Lep4F6Rl2R7xkpGcAAABYlCoISM9jSc+zID3D7oiXjPQMAAAAi1IFAel5LOl5FqRn2B3xkpGeAQAAYFGqICA9jyU9z4L0DLsjXjLSMwAAACxKFQSk57Gk51mQnmF3xEtGegYAAIBFqYKA9DyW9DwLx5yeT5/Yy1xz+/m0HAjiJSM9AwAAwKJUQUB6Hkt6noXjT89Vbz5/+zU7UZ/zc4LLKl4y0jMAAAAsShUEpOexpOdZuIzpOcbny199pWd2RrxkpGcAAABYlCoISM9jSc+zsBPpuXz/c1KvLpaeOB32CE6cTgtWslnKOU9X64pN6y3LHVeyCdL+cfZkte36Zh0nU++ZnQocTrxkpGcAAABYlCoISM9jSc+zcNnT84nT4T8n8sK7SsDF7WuuqVb1bRYjcJq1XNG8lwfl6tjFPtn+rXPq2KxcXJ1MvtHp2+ud4XDiJSM9AwAAwKJUQUB6Hkt6noXLmJ7LZLzqv5V6i0YEbssmqvtwYe1e2izboVBMnjZrrOnbrHky2d6wRfGSkZ4BAABgUaogID2PJT3PwvGn51rWeIuWW0nLO/pu12atWtxzr3HgpCM9927WOpl0IvIz2xUvGekZAAAAFqUKAtLzWNLzLBx/es7CcFTm3jz+ptut2tu3WWvOnnvF3j2hON+jd7OODq4/s3XxkpGeAQAAYFGqICA9jyU9z8LlT8/NqFvcS1usr+jcrDVnz718h5Z8j97NmoevDcwLk8VLRnoGAACARamCgPQ8lvQ8C7uRnlfLits9H7jRu9m49FzezN6hnP3OwmJFfZyezZonc/rE6vZqeXV66zdgtHjJSM8AAACwKFUQkJ7Hkp5n4fKn5xhpo7Cu3mJVdVd6NmvNueFeJVu8mnh1sK7NmidTn8pqg2JJeXP9BowWLxnpGQAAABalCgLS81jS8ywcc3oGBsRLRnoGAACARamCgPQ8lvQ8C9Iz7I54yUjPAAAAsChVEJCex5KeZ0F6ht0RLxnpGQAAABalCgLS81jS8yxIz7A74iUjPQMAAMCiVEFAeh5Lep4F6Rl2R7xkpGcAAABYlCoISM9jSc+zUKXnlL6AyydejNIzAAAALEoVBKTnsaTnWZCeYXfEi1F6BgAAgEWpgoD0PJb0PAtVej46KaoBm8RLRnoGAACARamCgPQ8lvQ8C9Iz7I54yUjPAAAAsChVEJCex5KeZ+F40vNjwAjxkpGeAQAAYFGqICA9jyU9z8LxpGdgjHjJSM8AAACwKFUQkJ7Hkp5nQXqG3REvGekZAAAAFqUKAtLzWNLzLEjPsDviJSM9AwAAwKJUQUB6Hkt6ngXpGXZHvGSkZwAAAFiUKghIz2NJz7MgPcPuiJeM9AwAAACLUgUB6Xks6XkWpGfYHfGSkZ4BAABgUaogID2PJT3PgvQMuyNeMtIzAAAALEoVBKTnsaTnWZCeYXfES0Z6BgAAgEWpgoD0PJb0PAvSM+yOeMlIzwAAALAoVRCQnseSnmdBeobdES8Z6RkAAAAWpQoC0vNY0vMsSM+wO+IlIz0DAADAolRBQHoeS3qeheNMz4+c+rZvO/VIurNSLSxurK8+hHLC2+5/Z7qbGXOod95/27SzKXYoFDvlBwi3O08C1sVLRnoGAACARamCgPQ8lvQ8C8eZnssi28q5HYu2pey/Hdn3nfffFmw66sT0XGzeXZilZ8aLl4z0DAAAAItSBQHpeSzpeRaONT2vh+YjLM9l873ttrX5y0h8JOm5e3PpmfHiJSM9AwAAwKJUQUB6Hkt6noXjTc/t1JzfbSXaouUmaXFz38a9zvBbTvhIe8360uxI2RnkU8Yt0r31E8sniFvljyW/HazvDpV4yUjPAAAAsChVEJCex5KeZ+GY0/NAMc4TbbEib7edQTdY7RzuVfNU4uaNqfKFqx3eef+p/LCr5fUmxaFWM3SfWJDPuDrK+u3e3aEULxnpGQAAABalCgLS81jS8ywcd3rOS2xvrs1rbbDaLgu3YYtT999/W30v3z5ZLc3W5jN1Vt9627RJWJDN3TpQNk1zxny77Hb/7lCKl4z0DAAAAItSBQHpeSzpeRaOPT3X/bVVXusuG26tKTes9ghbhP+u9qj3bKgWVzeq/VuHLu5W0lTFsvZHRYeJ1qTVzRnzM6pvD+wOpXjJSM8AAACwKFUQkJ7Hkp5n4fjT86rFtvJvK9F2J9m0T/hPuWnYMLvXVk/Y2q0RiouDdXXiYpMyPWdz959YPmNQT5PfHtgdSvGSkZ4BAABgUaogID2PJT3PwmVIzzHGdv/+v7r61sE3V9bjsGsdc4vP3egOuvWEMQyfat0v92km4+zIaUXxn8Zuq9stzXmyQ497XFCKl4z0DAAAAItSBQHpeSzpeRYuR3ouauz6h020cm22OvtFgGnX1YbvvP+24p3JzYlW8gnjftXdOhTnObi4XW3U3GR1iN4Tqzcv5Idu3e55XFCIl4z0DAAAAItSBQHpeSzpeRYuS3puJdgoT7RBuUnSXl7fz7NwW3PCcK/eLg/F5RSrw9T7NFpyPJl4N96OmidSz58fOr8ddO8OpXjJSM8AAACwKFUQkJ7Hkp5n4fKkZ6BLvGSkZwAAAFiUKghIz2NJz7MgPcPuiJeM9AwAAACLUgUB6Xks6XkWpGfYHfGSkZ4BAABgUaogID2PJT3PgvQMuyNeMtIzAAAALEoVBKTnsaTnWZCeYXfES0Z6BgAAgEWpgoD0PJb0PAtVek7pC7h84sUoPQMAAMCiVEFAeh5Lep4F6Rl2R7wYpWcAAABYlCoISM9jSc+zUKXno5OiGrBJvGSkZwAAAFiUKghIz2NJz7MgPcPuiJeM9AwAAACLUgUB6Xks6XkWjic9PwaMEC8Z6RkAAAAWpQoC0vNY0vMsHE96BsaIl4z0DAAAAItSBQHpeSzpeRakZ9gd8ZKRngEAAGBRqiAgPY8lPc+C9Ay7I14y0jMAAAAsShUEpOexpOdZkJ5hd8RLRnoGAACARamCgPQ8lvQ8C9Iz7I54yUjPAAAAsChVEJCex5KeZ0F6ht0RLxnpGQAAABalCgLS81jS8yxIz7A74iUjPQMAAMCiVEFAeh5Lep6Fken55MmTe3t74c90f4oU1YBN4iUjPQMAAMCiVEFAeh5Lep6Fkel5b2+v+nOqFNWATeIlIz0DAADAolRBQHoeS3qehTHpea8pLR0tRTVgk3jJSM8AAACwKFUQkJ7Hkp5nYTg9x8/ZuOviLWG86lwaUwN0imrAJvGSkZ4BAABgUaogID2PJT3PwkB6rqJz7M63nr05jlvuORnG+Pqcolrm/O3XlPk6OnG6XHj6xN41t58vb8JCxUtGegYAAIBFqYKA9DyW9DwLfel5L3uzcxWdq+5886kbwwjbpK0HpaiWxOyccnPh9Il4R3qGeMlIzwAAALAoVRCQnseSnmdhOD0PdOeDpeciPPcEZukZ4iUjPQMAAMCiVEFAeh5Lep6FgfT8+dd+9vCYnp5Pn2i84bmhlZ6zD+XIFucf1VEvLpaeOF2tU7CZq3jJSM8AAACwKFUQkJ7Hkp5noS89B3t7e686d/OrHi7f8vzAyVvui295nvZpG0GKasFQeW6k58abo7O9zt9+It+kXlxE57RDsbn4zDzFS0Z6BgAAgEWpgoD0PJb0PAs7mZ7zCh3ENzWnO7V6q0ap7tscdl+8ZKRnAAAAWJQqCEjPY0nPszAuPZ881vRcbNZW7Rbf4Zxk6bmetxmiYUbiJSM9AwAAwKJUQUB6Hkt6noVx6XlL73oejMLN9NxZqMsmXU1Q7yA9c4WIl4z0DAAAAItSBQHpeSzpeRY2pudbt/iu57IK973vuVmSu9pxb2HuXQHzEi8Z6RkAAAAWpQoC0vNY0vMsbEzP23zXc6H5zuXg9IlYjev0nDaqYvLqlwvmTbm47QM3uNLES0Z6BgAAgEWpgoD0PJb0PAvHnp6DmI1XVpU4T89BWZ+Tanm9Z1hU7yA9c4WIl4z0DAAAAItSBQHpeSzpeRYG0nOQOm+XtMUIKaoBm8RLRnoGAACARamCgPQ8lvQ8C8PpeStSVAM2iZeM9AwAAACLUgUB6Xks6XkWpGfYHfGSkZ4BAABgUaogID2PJT3PgvQMuyNeMtIzAAAALEoVBKTnsaTnWZCeYXfES0Z6BgAAgEWpgoD0PJb0PAtVek7pC7h84sUoPQMAAMCiVEFAeh5Lep4F6Rl2R7wYpWcAAABYlCoISM9jSc+zUKXno5OiGrBJvGSkZwAAAFiUKghIz2NJz7MgPcPuiJeM9AwAAACLUgUB6Xks6XkWjic9PwaMEC8Z6RkAAAAWpQoC0vNY0vMsHE96BsaIl4z0DAAAAItSBQHpeSzpeRakZ9gd8ZKRngEAAGBRqiAgPY8lPc+C9Ay7I14y0jMAAAAsShUEpOexpOdZkJ5hd8RLRnoGAACARamCgPQ8lvQ8C9Iz7I54yUjPAAAAsChVEJCex5KeZ0F6ht0RLxnpGQAAABalCgLS81jS8yxIz7A74iUjPQMAAMCiVEFAeh5Lep6FSen55MmTe5m0dJMU1YBN4iUjPQMAAMCiVEFAeh5Lep6FSel5b2/v4Sf2T53bv/mBfekZti5eMtIzAAAALEoVBKTnsaTnWdiYnlvvdI7d+fp7ngm30xabpKgGbBIvGekZAAAAFqUKAtLzWNLzLGxMz3t7e0/uX7q4/8Bdl26RnuFIxUtGegYAAIBFqYKA9DyW9DwLY9Jz7M7Xn73u8On59ImwX+Wa28+n5ZOcv/2acvcTp9OExY0g3D7QjOV8BzyX2gGOnp88BPGSkZ4BAABgUaogID2PJT3PwmHScyVt2iNFtVLeZw9YfIvduvc6YHoOEwYH2jV30PANtXjJSM8AAACwKFUQkJ7Hkp5noTM9tz7fuS897+8/ub9/KtxIu/VIUa3U7LP9FXlAsVP3O4UPFn/jXuHPQ77/WHrm8OIlIz0DAADAolRBQHoeS3qehc70XGTli/fsP3Dz/l0vHkzPp/b3i4Vptx4pqpV60nPMyUX+rQJwsaiyisLrC/MJW/E323igCa92iqeQFgbxfjVHNkN+Etni6ujFw8hmKjavV0Rpt8YJr61lgeIlIz0DAADAolRBQHoeS3qehd70XHbnZ26+Otw+0vRcRtoyz15zolpT1t0q367fq8tuPmF+u5wxW5HH4Fy9T3PeeNDVumKC1Wznb6/Os3Fi9Uz5eVTT5id0+vb2hl1rWaB4yUjPAAAAsChVEJCex5KeZ+Eypuei56Zwm5fXoNFuC6t+2769NmGVb5szNPfJ5Ns1N2qeUt8E3YfMblY7ds1Qb9c3PwsTLxnpGQAAABalCgLS81jS8ywcf3qu9ZXdYqNWh+2KuaVsRXa7cZiko+wWU9Un0bzbPExzy+JeZbW480yyWdJO+Wlku3SsZYHiJSM9AwAAwKJUQUB6Hkt6noXjT891wa1lhTYownGrwbYibWPb9eDbNUOHlHubug9T3Itriqm7Dtk4k9Wd5iRBOmRa1tglaK5lgeIlIz0DAADAolRBQHoeS3qehV1Mz3XnXcnXN7fNJ6xvr8/QoWOjbFHzMNWKnsVB86GV9043Nl6pd+p6NvIpWZx4yUjPAAAAsChVEJCex5KeZ6E3PZfd+ez1vyfcjt35haeKDB2783W3Plym5+sefrhYmHbrkaJaqSu2Bs2gW26Wvfm3WWOb2+YTtm43Zqh/heFKZ+MtFsbdmoepNs73Kjeu7rUeWnH3mmyK0ydWN+uZ61261rJA8ZKRngEAAGBRqiAgPY8lPc9CX3qeJO3WI0W1UqvPrnT01th1o8YuzW3zCdfjb2X9oMXajlMpD1tM3zxMcS9tXZ9YWJAdsnX0fJdCvVu9tN6lay0LFC8Z6RkAAAAWpQoC0vNY0vMsdKbn7UpRbWnaKRo2i5eM9AwAAACLUgUB6Xks6XkWpOej0XrPM4wSLxnpGQAAABalCgLS81jS8yxIz1tXfJRH4AObmS5eMtIzAAAALEoVBKTnsaTnWZCeYXfES0Z6BgAAgEWpgoD0PJb0PAvSM+yOeMlIzwAAALAoVRCQnseSnmehSs8pfQGXT7wYpWcAAABYlCoISM9jSc+zID3D7ogXo/QMAAAAi1IFAel5LOl5Fqr0fHRSVAM2iZeM9AwAAACLUgUB6Xks6XkWpGfYHfGSkZ4BAABgUaogID2PJT3PgvQMuyNeMtIzAAAALEoVBKTnsaTnWZCeYXfES0Z6BgAAgEWpgoD0PJb0PAuT0vPLXvayvUxaukmKasAm8ZKRngEAAGBRqiAgPY8lPc/CxvScJ+Zw+13vetdDDz1UlmfpGbYsXjLSMwAAACxKFQSk57Gk51kYTs97e3v7L395DM1R7M5xYdpokxTVgE3iJSM9AwAAwKJUQUB6Hkt6noWB9BwT8/7f+3thhNuvf/3rw5/1wvJ22nRQimrAJvGSkZ4BAABgUaogID2PJT3PQl96zhNzMcr6nC98297ePeWStEO/FNVK52+/ptypds3t59O6QadPjN1ykjBt5oBHWD2oE6fThMWNID/nfPkhFVONmCk/q8tli496IeIlIz0DAADAolRBQHoeS3qehb70HOyVxTml52o0u3OUduiRolqp6KGNFFnGyRF1Ms+4vUZt1JDvUbba6fW52K17r+mnM0rxlG18wvrP6mgd0WNejHjJSM8AAACwKFUQkJ7Hkp5noTM9v+xlLyuTcmG9Plfd+dlnn3366afDjbRbjxTVSmvpOSiT76aWOippTu+ezT0O1Gu7HlJ0RBk2TDsuPW/c6Agc0WNejHjJSM8AAACwKFUQkJ7Hkp5noTM97+3thS/fQw89dPr06XC7lZ7DiJ5++un3v//94UbarUeKaqXuItqMqWWKjuqK2Uqa69sUc1RWk3VOlWtOW2xe3o2nGadMc2VTdc6fFuYT9tyOk1e7ZsfPH8U1t58ut0srMsU22UmtT7V+Vn0LVzPEwxZLy/MsjhwVi+o9690a060eQX3yQbltOVv98AbPoVrZeEKWJl4y0jMAAAAsShUEpOexpOdZ6EvPsTt/z/d8T7jd6s5hRFtLz8XSLJtW7TGLrHnE7NumVTp7N8us71FuVO56zYlqTXG/3n39Xj1zPmHP7XL31b3ivFYr8tvlnc5TLtek5b1Ttc5q/YzzGfJHWh42zRJnb9xbzXH+9mqX5txh/+ocmvea2+X34nHSho1HsTzxkpGeAQAAYFGqICA9jyU9z8Jweg43Gr9scDXeViTJ7aXnOlE2y2W2ebaid5vmmv7NMvlG4faqhhYbZzu3pmpO1py4NWHX7ebk9e7to4T7HWfcWN43Veus2jNna5sztA+6dq85TZIvb26T3Vvbue8cGme+OPGSkZ4BAABgUaogID2PJT3PwkB6Dn9W3fltzfQclwRbftfz6aL+tsTN63LZv00jbw5slmls1Zc/i41au2ZHWts2P4Wu280dqsfeXBysLUiy0+mZKt1ercl2WKlOp32Q/JyH7xV7VqrlfXuEWyPPIX8UyxMvGekZAAAAFqUKAtLzWNLzLPSl5yDvzvH3CgZVg84Xpt16pKhWapfOqIqQHYEyGYyYK/VGg5tl8j0yzdPsmCrbb23b/BS6bveU1rWjdD9XjQ17pkq3V2vWZs5Op32Q7DyDvnvFjPWafKuhPcadQ/4olideMtIzAAAALEoVBKTnsaTnWehLz+ldz1li/u7v/u7yv8WSauE23vWcVcn+7FhHzIE0WW80tmDme2Sap7k+Vb6+uW0+Yc/tnsnXjhJ2ybarZct7pkq3V2vWZs7WNmdonnPvveZOjen79h9/DutbLkm8ZKRnAAAAWJQqCEjPY0nPs9CXnqvfMVh153/4D/9huPEjP/Ij1cL3v//9Z86cCTfSbj1SVCs1K2O83wisp4v301b3699mlyfNvm3KFfVcvZtl8mkz7dNsT5XH0ea2+YQ9t5s71JMVtxo75MfMFGvS8r6p2mvKyaq7/ds1z7n3XnuC1mk3jttYM+Yc8jXLEy8Z6RkAAAAWpQoC0vNY0vMs9KXnSdJuPVJUK8VQmcmzZ1I2yiQPl3mP7Nymnn41a89mtda0K80YWsrPvLFLc9t8wp7bzR2Ke9VW2UFOnG5uVyseVFreP9XaztnU9fHWt2s+Ib336tnCksZWqzXlpM39x51DcS/faVniJSM9AwAAwKJUQUB6Hkt6noXO9LxdKaoxUavbsgTxkpGeAQAAYFGqICA9jyU9z4L0vKNO1+9tZjniJSM9AwAAwKJUQUB6Hkt6ngXpeXcUtbmmOy9RvGSkZwAAAFiUKghIz2NJz7MgPcPuiJeM9AwAAACLUgUB6Xks6XkWpGfYHfGSkZ4BAABgUaogID2PJT3PQpWeU/oCLp94MUrPAAAAsChVEJCex5KeZ0F6ht0RL0bpGQAAABalCgLS81jS8yxU6fnopKgGbBIvGekZAAAAFqUKAtLzWNLzLEjPsDviJSM9AwAAwKJUQUB6Hkt6noXjSc+PASPES0Z6BgAAgEWpgoD0PJb0PAvHk56BMeIlIz0DAADAolRBQHoeS3qeBekZdke8ZKRnAAAAWJQqCEjPY0nPsyA9w+6Il4z0DAAAAItSBQHpeSzpeRakZ9gd8ZKRngEAAGBRqiAgPY8lPc+C9Ay7I14y0jMAAAAsShUEpOexpOdZkJ5hd8RLRnoGAACARamCgPQ8lvQ8C9Iz7I54yUjPAAAAsChVEJCex5KeZ0F6ht0RLxnpGQAAABalCgLS81jS8yxIz7A74iUjPQMAAMCiVEFAeh5Lep4F6Rl2R7xkpGcAAABYlCoISM9jSc+zID3D7oiXjPQMAAAAi1IFAel5LOl5Fi5Pen7k1LflTj2Slm/bO++/LR2idNv970wrDquYeFtnXT4ZR/YUcFCPvSFcHLU3PLa2NC3apnjJhLmlZwAAAFiOKghIz2NJz7MQXtPpcR6ZFNWSWIPz0vrIqTFJ+JFTByjHjUJcHnlLiXeb6XmUAz18DuOxN9z92vONy/8TH33fG9/wxvd99BPlvfc8dPfdP3b+l9PWWxIvGekZAAAAFqUKAtLzWNLzLBxzei6S7cES6uHTc3x/8XaCsfR85Yvp+dmPPZ3uJ09/7BNp0fve+Nq7f+ytH2hvcCjxkpGeAQAAYFGqICA9jyU9z8LxpufN7bd8a/LKatNit8pqYeeWLevpedVv45o4cdoimzCrvPlh6sX5xHGL4l6cv96jGYvzmQbPqtowLe58+By1nvScCVu8bniLyeIlIz0DAADAolRBQHoeS3qehWNNz0VDHUqnZXOtNmjeywJtMLRlpliRz9Dc5bbbTjVacjV/tuU776+2yY9ST1xsu9qxuF3fy7dv3mneyx5ZuXx1L58534jjsTE9hw3u/ql37UvPAAAAwOFUQUB6Hkt6noXLmJ5jZy1VFbeZV4stOgLthi0z2SEK2RbFmmyK1oQ909VbpQ3CgtYsjd3qgwydcLaueVb5WaxNwFErynKt/SsFi0/buPsN7/hE8QnQadE2xEsmHE96BgAAgOWogoD0PJb0PAvhNZ0e55FJUS1op9lSFVg71mbBNW+vw1tm8ngb763uNtcUE7ZVa8vdVtJBimW33VZPF62dxGrB4Alne62f72rN2tQctfiu53SdFOrGXFbpN7z9Y89uOTxLzwAAALBIVRCQnseSnmfhWNNz3lIrVW4d7LON9jq8ZaaZcvMTaK7pmDAqVjSOm26XExXpuXHQtZNYLeiYv94226t5VvXZdkzNUev5wI34dufHPvqJcPVsuTsH8ZKRngEAAGBRqiAgPY8lPc/CsabnzgZb5da8tEZ5ic3b6/CWmfbi+n5zzfqEUe9WaUXxn2zH9qOr7q/Pn82cPbJsaZDvlT98jkVnei7e73wkb3dO4iUjPQMAAMCiVEFAeh5Lep6FY07PMcc2Kmozwmbtttlrq4xbGtoys55yV3eba9YnjL9cMJ+43Ht1r949n7ScpJqluFed1cAJh1X5MaqNGlsV+9drOAYd6bl4x/Nr3/yBo+rOQbxkpGcAAABYlCoISM9jSc+zcOzpuRATbSVPqmXJTao4W1qtWW3dv2Ut36bQzLqtlJufVTVhPUNYVEfixu5xx3C3XP9IfczmAfpOuJ61dVbFvbUTaZ00R6YnPbe1f//g4cRLJkwrPQMAAMByVEFAeh5Lep6F8JpOj/PIpKi2AFlE5krw0U/stz/r+eniwzZatvge6HjJSM8AAACwKFUQkJ7Hkp5nQXreIumZQ4qXjPQMAAAAi1IFAel5LOl5FqTnLZKeOaR4yUjPAAAAsChVEJCex5KeZ0F6ht0RLxnpGQAAABalCgLS81jS8yxIz7A74iUjPQMAAMCiVEFAeh5Lep6FKj2n9AVcPvFilJ4BAABgUaogID2PJT3PgvQMuyNejNIzAAAALEoVBKTnsaTnWajS89FJUQ3YJF4y0jMAAAAsShUEpOexpOdZkJ5hd8RLRnoGAACARamCgPQ8lvQ8C9Iz7I54yUjPAAAAsChVEJCex5KeZ0F6ht0RLxnpGQAAABalCgLS81jS8yxIz7A74iUjPQMAAMCiVEFAeh5Lep4F6Rl2R7xkpGcAAABYlCoISM9jSc+zID3D7oiXjPQMAAAAi1IFAel5LOl5FqRn2B3xkpGeAQAAYFGqICA9jyU9z8JxpudHTn1bh1OPpNXbEw502/3vTHdGeOf9t6WTKU3ad1Ax8bYeX/nsHcGTRY/H3hAujtobHkvLk2L1a9/4vnRvW+IlEw4nPQMAAMByVEFAeh5Lep6F8JpOj/PIpKiWKSrqUUbUg6Tn6nzKDr2ls9tmeh5l6iOn32NvuPu15xuX/yc+mlZ96EPve+Nrw6Xzurd+8NmPPZ0WbUW8ZKRnAAAAWJQqCEjPY0nPsyA9B61CvL3Tk55nLKbnzrRchOc3nP3pu39MegYAAAAOrwoC0vNY0vMs7Eh6Lt9qvNJcVWwc3Xb/I+uNOGquagXYbPLuLruenlfbxTXxOGmL7tnyB1AvzieOWxT34vz1Hs2TymcaPKtqw7Q4nmWS7cjB9KbnMjy//WOXHrr7dT1p+uDiJSM9AwAAwKJUQUB6Hkt6noVdSM9lQ63uN+4VW1ZlNrbVcauqNcV0jc2yA6/ElJvuNLYp977t1Gr/3tneeX+1TX7+9cTFtqsdi9v1vXz75p3mvbBXY5fVvXzmfCMOqSc9p/D87P67fqr3XdEHFy8Z6RkAAAAWpQoC0vNY0vMs7EB6XsuljWDbWJXtOLAqX9farJ46F1NuJdugWJPtP2q2bKu0QXFuzVkau9UHac3fOEK2rnlW+VmsTcCBFb9HsJZ+y2CxsAzPn/jowAdyHFy8ZMLxpGcAAABYjioISM9jSc+zEF7T6XEemRTVMo322g6xwSqg5lG1VC8YWJUH2GLyttbBguZkxb3V3eaawdnK3VbS4Ytlt92WvXW5VJ9eslpQzN/YMt8222v9fFdr1qbmwGJaTtdJIdbmN/7yJ+IvHJSeAQAAgO2ogoD0PJb0PAs7nZ7XVtXNdWBVvX/n5B2aKTePuc01vbMVK+rmWx++nKhIz9W6Qr0+WS3omL/eNtureVb12XZMzYGtpeXiozY6nI3vh96OeMmEWaVnAAAAWI4qCEjPY0nPsxBe0+lxHpkU1TKNxJqX06gqq2ur6h0HVuUBdn3yLtUBk/p+c03fbL1bpRXFf7IdGw8/qO6vz5/NXD+ofGmQ75VtxCF1vav56Y/VEfg9D939Y2+N3x6KN0FvR7xkpGcAAABYlCoISM9jSc+zcPnTc7xb389LanG7bqnldqsNB1Y1Amx78vpXBtbWU25+lHpN32zFVo1TXt2rd88nXTvZ/rPNUnRYlR+j2qixVbF/vYbD2PSBGj5wAwAAANiOKghIz2NJz7OwC+k5KMtsUsXWUrbm1CPrzTVprsoqbaHsuUlz8iQ/eqF5iFbK7ZytniEsqg/f2D3uGO6W6x+pj9k8QH4yrUexuts8q+Le2om0TprppGcAAADgeFRBQHoeS3qehcuSng8sy69tA6t2zYxOdeE++on9wbS8af108ZKRngEAAGBRqiAgPY8lPc/CnNLzI/2fJjGwavdIz/SJl4z0DAAAAItSBQHpeSzpeRZ2PD0XSbnWiMsDq3ac9EyfeMlIzwAAALAoVRCQnseSnmdhx9MzLEq8ZKRnAAAAWJQqCEjPY0nPsyA9w+6Il4z0DAAAAItSBQHpeSzpeRaq9JzSF3D5xItRegYAAIBFqYKA9DyW9DwL0jPsjngxSs8AAACwKFUQkJ7Hkp5noUrPRydFNWCTeMlIzwAAALAoVRCQnseSnmdBeobdES8Z6RkAAAAWpQoC0vNY0vMsSM+wO+IlIz0DAADAolRBQHoeS3qeBekZdke8ZKRnAAAAWJQqCEjPY0nPs3DI9Ly3t5du9UtRDdgkXjLSMwAAACxKFQSk57Gk51k4THre29u79PD+xvqcohqwSbxkpGcAAABYlCoISM9jSc+zcOD0vLe39+Sl/QdukZ5ha+IlIz0DAADAolRBQHoeS3qehYOl59idLz4gPcM2xUtGegYAAIBFqYKA9DyW9DwLB0jPVXd++NTk9Hz+9mvC9rlrbj+f1g06fWLslrAV4SWXO3F6YOnWxEtGegYAAIBFqYKA9DyW9DwLU9Pz3sTuHKSoVirSc6PWxZK3OeBJzxyz7pdcWLrt3JyLl4z0DAAAAItSBQHpeSzpeRb60nNnUz5Adw5SVCutpeegfCf0ppwnPXPMOl9yXS/gbYqXjPQMAAAAi1IFAel5LOl5FjrT897e3jPPPNMqywfrzkGKaqXucnf6RN6eyxQd1ekvdsB6VXtNutM6QDFxdM3tp484GnKFkZ4BAACA41EFAel5LOl5FvrS8xPn9sMIN6olB+vOQYpqpe5yVyxNlS+72UjSMSKv1hRbZWu603OxS2OqMR/sAUnzhZWUr7yVI3g5xUtGegYAAIBFqYKA9DyW9DwLA+n54gOpPgcH7s5BimqlrAznqsrXyn315kU6zncs1nTt0tijUQ7bM8Cg4gVTW3/plOu3/YqKl4z0DAAAAItSBQHpeSzpeRY60/PJkycvPpBac3z784G7c5CiWqk7PVcduVn7ou6QXC9orqkOsHak7kNDj7WX3Jri5brll1S8ZKRnAAAAWJQqCEjPY0nPs9CZnoO9vb2HTxW5OY4Hbjlgdw5SVCt19988I/e0vLUOmO/TlZ7XppKemWTtJbfmCF5S8ZKRngEAAGBRqiAgPY8lPc9CX3oOqvp8mO4cpKhW6op1WSQuVnfnvnZJru83C2G1fG2q9gwwqPnC6nIEL6l4yUjPAAAAsChVEJCex5KeZ2EgPQd7e3uH7M5Bimqldnou7jfyXVHz6vvnbz+R4l+5vFpR3FtlwXKKtCLfqlxetcPm/rBReMmspef6Bdl6fW1LvGSkZwAAAFiUKghIz2NJz7MwnJ6DotgeojsHKaqVYmrOdMTgWImjPB1fc/vpeu/GftUeJ04XB6jWZUdrrYFNutNz9vo9ildTvGSkZwAAAFiUKghIz2NJz7OwMT0fXopql1tXSYTdEi8Z6RkAAAAWpQoC0vNY0vMsLCU9F2+M9p5ndl28ZKRnAAAAWJQqCEjPY0nPs3AFp+fqYzhKujMzEC8Z6RkAAAAWpQoC0vNY0vMsXMHpGWYnXjLSMwAAACxKFQSk57Gk51mQnmF3xEtGegYAAIBFqYKA9DyW9DwLVXpO6Qu4fOLFKD0DAADAolRBQHoeS3qeBekZdke8GKVnAAAAWJQqCEjPY0nPs1Cl56OTohqwSbxkpGcAAABYlCoISM9jSc+zID3D7oiXjPQMAAAAi1IFAel5LOl5Fo4nPT8GjBAvGekZAAAAFqUKAtLzWNLzLBxPegbGiJeM9AwAAACLUgUB6Xks6XkWpGfYHfGSkZ4BAABgUaogID2PJT3PgvQMuyNeMtIzAAAALEoVBKTnsaTnWZCeYXfES0Z6BgAAgEWpgoD0PJb0PAvSM+yOeMlIzwAAALAoVRCQnseSnmdBeobdES8Z6RkAAAAWpQoC0vNY0vMsSM+wO+IlIz0DAADAolRBQHoeS3qeBekZdke8ZKRnAAAAWJQqCEjPY0nPs7AxPXduMClYp6gGbBIvGekZAAAAFqUKAtLzWNLzLAxH5LA2SvdLadHo+pyiGrBJvGTCxSU9AwAAwHJUQUB6Hkt6noWBglzU5czAwmEpqgGbxEsmXFnSMwAAACxHFQSk57Gk51noy8dFVx4n7dAvRbWVR059W+3UI2nptr3z/tvSIZLb7n9nWnU8yod5ZA+Po/fYG9IrPHrDY2n5hz70vje+Ni28+7VvfF9auB3xkgkTS88AAACwHFUQkJ7Hkp5nIbym0+NcU5S1TeIkaYceKaoVyiCc9dhH7l8F4UdObTcOF0c65vC77YfA5fXYG+5+7fnG5f+Jj4bFRXd+7Ruf+FhVg5/92NNxh22Il0y4sqRnAAAAWI4qCEjPY0nPsxBe0+lxdinqcr84Q9q0X4pqQdGDe+qs9MyOiem5FZaL8PyGt3/s2e0G51q8ZMLFJT0DAADAclRBQHoeS3qehfCaTo+zR9GYu8Td00aDUlQrFJ9CsR6Ei6WV1erGJ2bkb5QuA2+9tqf2dqbncq9qaeNedrjGjNnyuG0zMK8Os/4Qmts15qlPIe1frex5MFwOXem5KM9nH382vv/5KMRLJlxf0jMAAAAsRxUEpOexpOdZCK/p9Dh7FJm5S9g3bbFJimqlGFk7Cut60a0DbeNejLyrbZsbZooVHcuLxXHf+lbzdnmAtGdj9nfef39xa/1EszPL1uT3GvM07pW3VxsWR85m4PLqSM/lh22cu/TW16WLYNuf9Cw9AwAAwCJVQUB6Hkt6noXwmk6Ps0uR1/qljTZJUa0Sc2ursja6bTPiBlnhLfpsVXGDYlVHr10dZKXaJE2VH6J1uOpg7UOVmhtnJ9Zak91rzZ/vVdyq1+Wzcbk1f81g+VsG4+8X/LHzv/LR4qOeP/jWH7v77v/8+FY/eCNeMuEg0jMAAAAsRxUEpOexpOdZCK/p9DjXhFUbpU0HpajWUnTdrOzmebZY1Sqw9eq1jru2oDRQcYvpW4deU6wslq9P0TzcmPTcMU+1snmazRDN5bX2awY/8dEiPb+uWJbeC/2+N73u7h976we2+Okb8ZIJV5b0DAAAAMtRBQHpeSzpeRb68nHRlcdJO/RLUW1dXlrzbjvUahsbltYWlAbSc7Eqf891x+FK3cubh8sP01xT3+uYp1rZPM38CeFy6/nAjddly9r3Dy9eMuGykp4BAABgOaogID2PJT3PwkA7Lrpypto+FxemHXqkqNYhi7J5t10vsFmhbYfcjrBbaDbdTFyRH2L9cFH38vxEm0dfW5Purc8Tz6F5q9B3JlwOfb9m8D+/p5Gef/rS6j3Q2xAvmXBlSc8AAACwHFUQkJ7Hkp5nIbym0+PsUtTlUtx4YOGAFNWCd95/W5aDi9Cad9uswRb36ruNIluuauzWGWubTbdST5VP2j7cqa7l6dcM5me9fi71IcO95jln89dHbp5mvobLrSs9x097fuhd5UdsFLdf+6ZfeXb/E9v7xI14yYSLS3oGAACA5aiCgPQ8lvQ8C+E1nR5nj87EPL47BymqFWKrrdTRNSXdbNnqfiHPsWXSfaRemc+RyXePwobF4eu5GvfyM2sdbmV92/ju6eoMGg8hbJTP0/NwGvuX9/KduJw603PwxLkfC6//0hve/rFnt/meZ+kZAAAAFqkKAtLzWNLzLITXdHqc/cJm6Vamc2GnFNW2pJV04eh89BPdYfnpj1UteIvveC7ES0Z6BgAAgEWpgoD0PJb0PAtj0vMhpai2JdIzV7B4yUjPAAAAsChVEJCex5KeZ0F6ht0RLxnpGQAAABalCgLS81jS8yzMLj3DFSxeMtIzAAAALEoVBKTnsaTnWZCeYXfES0Z6BgAAgEWpgoD0PJb0PAtVek7pC7h84sUoPQMAAMCiVEFAeh5Lep4F6Rl2R7wYpWcAAABYlCoISM9jSc+zUKVnYEdIzwAAALAoVRCQnseSnmdBeoZdIz0DAADAolRBQHoeS3qehfCaBnaN9AwAAADLESPk3dLzeNLzHH3oQx8KX7gf//Ef//7v//4777zzDuByCBdguAzDxRguyU9+8pPp+gQAAACuRDFCSs8TSM9z9NGPfjR8gX72Z3/2x3/8x0+fPn0vcDmECzBchuFi/MhHPiI9AwAAwJUtRkjpeQLpeY4+/vGPP/XUU+FrFL58v/ALv/AocDmECzBchuFiDJfkpz71qXR9AgAAAFeiGCGl5wmk5zn65Cc/+fGPf/wjH/nIhz70oaeAyyRcgB/96EfDxRguSekZAAAArmwxQkrPE0jPc/Sp0idLzwKXSbwG4/WYLk4AAADgChUjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAAwLAYIaXnCaRnAAAAAIBhMUJKzxNIzwAAAAAAw2KElJ4nkJ4BAAAAAIbFCCk9TyA9AwAAAAAMixFSep5AegYAAAAAGBYjpPQ8gfQMAAAAADAsRkjpeQLpGQAAAABgWIyQ0vME0jMAAAAA///27pbJkSNbA3D/hAv3Lxhe0MB0oaGhUUc0NDTZiKYTjRYONDXqMDRsurDhTFxiOtDLDOdm1UlJ9XmkVKs/NHqeUMhSZX1knaySol5Xa4BchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJnAAAAAIBchJCi5waiZwAAAACAXISQoucGomcAAAAAgFyEkKLnBqJn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" alt="Menu Execute pada aplikasi Dev-C++ berisi pilihan Compile, Run, Compile & Run, Rebuild All">
+
+      <div class="callout-list">
+        <div class="callout">
+          <div class="cnum">1</div>
+          <div><h4>Compile <span class="key">F9</span></h4><p>Memeriksa tulisan kodemu dan menerjemahkannya ke bahasa mesin. Kalau ada kesalahan penulisan (disebut <span class="term">syntax error</span>), pesannya akan muncul di panel <strong>Compiler</strong> di bagian bawah. Program belum dijalankan pada tahap ini.</p></div>
+        </div>
+        <div class="callout">
+          <div class="cnum">2</div>
+          <div><h4>Run <span class="key">F10</span></h4><p>Menjalankan program yang sebelumnya sudah di-compile. Hasilnya (disebut <span class="term">output</span>) akan muncul di jendela hitam yang disebut <strong>Console</strong>.</p></div>
+        </div>
+        <div class="callout highlight">
+          <div class="cnum">3</div>
+          <div><h4>Compile &amp; Run <span class="key">F11</span></h4><p>Menggabungkan langkah 1 dan 2 sekaligus — kode diperiksa, diterjemahkan, lalu langsung dijalankan. <strong>Ini yang paling sering kamu pakai.</strong> Cukup tekan tombol <strong>F11</strong> di keyboard!</p></div>
+        </div>
+        <div class="callout">
+          <div class="cnum">4</div>
+          <div><h4>Rebuild All <span class="key">F12</span></h4><p>Meng-compile ulang semua file dari awal. Berguna kalau program terasa aneh setelah kamu melakukan banyak perubahan.</p></div>
+        </div>
+      </div>
+
+      <div class="card" style="border-left:3px solid var(--amber);">
+        <h4 style="font-family:var(--font-mono); font-size:14px; color:var(--amber); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;">Langkah Praktis</h4>
+        <ol class="steps">
+          <li><span>Buka Dev-C++, lalu buat file baru lewat <strong>File → New → Source File</strong>.</span></li>
+          <li><span>Ketik kode C++ kamu di area editor.</span></li>
+          <li><span>Simpan filenya dengan <strong>File → Save</strong> (atau <code>Ctrl+S</code>), beri nama berakhiran <code>.cpp</code>, misalnya <code>latihan1.cpp</code>.</span></li>
+          <li><span>Tekan tombol <strong>F11</strong> di keyboard untuk meng-compile sekaligus menjalankan programmu.</span></li>
+          <li><span>Lihat hasilnya di jendela <strong>Console</strong> yang muncul.</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 05 STRUKTUR ============ -->
+    <section class="section" id="struktur">
+      <div class="eyebrow">05 · Fondasi</div>
+      <h2>Struktur Dasar Program C++</h2>
+      <p class="lead">Hampir semua program C++ punya "kerangka" yang mirip. Yuk kenali dulu bagian-bagiannya.</p>
+
+      <div class="grid2">
+        <div class="mini-card">
+          <div class="ic">1</div>
+          <h4><code>#include &lt;iostream&gt;</code></h4>
+          <p>Baris ini menyertakan kumpulan perintah siap pakai (disebut <span class="term">library</span> atau pustaka) untuk menampilkan tulisan ke layar dan nanti membaca input dari keyboard.</p>
+        </div>
+        <div class="mini-card">
+          <div class="ic">2</div>
+          <h4><code>using namespace std;</code></h4>
+          <p>Baris ini membuat kita bisa langsung menulis <code>cout</code> tanpa awalan tambahan. Tanpa baris ini, kita harus menulis <code>std::cout</code> setiap kali.</p>
+        </div>
+        <div class="mini-card">
+          <div class="ic">3</div>
+          <h4><code>int main() { }</code></h4>
+          <p>Ini disebut <span class="term">fungsi</span> (kumpulan perintah yang diberi nama). Fungsi <code>main</code> wajib ada di setiap program C++ — di sinilah program mulai dijalankan.</p>
+        </div>
+        <div class="mini-card">
+          <div class="ic">4</div>
+          <h4>Kurung kurawal <code>{ }</code></h4>
+          <p>Tanda kurung ini menandai awal dan akhir dari sekumpulan perintah, disebut satu <span class="term">blok kode</span>.</p>
+        </div>
+        <div class="mini-card">
+          <div class="ic">5</div>
+          <h4>Titik koma <code>;</code></h4>
+          <p>Setiap perintah (disebut <span class="term">statement</span>) di C++ harus diakhiri titik koma — mirip tanda titik di akhir kalimat. Lupa menulis <code>;</code> adalah penyebab error paling sering! Dalam istilah pemrograman, tanda <code>;</code> ini disebut <span class="term">statement terminator</span> (penanda akhir sebuah pernyataan).</p>
+        </div>
+        <div class="mini-card">
+          <div class="ic">6</div>
+          <h4><code>return 0;</code></h4>
+          <p>Baris terakhir sebelum penutup fungsi <code>main</code>, menandakan program selesai berjalan dengan baik, tanpa masalah.</p>
+        </div>
+      </div>
+
+      <p class="term-note" style="margin-top:8px;">Satu hal penting: C++ bersifat <span class="term">case-sensitive</span>, artinya huruf besar dan huruf kecil dianggap berbeda. Menulis <code>cout</code> tidak sama dengan <code>Cout</code> atau <code>COUT</code> — komputer akan menganggapnya error.</p>
+    </section>
+
+    <!-- ============ 06 HELLO WORLD ============ -->
+    <section class="section" id="helloworld">
+      <div class="eyebrow">06 · Praktik Pertama</div>
+      <h2>Program "Hello, World!"</h2>
+      <p class="lead">Ini adalah program pertama yang biasa ditulis siapa pun saat mulai belajar bahasa pemrograman baru — tujuannya sederhana: menampilkan tulisan ke layar.</p>
+
+      <div class="code-block protected-code">
+        <div class="code-head"><span>Contoh 1 — helloworld.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
+        <div class="code-body">
+<div class="code-line"><span class="ln">1</span><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
+<div class="code-line"><span class="ln">2</span></div>
+<div class="code-line"><span class="ln">3</span><span class="tk-kw">using</span> <span class="tk-kw">namespace</span> std<span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">4</span></div>
+<div class="code-line"><span class="ln">5</span><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
+<div class="code-line"><span class="ln">6</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Hello, World!"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">7</span>    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="tk-punc">}</span></div>
+        </div>
+      </div>
+
+      <div class="console-block">
+        <div class="console-head">Tampilan di jendela Console setelah ditekan F11</div>
+        <div class="console-body">
+          <div class="cline">Hello, World!</div>
+          <div class="cmeta">Process exited after 0.01 seconds with return value 0<br>Press any key to continue . . .</div>
+        </div>
+      </div>
+
+      <div class="try-it">✏️ Coba ketik kode ini sendiri di Dev-C++, simpan sebagai <code>helloworld.cpp</code>, lalu tekan <strong>F11</strong>.</div>
+
+      <h3 style="margin-top:34px; font-size:19px;">Penjelasan Setiap Baris</h3>
+      <div class="explain-list">
+        <div class="explain-item">
+          <div class="badge">1</div>
+          <div>
+            <code class="line-code">#include &lt;iostream&gt;</code>
+            <p>Menyertakan pustaka <code>iostream</code>, yang berisi perintah untuk menampilkan teks ke layar (<code>cout</code>) dan nanti membaca input dari keyboard (<code>cin</code>, akan dipelajari di pertemuan berikutnya).</p>
+          </div>
+        </div>
+        <div class="explain-item">
+          <div class="badge">3</div>
+          <div>
+            <code class="line-code">using namespace std;</code>
+            <p>Perintah-perintah standar C++ seperti <code>cout</code> sebenarnya berada di dalam "wadah" bernama <code>std</code>. Baris ini membuat kita bisa langsung memakainya tanpa menulis <code>std::</code> setiap kali.</p>
+          </div>
+        </div>
+        <div class="explain-item">
+          <div class="badge">5</div>
+          <div>
+            <code class="line-code">int main() {</code>
+            <p>Awal dari fungsi <code>main</code>, tempat program mulai berjalan. Kurung kurawal <code>{</code> membuka blok kode milik fungsi ini.</p>
+          </div>
+        </div>
+        <div class="explain-item">
+          <div class="badge">6</div>
+          <div>
+            <code class="line-code">cout &lt;&lt; "Hello, World!" &lt;&lt; endl;</code>
+            <p><code>cout</code> dipakai untuk menampilkan sesuatu ke layar. Tanda <code>&lt;&lt;</code> berarti "kirim ke". <code>"Hello, World!"</code> adalah tulisan yang ditampilkan. <code>endl</code> memindahkan tampilan ke baris baru. Semua diakhiri titik koma <code>;</code>.</p>
+          </div>
+        </div>
+        <div class="explain-item">
+          <div class="badge">7</div>
+          <div>
+            <code class="line-code">return 0;</code>
+            <p>Menandakan program selesai berjalan dengan <strong>sukses</strong>, tanpa masalah.</p>
+          </div>
+        </div>
+        <div class="explain-item">
+          <div class="badge">8</div>
+          <div>
+            <code class="line-code">}</code>
+            <p>Kurung kurawal penutup — tanda akhir dari fungsi <code>main()</code>. Program berakhir di sini.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:38px; font-size:19px;">Contoh 2 — Menampilkan Lebih dari Satu Baris</h3>
+      <p>Kita bisa menulis <code>cout</code> lebih dari sekali untuk menampilkan beberapa baris tulisan.</p>
+
+      <div class="code-block protected-code">
+        <div class="code-head"><span>Contoh 2 — duabaris.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
+        <div class="code-body">
+<div class="code-line"><span class="ln">1</span><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
+<div class="code-line"><span class="ln">2</span></div>
+<div class="code-line"><span class="ln">3</span><span class="tk-kw">using</span> <span class="tk-kw">namespace</span> std<span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">4</span></div>
+<div class="code-line"><span class="ln">5</span><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
+<div class="code-line"><span class="ln">6</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Hello, World!"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">7</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Saya Dewi, senang belajar pemrograman C++"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">8</span>    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="tk-punc">}</span></div>
+        </div>
+      </div>
+
+      <div class="console-block">
+        <div class="console-head">Tampilan di jendela Console setelah ditekan F11</div>
+        <div class="console-body">
+          <div class="cline">Hello, World!</div>
+          <div class="cline">Saya Dewi, senang belajar pemrograman C++</div>
+          <div class="cmeta">Process exited after 0.01 seconds with return value 0<br>Press any key to continue . . .</div>
+        </div>
+      </div>
+
+      <div class="try-it">✏️ Coba juga contoh ini. Ganti kalimat "Saya Dewi..." dengan namamu sendiri, lalu jalankan dengan <strong>F11</strong>.</div>
+    </section>
+
+    <!-- ============ 07 MATERI TAMBAHAN ============ -->
+    <section class="section" id="materi">
+      <div class="eyebrow">07 · Bekal Tambahan</div>
+      <h2>Hal Penting Lainnya</h2>
+      <p class="lead">Beberapa hal kecil ini akan sering kamu temui dan berguna sejak sekarang.</p>
+
+      <h3 style="font-size:17px;">Komentar Kode</h3>
+      <p>Komentar adalah catatan di dalam kode yang <strong>tidak dijalankan</strong> oleh komputer. Gunanya untuk memberi keterangan supaya kode lebih mudah dipahami, oleh orang lain maupun oleh diri kita sendiri nanti.</p>
+      <div class="code-block protected-code">
+        <div class="code-head"><span>komentar.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
+        <div class="code-body">
+<div class="code-line"><span class="ln">1</span><span class="tk-com">// Ini komentar satu baris, diawali dua garis miring</span></div>
+<div class="code-line"><span class="ln">2</span><span class="tk-com">/* Ini komentar</span></div>
+<div class="code-line"><span class="ln">3</span><span class="tk-com">   yang bisa lebih dari satu baris */</span></div>
+        </div>
+      </div>
+
+      <h3 style="font-size:17px; margin-top:26px;">Membuat Baris Baru — Dua Hal yang Berbeda</h3>
+      <p>Pertanyaan yang sering muncul: <em>"cara bikin baris baru di C++ gimana?"</em> Ada dua konteks yang perlu dibedakan:</p>
+      <div class="grid2">
+        <div class="mini-card">
+          <div class="ic">di editor</div>
+          <h4>Baris kode baru</h4>
+          <p>Sama seperti mengetik dokumen biasa — tekan tombol <strong>Enter</strong> di keyboard saat menulis kode di Dev-C++ untuk pindah ke baris berikutnya. Ini hanya soal rapi-rapi kode, tidak memengaruhi jalannya program.</p>
+        </div>
+        <div class="mini-card">
+          <div class="ic">di tampilan hasil</div>
+          <h4>Baris baru pada output</h4>
+          <p>Untuk membuat tulisan hasil program pindah ke baris baru di jendela <strong>Console</strong>, gunakan <code>endl</code> di dalam <code>cout</code>, seperti pada contoh Hello World di atas.</p>
+        </div>
+      </div>
+      <p class="term-note">Selain <code>endl</code>, ada juga cara lain yaitu karakter <code>"\n"</code> yang ditulis di dalam tanda kutip. Untuk sekarang, cukup gunakan <code>endl</code> dulu supaya lebih mudah diingat.</p>
+    </section>
+
+    <!-- ============ 08 KUIS ============ -->
+    <section class="section" id="kuis">
+      <div class="eyebrow">08 · Uji Pemahaman</div>
+      <h2>Kuis Interaktif</h2>
+      <p class="lead">Kuis ini fokus menguji pemahamanmu tentang <strong>struktur program</strong> dan <strong>aturan penulisan (sintaks)</strong> C++ yang sudah kita bahas.</p>
+
+      <h3 style="font-size:17px;">Bagian A — Uji Pemahaman (20 Soal)</h3>
+      <p style="font-size:13.5px;">Soal bervariasi: pilihan ganda, benar/salah, isian singkat, dan mencocokkan.</p>
+      <div class="quiz-card" id="quizCard">
+        <div class="q-progress" id="qProgress">Soal 1 dari 20</div>
+        <div class="q-text" id="qText"></div>
+        <div class="q-options" id="qOptions"></div>
+        <div class="q-isian" id="qIsianArea" style="display:none;">
+          <input type="text" id="qIsianInput" class="q-isian-input" placeholder="Ketik jawabanmu di sini">
+          <button class="btn primary" id="qIsianCheck" type="button">Periksa Jawaban</button>
+        </div>
+        <div class="q-match" id="qMatchArea" style="display:none;"></div>
+        <div class="q-explain" id="qExplain"></div>
+        <div class="q-nav">
+          <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-faint);" id="qScoreLabel">Skor: 0</span>
+          <button class="btn primary" id="qNextBtn" disabled>Soal Berikutnya →</button>
+        </div>
+      </div>
+      <div class="quiz-result" id="quizResult">
+        <div class="score" id="quizResultScore">0/20</div>
+        <p id="quizResultMsg" style="margin-top:8px;"></p>
+        <button class="btn" id="quizRestart">Ulangi Kuis</button>
+      </div>
+
+      <h3 style="font-size:17px; margin-top:38px;">Bagian B — Puzzle Kode: Susun Programnya</h3>
+      <p>Baris-baris kode di bawah teracak. <strong>Urutkan kembali</strong> memakai tombol ↑ / ↓ sampai jadi program yang benar (mengikuti struktur yang sudah kita pelajari), lalu klik <strong>Periksa Urutan</strong>.</p>
+      <div class="game-wrap">
+        <div class="game-top">
+          <div class="game-stat" id="puzzleLabel">Puzzle 1 dari 2</div>
+          <div class="game-stat">Baris benar posisinya: <b id="puzzleFound">0</b> / <span id="puzzleTotal">0</span></div>
+        </div>
+        <div id="puzzleLines"></div>
+        <div class="game-actions">
+          <button class="btn primary" id="puzzleCheck">Periksa Urutan</button>
+          <button class="btn" id="puzzleShuffle">Acak Ulang</button>
+          <button class="btn" id="puzzleNext" disabled>Puzzle Berikutnya →</button>
+        </div>
+        <div class="game-feedback" id="puzzleFeedback"></div>
+      </div>
+
+      <h3 style="font-size:17px; margin-top:38px;">Kirim Hasil ke Guru</h3>
+      <p>Selesaikan dulu kuis pilihan ganda dan ketiga puzzle kode di atas, lalu isi data di bawah untuk mengirim hasilmu.</p>
+      <div class="quiz-card">
+        <div class="idform" id="formIndividu">
+          <div class="field"><label for="qNama">Nama Lengkap</label><input id="qNama" type="text" placeholder="Nama kamu"></div>
+          <div class="field"><label for="qKelas">Kelas</label><input id="qKelas" type="text" placeholder="Contoh: XI 1"></div>
+          <div class="field"><label for="qNis">NIS</label><input id="qNis" type="text" placeholder="Nomor Induk Siswa"></div>
+          <div class="field"><label for="qAbsen">No. Absen</label><input id="qAbsen" type="text" placeholder="Nomor absen"></div>
+        </div>
+
+        <button class="btn primary" id="submitHasil">Kirim Hasil</button>
+        <div id="submitResult"></div>
+      </div>
+    </section>
+
+    <!-- ============ 09 LATIHAN ============ -->
+    <section class="section" id="latihan">
+      <div class="eyebrow">09 · Praktik Mandiri</div>
+      <h2>Latihan: Program Identitas Diri</h2>
+
+      <div class="lock-box" id="latihanLock">
+        <div class="lock-icon">🔒</div>
+        <p>Latihan ini masih terkunci. Masukkan kode pembuka dari gurumu untuk membukanya.</p>
+        <div class="lock-form">
+          <input type="text" id="latihanKode" placeholder="Masukkan kode pembuka">
+          <button class="btn primary" type="button" id="latihanUnlock">Buka Latihan</button>
+        </div>
+        <p class="lock-err" id="latihanErr">Kode belum tepat, coba lagi ya.</p>
+      </div>
+
+      <div id="latihanContent" style="display:none;">
+      <div class="task-box">
+        <h4>Tugas</h4>
+        <p style="margin-top:10px;">Buatlah program C++ di Dev-C++ yang menampilkan identitas dirimu ke layar, dengan setiap informasi berada pada <strong>baris terpisah</strong> (gunakan <code>cout</code> dan <code>endl</code> seperti pada Contoh 2). Tampilkan:</p>
+        <ul class="checklist">
+          <li><span class="bullet">▸</span><span>Nama lengkap</span></li>
+          <li><span class="bullet">▸</span><span>Kelas</span></li>
+          <li><span class="bullet">▸</span><span>Nomor absen</span></li>
+          <li><span class="bullet">▸</span><span>Cita-cita</span></li>
+          <li><span class="bullet">▸</span><span>Hobi</span></li>
+          <li><span class="bullet">▸</span><span>Motivasi belajar C++</span></li>
+        </ul>
+      </div>
+
+      <div class="code-block protected-code">
+        <div class="code-head"><span>Kerangka Awal — identitas_template.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
+        <div class="code-body">
+<div class="code-line"><span class="ln">1</span><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
+<div class="code-line"><span class="ln">2</span><span class="tk-kw">using</span> <span class="tk-kw">namespace</span> std<span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">3</span></div>
+<div class="code-line"><span class="ln">4</span><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
+<div class="code-line"><span class="ln">5</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Nama&#8202;: ______________"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">6</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Kelas&#8202;: _____"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">7</span>    <span class="tk-com">// TODO: tambahkan baris untuk Absen, Cita-cita, Hobi, dan Motivasi</span></div>
+<div class="code-line"><span class="ln">8</span></div>
+<div class="code-line"><span class="ln">9</span>    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="tk-punc">}</span></div>
+        </div>
+      </div>
+
+      <p style="font-size:13.5px;">Contoh gambaran hasil akhir yang diharapkan (isinya tentu diganti dengan identitasmu sendiri):</p>
+      <div class="console-block">
+        <div class="console-head">Contoh tampilan saat program berhasil dijalankan</div>
+        <div class="console-body">
+          <div class="cline">Nama&#8202;: ....................</div>
+          <div class="cline">Kelas&#8202;: ....................</div>
+          <div class="cline">Absen&#8202;: ....................</div>
+          <div class="cline">Cita-cita&#8202;: ....................</div>
+          <div class="cline">Hobi&#8202;: ....................</div>
+          <div class="cline">Motivasi&#8202;: ....................</div>
+          <div class="cmeta">Process exited after 0.01 seconds with return value 0<br>Press any key to continue . . .</div>
+        </div>
+      </div>
+
+      <div class="submit-box">
+        <h4>Cara Mengumpulkan</h4>
+        <p style="margin-top:8px; margin-bottom:0;">Tugas ini dikumpulkan di LMS, berupa screenshot yang menampilkan kode program sekaligus hasil tampilan Console setelah menekan <strong>F11</strong>. Kamu bisa letakkan jendela Console berdampingan dengan kodemu, lalu screenshot. Hasil screenshot tersebut yang kamu kumpulkan di bagian <strong>"Latihan 1 – Biodata Diri"</strong> pada LMS.</p>
+      </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="sources">
+  <h3>Sumber Materi</h3>
+  <ul>
+    <li>Stroustrup, B. <em>A History of C++: 1979–1991</em> — <a href="https://www.stroustrup.com/hopl2.pdf" target="_blank" rel="noopener">stroustrup.com/hopl2.pdf</a></li>
+    <li>Standard C++ Foundation — <a href="https://isocpp.org/" target="_blank" rel="noopener">isocpp.org</a></li>
+    <li>cppreference.com — <a href="https://en.cppreference.com/w/cpp/language/basic_concepts.html" target="_blank" rel="noopener">Referensi bahasa C++</a></li>
+    <li>GeeksforGeeks — <a href="https://www.geeksforgeeks.org/cpp/difference-between-c-and-c/" target="_blank" rel="noopener">Difference between C and C++</a></li>
+    <li>GeeksforGeeks — <a href="https://www.geeksforgeeks.org/c-sharp/c-vs-c-sharp/" target="_blank" rel="noopener">C++ vs C#</a></li>
+    <li>Dev-C++ / Embarcadero — <a href="https://www.embarcadero.com/products/cbuilder/starter" target="_blank" rel="noopener">Dokumentasi resmi Dev-C++</a></li>
+  </ul>
+</div>
+
+<div class="statusbar" id="statusbar">
+  <span id="sbFile">📄 Beranda</span>
+  <span>Ln <b id="sbLine">1</b>, Kol <b id="sbCol">1</b></span>
+  <span id="sbProgress">Progres: <b>0%</b></span>
+  <span>UTF-8</span>
+  <span style="margin-left:auto;">Siap</span>
+</div>
+
+<div class="toast" id="toast">Yuk, coba ketik sendiri kodenya ya 🙂</div>
+
+<footer style="text-align:center; padding:24px 20px; font-family:var(--font-mono); font-size:12.5px; color:var(--text-faint); max-width:520px; margin:0 auto;">"Kemampuan menulis kode bukan bakat bawaan — itu keterampilan yang tumbuh dari latihan, rasa penasaran, dan keberanian mencoba lagi setelah error." <span style="color:var(--amber);">📘</span> Semangat belajar, Informatika XI!</footer>
+
+</div><!-- /#konten-utama -->
+
+<script>
+  const MODUL_ID = "INF-102";
+  // Jaring pengaman preview: kalau config.js/guard.js belum ada di folder
+  // yang sama (mis. saat file ini dibuka langsung sebelum di-hosting) atau
+  // pengecekan ke Google Sheet lambat/menggantung, materi tetap otomatis
+  // ditampilkan — tidak nyangkut selamanya di "Memuat materi...".
+  let __revealed = false;
+  function __forceReveal(){
+    if(__revealed) return;
+    __revealed = true;
+    const k = document.getElementById('konten-utama');
+    if(k) k.style.visibility = 'visible';
+    const l = document.getElementById('guard-loading');
+    if(l) l.remove();
+  }
+  setTimeout(__forceReveal, 4000);
+</script>
+<script src="../config.js" onerror="__forceReveal()"></script>
+<script src="../guard.js" onerror="__forceReveal()"></script>
+
+<script>
+/* ---------------- Terminal boot animation ---------------- */
+(function(){
+  const el = document.getElementById('bootTerminal');
+  const steps = [
+    {t:'prompt', text:'$ g++ pertemuan1.cpp -o pertemuan1'},
+    {t:'line', text:'Compiling...'},
+    {t:'out', text:'✓ Compilation successful'},
+    {t:'prompt', text:'$ ./pertemuan1'},
+  ];
+  let i = 0;
+  function typeLine(step, cb){
+    const div = document.createElement('div');
+    div.className = 'line';
+    const span = document.createElement('span');
+    span.className = step.t === 'prompt' ? 'prompt' : (step.t === 'out' ? 'out' : '');
+    div.appendChild(span);
+    el.appendChild(div);
+    let j = 0;
+    const iv = setInterval(()=>{
+      span.textContent += step.text[j];
+      j++;
+      if(j >= step.text.length){ clearInterval(iv); cb(); }
+    }, 14);
+  }
+  function next(){
+    if(i >= steps.length){
+      const cur = document.createElement('span');
+      cur.className = 'cursor';
+      el.appendChild(cur);
+      return;
+    }
+    typeLine(steps[i], ()=>{ i++; setTimeout(next, 220); });
+  }
+  next();
+})();
+
+/* ---------------- Mobile sidebar toggle ---------------- */
+const sidebar = document.getElementById('sidebar');
+document.getElementById('menuToggle').addEventListener('click', ()=> sidebar.classList.toggle('open'));
+document.querySelectorAll('#sidenav a').forEach(a=>{
+  a.addEventListener('click', ()=> sidebar.classList.remove('open'));
+});
+
+/* ---------------- Active nav + status bar via scroll ---------------- */
+const sections = [...document.querySelectorAll('main .hero, main .section')];
+const navLinks = [...document.querySelectorAll('#sidenav a')];
+const sbFile = document.getElementById('sbFile');
+const sbLine = document.getElementById('sbLine');
+const sbCol = document.getElementById('sbCol');
+const sbProgress = document.getElementById('sbProgress');
+const fileNames = {
+  beranda:'Beranda', pengenalan:'Apa itu C++', sejarah:'Sejarah Singkat',
+  perbandingan:'C vs C++ vs C#', ide:'Mengenal Dev-C++', struktur:'Struktur Program',
+  helloworld:'Hello World', materi:'Hal Penting Lainnya', kuis:'Uji Pemahaman', latihan:'Latihan'
+};
+const obs = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      const id = entry.target.id;
+      navLinks.forEach(l=> l.classList.toggle('active', l.dataset.target === id));
+      sbFile.textContent = '📄 ' + (fileNames[id] || id);
+    }
+  });
+}, {rootMargin:'-40% 0px -55% 0px'});
+sections.forEach(s=> obs.observe(s));
+
+window.addEventListener('scroll', ()=>{
+  const scrollTop = window.scrollY;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docH > 0 ? Math.min(100, Math.round((scrollTop/docH)*100)) : 0;
+  sbProgress.innerHTML = 'Progres: <b>' + pct + '%</b>';
+  sbLine.textContent = Math.max(1, Math.round(scrollTop/18) + 1);
+  sbCol.textContent = (Math.round(scrollTop) % 40) + 1;
+}, {passive:true});
+
+/* ---------------- Cegah copy-paste kode ---------------- */
+let toastTimer = null;
+function showToast(){
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 1800);
+}
+document.querySelectorAll('.protected-code').forEach(block=>{
+  block.addEventListener('copy', e=>{ e.preventDefault(); showToast(); });
+  block.addEventListener('cut', e=>{ e.preventDefault(); showToast(); });
+  block.addEventListener('contextmenu', e=>{ e.preventDefault(); showToast(); });
+  block.addEventListener('dragstart', e=> e.preventDefault());
+});
+document.addEventListener('keydown', e=>{
+  const sel = window.getSelection();
+  const inProtected = sel && sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement)?.closest?.('.protected-code');
+  if((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'x') && inProtected){
+    e.preventDefault();
+    showToast();
+  }
+});
+
+/* ---------------- QUIZ: 20 soal, tipe bervariasi ---------------- */
+const quizData = [
+  {
+    type: "mcq",
+    q: "Berdasarkan tabel perbandingan, siapa pembuat bahasa C#?",
+    options: ["Bjarne Stroustrup", "Dennis Ritchie", "Microsoft", "Linus Torvalds"],
+    correct: 2,
+    explain: "Pada tabel perbandingan, C# dibuat oleh Microsoft, berbeda dengan C (Dennis Ritchie) dan C++ (Bjarne Stroustrup)."
+  },
+  {
+    type: "mcq",
+    q: "C++ paling umum dipakai untuk membuat...?",
+    options: [
+      "Membuat dokumen presentasi multimedia yang interaktif",
+      "Game dan aplikasi yang butuh performa tinggi",
+      "Halaman web statis sederhana",
+      "Aplikasi pengolah kata harian"
+    ],
+    correct: 1,
+    explain: "Karena kecepatannya, C++ banyak dipakai untuk game engine dan aplikasi yang butuh performa tinggi."
+  },
+  {
+    type: "mcq",
+    q: "Siapa yang pertama kali mengembangkan bahasa C++?",
+    options: ["Dennis Ritchie", "Bjarne Stroustrup", "Anders Hejlsberg", "Guido van Rossum"],
+    correct: 1,
+    explain: "C++ dikembangkan oleh Bjarne Stroustrup, awalnya bernama \"C with Classes\"."
+  },
+  {
+    type: "mcq",
+    q: "Pada tahun 1979, Bjarne Stroustrup mulai mengembangkan versi awal C++ dengan nama sementara...?",
+    options: ["C Sharp", "C with Classes", "C Extended", "Super C"],
+    correct: 1,
+    explain: "Nama awalnya \"C with Classes\", sebelum akhirnya diganti menjadi C++ pada 1983."
+  },
+  {
+    type: "mcq",
+    q: "Kenapa bahasa ini dinamai \"C++\"?",
+    options: [
+      "Karena bahasa ini awalnya dikembangkan oleh dua insinyur berbeda bernama C",
+      "Simbol ++ berarti tambah satu, jadi C++ berarti 'C yang ditingkatkan'",
+      "Karena programnya hanya boleh dijalankan sebanyak dua kali",
+      "Tidak ada alasan resmi, hanya sekadar nama yang dipilih"
+    ],
+    correct: 1,
+    explain: "Simbol ++ adalah operator penambahan 1 di C, jadi namanya berarti \"satu langkah lebih maju dari C\"."
+  },
+  {
+    type: "mcq",
+    q: "C++ mulai dirilis dan bisa dipakai secara luas pada tahun berapa?",
+    options: ["1972", "1985", "1998", "2005"],
+    correct: 1,
+    explain: "C++ dirilis secara komersial pada tahun 1985."
+  },
+  {
+    type: "mcq",
+    q: "Siapa pencipta bahasa C, cikal bakal C++?",
+    options: ["Dennis Ritchie", "Bjarne Stroustrup", "Linus Torvalds", "James Gosling"],
+    correct: 0,
+    explain: "Bahasa C diciptakan oleh Dennis Ritchie, dan C++ dikembangkan sebagai perluasan dari bahasa ini."
+  },
+  {
+    type: "mcq",
+    q: "Apa fungsi kurung kurawal { } dalam program C++?",
+    options: [
+      "Menandai awal dan akhir dari sekumpulan perintah (blok kode)",
+      "Menandai komentar yang tidak dijalankan komputer",
+      "Menyimpan nilai variabel sementara",
+      "Mengganti fungsi main() jika diperlukan"
+    ],
+    correct: 0,
+    explain: "Kurung kurawal { } menandai awal dan akhir dari sekumpulan perintah, disebut satu blok kode."
+  },
+  {
+    type: "mcq",
+    q: "Istilah OOP (Object-Oriented Programming) yang dimiliki C++ berarti...?",
+    options: [
+      "Bahasa pemrograman yang hanya bisa dipakai satu kali lalu kadaluarsa",
+      "Cara menulis kode dengan mengelompokkan data dan perintah menjadi 'objek'",
+      "Jenis compiler khusus buatan Microsoft untuk sistem Windows saja",
+      "Nama lain dari sistem operasi yang dipakai di superkomputer"
+    ],
+    correct: 1,
+    explain: "OOP adalah cara menulis kode dengan mengelompokkan data & perintah menjadi paket yang disebut objek, supaya kode besar lebih rapi."
+  },
+  {
+    type: "mcq",
+    q: "Tombol keyboard apa yang dipakai untuk Compile & Run sekaligus di Dev-C++?",
+    options: ["F9", "F10", "F11", "F12"],
+    correct: 2,
+    explain: "F11 adalah shortcut untuk Compile & Run — memeriksa, menerjemahkan, lalu langsung menjalankan program."
+  },
+  {
+    type: "mcq",
+    q: "Apa fungsi Compile (F9) di Dev-C++?",
+    options: [
+      "Menjalankan program yang sudah jadi tanpa memeriksa ulang kodenya",
+      "Memeriksa & menerjemahkan kode ke bahasa mesin, tanpa menjalankannya",
+      "Menghapus seluruh riwayat kode yang pernah ditulis di editor",
+      "Menyimpan file secara otomatis setiap lima menit sekali"
+    ],
+    correct: 1,
+    explain: "Compile hanya memeriksa dan menerjemahkan kode ke bahasa mesin — program belum dijalankan pada tahap ini."
+  },
+  {
+    type: "mcq",
+    q: "File kode C++ yang kamu tulis di Dev-C++ sebaiknya disimpan dengan akhiran (ekstensi)...?",
+    options: [".doc", ".cpp", ".exe", ".txt"],
+    correct: 1,
+    explain: "File kode sumber C++ disimpan dengan ekstensi .cpp, misalnya latihan1.cpp."
+  },
+  {
+    type: "mcq",
+    q: "Apa fungsi baris #include <iostream>?",
+    options: [
+      "Menghapus seluruh komentar yang ada di dalam file kode",
+      "Menyertakan pustaka untuk perintah seperti cout",
+      "Membuat variabel baru secara otomatis di awal program",
+      "Mengganti nama fungsi main menjadi nama lain sesuai keinginan"
+    ],
+    correct: 1,
+    explain: "iostream berisi perintah dasar untuk menampilkan output (cout) dan membaca input (cin)."
+  },
+  {
+    type: "mcq",
+    q: "Apa fungsi baris using namespace std;?",
+    options: [
+      "Menghapus semua fungsi bawaan C++ secara permanen dari memori komputer",
+      "Membuat kita bisa langsung menulis cout tanpa awalan std::",
+      "Mengunci program supaya tidak pernah mengalami error sama sekali",
+      "Menentukan skema warna tampilan jendela Dev-C++ saat program berjalan"
+    ],
+    correct: 1,
+    explain: "Baris ini membuat kita bisa langsung memakai cout, cin, dsb. tanpa menulis std:: setiap kali."
+  },
+  {
+    type: "mcq",
+    q: "Benar atau Salah: C++ bersifat case-sensitive, artinya cout dianggap berbeda dengan Cout.",
+    options: ["Benar", "Salah"],
+    correct: 0,
+    explain: "C++ membedakan huruf besar dan kecil — cout, Cout, dan COUT dianggap tiga hal yang berbeda."
+  },
+  {
+    type: "mcq",
+    q: "Benar atau Salah: fungsi main() boleh dihilangkan dari program C++ asalkan sudah ada cout.",
+    options: ["Benar", "Salah"],
+    correct: 1,
+    explain: "Salah — fungsi main() wajib ada di setiap program C++ karena itulah titik awal program dijalankan."
+  },
+  {
+    type: "isian",
+    q: "Simbol apa yang wajib ditulis di akhir setiap statement C++? (ketik simbolnya saja)",
+    jawabanBenar: [";", "titik koma"],
+    explain: "Simbolnya adalah titik koma ( ; ), juga disebut statement terminator."
+  },
+  {
+    type: "isian",
+    q: "Tulis kata kunci yang dipakai untuk menampilkan teks ke layar di C++ (huruf kecil semua).",
+    jawabanBenar: ["cout"],
+    explain: "cout adalah objek yang dipakai untuk mengirim/menampilkan data ke layar."
+  },
+  {
+    type: "match",
+    q: "Pasangkan istilah berikut dengan fungsinya:",
+    pairs: [
+      { term: "cout", ans: "Menampilkan teks ke layar" },
+      { term: "endl", ans: "Memindahkan tampilan ke baris baru" },
+      { term: "return 0;", ans: "Menandakan program selesai tanpa error" },
+      { term: "//", ans: "Menandai komentar satu baris" }
+    ],
+    explain: "cout menampilkan teks, endl pindah baris, return 0; menandakan sukses, dan // menandai komentar."
+  },
+  {
+    type: "match",
+    q: "Pasangkan menu Execute berikut dengan tombol pintasannya di keyboard:",
+    pairs: [
+      { term: "Compile", ans: "F9" },
+      { term: "Run", ans: "F10" },
+      { term: "Compile & Run", ans: "F11" },
+      { term: "Rebuild All", ans: "F12" }
+    ],
+    explain: "Compile = F9, Run = F10, Compile & Run = F11 (paling sering dipakai), Rebuild All = F12."
+  }
+];
+let qIndex = 0, qScore = 0, qAnswered = false, qCompleted = false;
+let quizOrder = [];
+let currentOptOrder = [];
+const qProgress = document.getElementById('qProgress');
+const qText = document.getElementById('qText');
+const qOptions = document.getElementById('qOptions');
+const qIsianArea = document.getElementById('qIsianArea');
+const qIsianInput = document.getElementById('qIsianInput');
+const qIsianCheck = document.getElementById('qIsianCheck');
+const qMatchArea = document.getElementById('qMatchArea');
+const qExplain = document.getElementById('qExplain');
+const qNextBtn = document.getElementById('qNextBtn');
+const qScoreLabel = document.getElementById('qScoreLabel');
+const quizCard = document.getElementById('quizCard');
+const quizResult = document.getElementById('quizResult');
+
+function acakArray(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buatUrutanSoal(){
+  quizOrder = acakArray(quizData.map((_, i) => i));
+}
+
+function renderQuestion(){
+  qAnswered = false;
+  const item = quizData[quizOrder[qIndex]];
+  qProgress.textContent = `Soal ${qIndex+1} dari ${quizData.length}`;
+  qText.textContent = item.q;
+  qExplain.style.display = 'none';
+  qExplain.textContent = '';
+  qNextBtn.disabled = true;
+  qNextBtn.textContent = qIndex === quizData.length - 1 ? 'Lihat Hasil →' : 'Soal Berikutnya →';
+
+  qOptions.innerHTML = ''; qOptions.style.display = 'none';
+  qIsianArea.style.display = 'none';
+  qMatchArea.style.display = 'none'; qMatchArea.innerHTML = '';
+
+  if(item.type === 'isian'){
+    qIsianArea.style.display = 'block';
+    qIsianInput.value = '';
+    qIsianInput.disabled = false;
+    qIsianInput.className = 'q-isian-input';
+    qIsianCheck.disabled = false;
+  } else if(item.type === 'match'){
+    qMatchArea.style.display = 'block';
+    renderMatch(item);
+  } else {
+    qOptions.style.display = 'grid';
+    currentOptOrder = acakArray(item.options.map((_, i) => i));
+    currentOptOrder.forEach((origIdx, displayIdx)=>{
+      const b = document.createElement('button');
+      b.className = 'q-opt';
+      b.textContent = item.options[origIdx];
+      b.addEventListener('click', ()=> selectAnswer(displayIdx));
+      qOptions.appendChild(b);
+    });
+  }
+}
+
+function selesaiSoal(benar){
+  qAnswered = true;
+  if(benar) qScore++;
+  qScoreLabel.textContent = 'Skor: ' + qScore;
+  qExplain.style.display = 'block';
+  qExplain.textContent = quizData[quizOrder[qIndex]].explain;
+  qNextBtn.disabled = false;
+}
+
+function selectAnswer(displayIdx){
+  if(qAnswered) return;
+  const item = quizData[quizOrder[qIndex]];
+  const btns = [...qOptions.children];
+  const origIdx = currentOptOrder[displayIdx];
+  btns.forEach((b, i)=>{
+    b.disabled = true;
+    if(currentOptOrder[i] === item.correct) b.classList.add('correct');
+    else if(i === displayIdx) b.classList.add('wrong');
+  });
+  selesaiSoal(origIdx === item.correct);
+}
+
+qIsianCheck.addEventListener('click', ()=>{
+  if(qAnswered) return;
+  const item = quizData[quizOrder[qIndex]];
+  const jawaban = qIsianInput.value.trim().toLowerCase();
+  const benar = item.jawabanBenar.some(j => j.toLowerCase() === jawaban);
+  qIsianInput.disabled = true;
+  qIsianCheck.disabled = true;
+  qIsianInput.classList.add(benar ? 'correct' : 'wrong');
+  selesaiSoal(benar);
+});
+qIsianInput.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !qAnswered) qIsianCheck.click();
+});
+
+function renderMatch(item){
+  qMatchArea.innerHTML = '';
+  const daftarJawaban = acakArray(item.pairs.map(p => p.ans));
+  item.pairs.forEach(p=>{
+    const row = document.createElement('div');
+    row.className = 'match-row';
+    const label = document.createElement('span');
+    label.className = 'match-term';
+    label.textContent = p.term;
+    const select = document.createElement('select');
+    select.className = 'match-select';
+    select.dataset.term = p.term;
+    const kosong = document.createElement('option');
+    kosong.value = ''; kosong.textContent = '— pilih jawaban —';
+    select.appendChild(kosong);
+    daftarJawaban.forEach(ans=>{
+      const o = document.createElement('option');
+      o.value = ans; o.textContent = ans;
+      select.appendChild(o);
+    });
+    row.appendChild(label);
+    row.appendChild(select);
+    qMatchArea.appendChild(row);
+  });
+  const cekBtn = document.createElement('button');
+  cekBtn.className = 'btn primary';
+  cekBtn.type = 'button';
+  cekBtn.style.marginTop = '6px';
+  cekBtn.textContent = 'Periksa Jawaban';
+  cekBtn.addEventListener('click', ()=> periksaMatch(item, cekBtn));
+  qMatchArea.appendChild(cekBtn);
+}
+
+function periksaMatch(item, cekBtn){
+  if(qAnswered) return;
+  const selects = [...qMatchArea.querySelectorAll('select')];
+  const belumLengkap = selects.some(s => !s.value);
+  if(belumLengkap){
+    alert('Lengkapi semua pasangan dulu ya, sebelum diperiksa.');
+    return;
+  }
+  let semuaBenar = true;
+  selects.forEach(s=>{
+    const jawabanBenar = item.pairs.find(p => p.term === s.dataset.term).ans;
+    const benar = s.value === jawabanBenar;
+    s.classList.add(benar ? 'match-correct' : 'match-wrong');
+    s.disabled = true;
+    if(!benar) semuaBenar = false;
+  });
+  cekBtn.disabled = true;
+  selesaiSoal(semuaBenar);
+}
+
+qNextBtn.addEventListener('click', ()=>{
+  qIndex++;
+  if(qIndex >= quizData.length){
+    quizCard.style.display = 'none';
+    quizResult.style.display = 'block';
+    qCompleted = true;
+    document.getElementById('quizResultScore').textContent = qScore + '/' + quizData.length;
+    let msg = '';
+    const pct = qScore/quizData.length;
+    if(pct === 1) msg = 'Sempurna! Pemahamanmu tentang struktur dan sintaks C++ sudah sangat baik. 🎉';
+    else if(pct >= 0.6) msg = 'Bagus! Coba baca ulang bagian yang masih meleset sebelum lanjut ke latihan.';
+    else msg = 'Belum apa-apa — scroll ke atas dan baca ulang bagian Struktur Program, lalu coba lagi.';
+    document.getElementById('quizResultMsg').textContent = msg;
+  } else {
+    renderQuestion();
+  }
+});
+document.getElementById('quizRestart').addEventListener('click', ()=>{
+  qIndex = 0; qScore = 0; qCompleted = false;
+  quizResult.style.display = 'none';
+  quizCard.style.display = 'block';
+  qScoreLabel.textContent = 'Skor: 0';
+  buatUrutanSoal();
+  renderQuestion();
+});
+buatUrutanSoal();
+renderQuestion();
+
+/* ---------------- GAME: Puzzle Kode (susun urutan baris program) ---------------- */
+const puzzleSet = [
+  [
+    "#include <iostream>",
+    "using namespace std;",
+    "int main() {",
+    '    cout << "Selamat datang di kelas Informatika!" << endl;',
+    "    return 0;",
+    "}"
+  ],
+  [
+    "#include <iostream>",
+    "using namespace std;",
+    "int main() {",
+    '    cout << "Belajar C++ itu menyenangkan!" << endl;',
+    '    cout << "Ayo terus berlatih." << endl;',
+    "    return 0;",
+    "}"
+  ],
+  [
+    "#include <iostream>",
+    "using namespace std;",
+    "int main() {",
+    '    cout << "Semangat belajar Informatika!" << endl;',
+    '    cout << "Sampai jumpa di pertemuan berikutnya." << endl;',
+    "    return 0;",
+    "}"
+  ]
+];
+let puzzleIndex = 0;
+let puzzleOrder = [];
+let puzzleChecked = false;
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function renderPuzzle(){
+  const correctOrder = puzzleSet[puzzleIndex];
+  puzzleChecked = false;
+  document.getElementById('puzzleLabel').textContent = `Puzzle ${puzzleIndex+1} dari ${puzzleSet.length}`;
+  document.getElementById('puzzleTotal').textContent = correctOrder.length;
+  document.getElementById('puzzleFound').textContent = '0';
+  document.getElementById('puzzleFeedback').style.display = 'none';
+  document.getElementById('puzzleCheck').disabled = false;
+  document.getElementById('puzzleNext').disabled = true;
+
+  // acak ulang sampai urutannya benar-benar berbeda dari urutan asli
+  let shuffled = shuffle(correctOrder);
+  let tries = 0;
+  while(shuffled.join('') === correctOrder.join('') && tries < 10){
+    shuffled = shuffle(correctOrder);
+    tries++;
+  }
+  puzzleOrder = shuffled;
+  drawPuzzleLines();
+}
+
+function drawPuzzleLines(){
+  const wrap = document.getElementById('puzzleLines');
+  wrap.innerHTML = '';
+  puzzleOrder.forEach((line, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'puzzle-line';
+    const codeSpan = document.createElement('span');
+    codeSpan.className = 'pcode';
+    codeSpan.textContent = line;
+    const btnWrap = document.createElement('div');
+    btnWrap.className = 'pbtns';
+    const upBtn = document.createElement('button');
+    upBtn.type = 'button'; upBtn.textContent = '↑'; upBtn.disabled = idx === 0;
+    upBtn.addEventListener('click', ()=> movePuzzleLine(idx, -1));
+    const downBtn = document.createElement('button');
+    downBtn.type = 'button'; downBtn.textContent = '↓'; downBtn.disabled = idx === puzzleOrder.length - 1;
+    downBtn.addEventListener('click', ()=> movePuzzleLine(idx, 1));
+    btnWrap.appendChild(upBtn);
+    btnWrap.appendChild(downBtn);
+    div.appendChild(codeSpan);
+    div.appendChild(btnWrap);
+    wrap.appendChild(div);
+  });
+}
+
+function movePuzzleLine(idx, dir){
+  if(puzzleChecked) return;
+  const target = idx + dir;
+  if(target < 0 || target >= puzzleOrder.length) return;
+  [puzzleOrder[idx], puzzleOrder[target]] = [puzzleOrder[target], puzzleOrder[idx]];
+  drawPuzzleLines();
+}
+
+document.getElementById('puzzleCheck').addEventListener('click', ()=>{
+  puzzleChecked = true;
+  const correctOrder = puzzleSet[puzzleIndex];
+  const wrap = document.getElementById('puzzleLines');
+  let benar = 0;
+  [...wrap.children].forEach((div, idx)=>{
+    div.querySelectorAll('button').forEach(b=> b.disabled = true);
+    if(puzzleOrder[idx] === correctOrder[idx]){
+      div.classList.add('correct'); benar++;
+    } else {
+      div.classList.add('wrong');
+    }
+  });
+  document.getElementById('puzzleFound').textContent = benar;
+  const fb = document.getElementById('puzzleFeedback');
+  fb.style.display = 'block';
+  if(benar === correctOrder.length){
+    fb.textContent = 'Tepat sekali! Urutan programnya sudah benar sesuai struktur C++. 🎯';
+    document.getElementById('puzzleNext').disabled = puzzleIndex >= puzzleSet.length - 1;
+    if(puzzleIndex >= puzzleSet.length - 1){
+      fb.textContent += ' Ketiga puzzle sudah selesai — lanjut ke bagian Kirim Hasil di bawah.';
+      puzzleAllDone = true;
+    }
+  } else {
+    fb.textContent = `${benar} dari ${correctOrder.length} baris sudah di posisi yang tepat (hijau). Baris merah masih perlu ditukar posisinya — klik "Acak Ulang" untuk mencoba lagi.`;
+  }
+  document.getElementById('puzzleCheck').disabled = true;
+});
+document.getElementById('puzzleShuffle').addEventListener('click', renderPuzzle);
+document.getElementById('puzzleNext').addEventListener('click', ()=>{
+  if(puzzleIndex < puzzleSet.length - 1){
+    puzzleIndex++;
+    renderPuzzle();
+  }
+});
+let puzzleAllDone = false;
+renderPuzzle();
+
+
+/* ---------------- Kirim hasil ke Google Sheet (lewat Apps Script di config.js) ---------------- */
+const MATERI_LABEL = "Kelas XI — Pengenalan C++";
+async function kirimKeSheet(materi, skor, total, identitas){
+  if(typeof CONTROL_URL === 'undefined'){
+    console.warn('CONTROL_URL belum tersedia — lewati pengiriman ke Sheet.');
+    return;
+  }
+  const payload = {
+    waktu: new Date().toLocaleString('id-ID'),
+    mode: identitas.mode,
+    nama: identitas.nama,
+    nis: identitas.nis || '',
+    absen: identitas.absen || '',
+    kelas: identitas.kelas,
+    anggota: identitas.anggota || '',
+    materi: materi,
+    skor: skor,
+    total: total
+  };
+  try{
+    await fetch(CONTROL_URL, { method: 'POST', body: JSON.stringify(payload) });
+  }catch(err){
+    console.error('Gagal mengirim hasil ke spreadsheet:', materi, err);
+  }
+}
+
+document.getElementById('submitHasil').addEventListener('click', async ()=>{
+  if(!qCompleted || !puzzleAllDone){
+    alert('Selesaikan dulu kuis pilihan ganda dan ketiga Puzzle Kode di atas sebelum mengirim hasil.');
+    return;
+  }
+  const nama = document.getElementById('qNama').value.trim();
+  const kelas = document.getElementById('qKelas').value.trim();
+  const nis = document.getElementById('qNis').value.trim();
+  const absen = document.getElementById('qAbsen').value.trim();
+  if(!nama || !kelas || !nis || !absen){
+    alert('Isi dulu Nama, Kelas, NIS, dan No. Absen ya.');
+    return;
+  }
+  let identitas = { mode: 'Individu', nama, kelas, nis, absen };
+
+  const submitBtn = document.getElementById('submitHasil');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Mengirim...';
+
+  const puzzleFound = parseInt(document.getElementById('puzzleFound').textContent) || 0;
+  const puzzleTotal = parseInt(document.getElementById('puzzleTotal').textContent) || 0;
+
+  await Promise.all([
+    kirimKeSheet(MATERI_LABEL + ' — Kuis Pilihan Ganda', qScore, quizData.length, identitas),
+    kirimKeSheet(MATERI_LABEL + ' — Puzzle Kode', puzzleFound, puzzleTotal, identitas)
+  ]);
+
+  const resultBox = document.getElementById('submitResult');
+  resultBox.style.display = 'block';
+  resultBox.textContent = 'Hasil berhasil dikirim ke guru. Terima kasih! 🎉';
+  submitBtn.textContent = 'Terkirim ✓';
+});
+
+/* ---------------- Kunci Latihan (dibuka dengan kode dari guru) ---------------- */
+const KODE_LATIHAN = "c++pertamaku";
+function cobaBukaLatihan(){
+  const kode = document.getElementById('latihanKode').value.trim().toLowerCase();
+  if(kode === KODE_LATIHAN){
+    document.getElementById('latihanLock').style.display = 'none';
+    document.getElementById('latihanContent').style.display = 'block';
+  } else {
+    document.getElementById('latihanErr').style.display = 'block';
+  }
+}
+document.getElementById('latihanUnlock').addEventListener('click', cobaBukaLatihan);
+document.getElementById('latihanKode').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') cobaBukaLatihan();
+});
+</script>
+</body>
+</html>
