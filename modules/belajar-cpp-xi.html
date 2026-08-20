@@ -215,10 +215,13 @@ td.lang-cs{color:var(--violet); font-family:var(--font-mono); font-weight:600;}
 }
 .code-body{padding:16px 0; overflow-x:auto; user-select:none; -webkit-user-select:none; -moz-user-select:none;}
 .code-line{
-  display:flex; padding:1px 18px; font-family:var(--font-mono); font-size:14px; white-space:pre;
+  position:relative;
+  padding:1px 18px 1px 62px; font-family:var(--font-mono); font-size:14px; white-space:pre;
 }
-.code-line .ln{
-  width:28px; flex-shrink:0; color:var(--text-faint); user-select:none; text-align:right; margin-right:16px;
+.code-line::before{
+  content: attr(data-ln);
+  position:absolute; left:18px; top:1px;
+  width:28px; color:var(--text-faint); user-select:none; text-align:right;
 }
 .tk-pre{color:var(--violet);}
 .tk-kw{color:var(--amber);}
@@ -753,31 +756,47 @@ td.lang-cs{color:var(--violet); font-family:var(--font-mono); font-weight:600;}
       <h2>Program "Hello, World!"</h2>
       <p class="lead">Ini adalah program pertama yang biasa ditulis siapa pun saat mulai belajar bahasa pemrograman baru — tujuannya sederhana: menampilkan tulisan ke layar.</p>
 
-      <div class="code-block protected-code">
-        <div class="code-head"><span>Contoh 1 — helloworld.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
-        <div class="code-body">
-<div class="code-line"><span class="ln">1</span><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
-<div class="code-line"><span class="ln">2</span></div>
-<div class="code-line"><span class="ln">3</span><span class="tk-kw">using</span> <span class="tk-kw">namespace</span> std<span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">4</span></div>
-<div class="code-line"><span class="ln">5</span><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
-<div class="code-line"><span class="ln">6</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Hello, World!"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">7</span>    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">8</span><span class="tk-punc">}</span></div>
+      <div class="grid2">
+        <div class="code-block protected-code">
+          <div class="code-head"><span>Contoh 1a — helloworld.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
+          <div class="code-body">
+<div class="code-line" data-ln="1"><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
+<div class="code-line" data-ln="2"></div>
+<div class="code-line" data-ln="3"><span class="tk-kw">using</span> <span class="tk-kw">namespace</span> std<span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="4"></div>
+<div class="code-line" data-ln="5"><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
+<div class="code-line" data-ln="6">    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Hello, World!"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="7">    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="8"><span class="tk-punc">}</span></div>
+          </div>
+        </div>
+
+        <div class="code-block protected-code">
+          <div class="code-head"><span>Contoh 1b — helloworld_std.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
+          <div class="code-body">
+<div class="code-line" data-ln="1"><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
+<div class="code-line" data-ln="2"></div>
+<div class="code-line" data-ln="3"><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
+<div class="code-line" data-ln="4">    std<span class="tk-punc">::</span>cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Hello, World!"</span> <span class="tk-punc">&lt;&lt;</span> std<span class="tk-punc">::</span>endl<span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="5">    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="6"><span class="tk-punc">}</span></div>
+          </div>
         </div>
       </div>
 
+      <p class="term-note" style="margin-top:10px;">Kedua versi di atas menghasilkan <strong>output yang sama persis</strong>. Bedanya: Contoh 1a memakai <code>using namespace std;</code> lalu cukup menulis <code>cout</code>, sedangkan Contoh 1b tidak memakai baris itu sehingga harus menulis <code>std::cout</code> (dengan awalan <code>std::</code>) setiap kali. Tanda <code>::</code> disebut <span class="term">scope resolution operator</span> — cara menunjuk "ambil <code>cout</code> dari dalam <code>std</code>". Untuk latihan di kelas ini, kedua cara sama-sama boleh dipakai — pilih salah satu, jangan dicampur dalam satu program.</p>
+
       <div class="console-block">
-        <div class="console-head">Tampilan di jendela Console setelah ditekan F11</div>
+        <div class="console-head">Tampilan di jendela Console setelah ditekan F11 (Contoh 1a maupun 1b)</div>
         <div class="console-body">
           <div class="cline">Hello, World!</div>
           <div class="cmeta">Process exited after 0.01 seconds with return value 0<br>Press any key to continue . . .</div>
         </div>
       </div>
 
-      <div class="try-it">✏️ Coba ketik kode ini sendiri di Dev-C++, simpan sebagai <code>helloworld.cpp</code>, lalu tekan <strong>F11</strong>.</div>
+      <div class="try-it">✏️ Coba ketik salah satu versi (1a atau 1b) di Dev-C++, lalu tekan <strong>F11</strong>.</div>
 
-      <h3 style="margin-top:34px; font-size:19px;">Penjelasan Setiap Baris</h3>
+      <h3 style="margin-top:34px; font-size:19px;">Penjelasan Setiap Baris (Contoh 1a)</h3>
       <div class="explain-list">
         <div class="explain-item">
           <div class="badge">1</div>
@@ -790,7 +809,7 @@ td.lang-cs{color:var(--violet); font-family:var(--font-mono); font-weight:600;}
           <div class="badge">3</div>
           <div>
             <code class="line-code">using namespace std;</code>
-            <p>Perintah-perintah standar C++ seperti <code>cout</code> sebenarnya berada di dalam "wadah" bernama <code>std</code>. Baris ini membuat kita bisa langsung memakainya tanpa menulis <code>std::</code> setiap kali.</p>
+            <p>Perintah-perintah standar C++ seperti <code>cout</code> sebenarnya berada di dalam "wadah" bernama <code>std</code>. Baris ini membuat kita bisa langsung memakainya tanpa menulis <code>std::</code> setiap kali (lihat perbandingannya dengan Contoh 1b di atas).</p>
           </div>
         </div>
         <div class="explain-item">
@@ -829,15 +848,15 @@ td.lang-cs{color:var(--violet); font-family:var(--font-mono); font-weight:600;}
       <div class="code-block protected-code">
         <div class="code-head"><span>Contoh 2 — duabaris.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
         <div class="code-body">
-<div class="code-line"><span class="ln">1</span><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
-<div class="code-line"><span class="ln">2</span></div>
-<div class="code-line"><span class="ln">3</span><span class="tk-kw">using</span> <span class="tk-kw">namespace</span> std<span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">4</span></div>
-<div class="code-line"><span class="ln">5</span><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
-<div class="code-line"><span class="ln">6</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Hello, World!"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">7</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Saya Dewi, senang belajar pemrograman C++"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">8</span>    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">9</span><span class="tk-punc">}</span></div>
+<div class="code-line" data-ln="1"><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
+<div class="code-line" data-ln="2"></div>
+<div class="code-line" data-ln="3"><span class="tk-kw">using</span> <span class="tk-kw">namespace</span> std<span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="4"></div>
+<div class="code-line" data-ln="5"><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
+<div class="code-line" data-ln="6">    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Hello, World!"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="7">    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Saya Dewi, senang belajar pemrograman C++"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="8">    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="9"><span class="tk-punc">}</span></div>
         </div>
       </div>
 
@@ -864,9 +883,9 @@ td.lang-cs{color:var(--violet); font-family:var(--font-mono); font-weight:600;}
       <div class="code-block protected-code">
         <div class="code-head"><span>komentar.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
         <div class="code-body">
-<div class="code-line"><span class="ln">1</span><span class="tk-com">// Ini komentar satu baris, diawali dua garis miring</span></div>
-<div class="code-line"><span class="ln">2</span><span class="tk-com">/* Ini komentar</span></div>
-<div class="code-line"><span class="ln">3</span><span class="tk-com">   yang bisa lebih dari satu baris */</span></div>
+<div class="code-line" data-ln="1"><span class="tk-com">// Ini komentar satu baris, diawali dua garis miring</span></div>
+<div class="code-line" data-ln="2"><span class="tk-com">/* Ini komentar</span></div>
+<div class="code-line" data-ln="3"><span class="tk-com">   yang bisa lebih dari satu baris */</span></div>
         </div>
       </div>
 
@@ -979,16 +998,16 @@ td.lang-cs{color:var(--violet); font-family:var(--font-mono); font-weight:600;}
       <div class="code-block protected-code">
         <div class="code-head"><span>Kerangka Awal — identitas_template.cpp</span><span class="no-copy-badge">🔒 ketik sendiri</span></div>
         <div class="code-body">
-<div class="code-line"><span class="ln">1</span><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
-<div class="code-line"><span class="ln">2</span><span class="tk-kw">using</span> <span class="tk-kw">namespace</span> std<span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">3</span></div>
-<div class="code-line"><span class="ln">4</span><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
-<div class="code-line"><span class="ln">5</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Nama&#8202;: ______________"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">6</span>    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Kelas&#8202;: _____"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">7</span>    <span class="tk-com">// TODO: tambahkan baris untuk Absen, Cita-cita, Hobi, dan Motivasi</span></div>
-<div class="code-line"><span class="ln">8</span></div>
-<div class="code-line"><span class="ln">9</span>    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
-<div class="code-line"><span class="ln">10</span><span class="tk-punc">}</span></div>
+<div class="code-line" data-ln="1"><span class="tk-pre">#include</span> <span class="tk-str">&lt;iostream&gt;</span></div>
+<div class="code-line" data-ln="2"><span class="tk-kw">using</span> <span class="tk-kw">namespace</span> std<span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="3"></div>
+<div class="code-line" data-ln="4"><span class="tk-type">int</span> <span class="tk-fn">main</span><span class="tk-punc">()</span> <span class="tk-punc">{</span></div>
+<div class="code-line" data-ln="5">    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Nama : ______________"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="6">    cout <span class="tk-punc">&lt;&lt;</span> <span class="tk-str">"Kelas : _____"</span> <span class="tk-punc">&lt;&lt;</span> endl<span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="7">    <span class="tk-com">// TODO: tambahkan baris untuk Absen, Cita-cita, Hobi, dan Motivasi</span></div>
+<div class="code-line" data-ln="8"></div>
+<div class="code-line" data-ln="9">    <span class="tk-kw">return</span> <span class="tk-str">0</span><span class="tk-punc">;</span></div>
+<div class="code-line" data-ln="10"><span class="tk-punc">}</span></div>
         </div>
       </div>
 
@@ -996,12 +1015,12 @@ td.lang-cs{color:var(--violet); font-family:var(--font-mono); font-weight:600;}
       <div class="console-block">
         <div class="console-head">Contoh tampilan saat program berhasil dijalankan</div>
         <div class="console-body">
-          <div class="cline">Nama&#8202;: ....................</div>
-          <div class="cline">Kelas&#8202;: ....................</div>
-          <div class="cline">Absen&#8202;: ....................</div>
-          <div class="cline">Cita-cita&#8202;: ....................</div>
-          <div class="cline">Hobi&#8202;: ....................</div>
-          <div class="cline">Motivasi&#8202;: ....................</div>
+          <div class="cline">Nama : ....................</div>
+          <div class="cline">Kelas : ....................</div>
+          <div class="cline">Absen : ....................</div>
+          <div class="cline">Cita-cita : ....................</div>
+          <div class="cline">Hobi : ....................</div>
+          <div class="cline">Motivasi : ....................</div>
           <div class="cmeta">Process exited after 0.01 seconds with return value 0<br>Press any key to continue . . .</div>
         </div>
       </div>
