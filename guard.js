@@ -10,6 +10,14 @@
 
   const kontenUtama = document.getElementById("konten-utama");
 
+  function sembunyikanLoadingOverlay() {
+    // Kalau file materi memakai overlay #guard-loading (pola terbaru,
+    // lihat belajar-cpp-xi.html), hapus overlay itu begitu status sudah
+    // dipastikan. Aman dipanggil walau elemen ini tidak ada di file lama.
+    const overlay = document.getElementById("guard-loading");
+    if (overlay) overlay.remove();
+  }
+
   function tampilkanTerkunci() {
     document.body.innerHTML = `
       <div style="font-family:Inter,ui-sans-serif,system-ui,sans-serif;text-align:center;
@@ -31,14 +39,17 @@
     const item = data.find(d => String(d.id).trim() === String(MODUL_ID).trim());
 
     if (item && item.tampilkan === false) {
+      sembunyikanLoadingOverlay();
       tampilkanTerkunci();
       return;
     }
     // Lolos pengecekan: tampilkan konten (kalau memakai pola konten-utama)
     if (kontenUtama) kontenUtama.style.visibility = "visible";
+    sembunyikanLoadingOverlay();
   } catch (err) {
     // Gagal fetch (mis. offline) -> tetap tampilkan konten apa adanya
     console.warn("Guard: tidak bisa memeriksa status visibilitas.", err);
     if (kontenUtama) kontenUtama.style.visibility = "visible";
+    sembunyikanLoadingOverlay();
   }
 })();

@@ -120,13 +120,59 @@ dengan URL asli dari langkah 3. Upload ulang ke GitHub. Setelah ini, **tidak ada
 
 ## 5. Menambah materi baru (workflow rutin)
 
-1. Buat file HTML materinya. Supaya ikut terkunci sesuai kontrol Sheet, tempel pola ini tepat sebelum `</body>`:
-   ```html
-   <script>const MODUL_ID = "INF-XXX";</script>
-   <script src="../config.js"></script>
-   <script src="../guard.js"></script>
+1. Buat file HTML materinya dengan pola lengkap berikut (lihat `belajar-cpp-xi.html` di folder `modules/` sebagai contoh jadi):
+
+   **a. CSS overlay loading** — taruh di `<style>`, sebelum `</head>`:
+   ```css
+   #guard-loading{
+     position:fixed; inset:0; background:var(--bg); z-index:999;
+     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+     font-family:var(--font-mono); color:var(--text-dim); font-size:13px;
+   }
+   #guard-loading .spin{
+     width:34px; height:34px; border-radius:50%;
+     border:3px solid var(--surface-2); border-top-color:var(--amber);
+     animation:guardspin .8s linear infinite;
+   }
+   @keyframes guardspin{to{transform:rotate(360deg);}}
    ```
-   Ganti `INF-XXX` dengan ID yang akan Anda pakai di Sheet. Bungkus juga konten utama dengan `<div id="konten-utama" style="visibility:hidden">...</div>` supaya tidak sempat "kelihatan sekilas" sebelum guard selesai mengecek (lihat contoh file di folder `modules/` sebagai referensi pola lengkapnya).
+   Sesuaikan warna (`--bg`, `--surface-2`, `--amber`, dst) dengan palet file materi Anda.
+
+   **b. Overlay + pembungkus konten** — tepat setelah `<body>`:
+   ```html
+   <div id="guard-loading">
+     <div class="spin"></div>
+     <div>Memuat materi…</div>
+   </div>
+
+   <div id="konten-utama" style="visibility:hidden">
+     ... seluruh isi materi di sini ...
+   </div><!-- /#konten-utama -->
+   ```
+   Overlay `#guard-loading` menutupi layar penuh (jadi siswa lihat spinner, bukan konten kelihatan sekilas), sementara `#konten-utama` disembunyikan lewat `visibility:hidden` sampai guard selesai mengecek.
+
+   **c. Blok guard** — tepat sebelum `</body>`, setelah `</div><!-- /#konten-utama -->`:
+   ```html
+   <script>
+     const MODUL_ID = "INF-XXX";
+     // Jaring pengaman: kalau config.js/guard.js belum ada di folder yang sama,
+     // atau pengecekan ke Google Sheet lambat/menggantung, materi tetap otomatis
+     // ditampilkan — tidak nyangkut selamanya di layar "Memuat materi...".
+     let __revealed = false;
+     function __forceReveal(){
+       if(__revealed) return;
+       __revealed = true;
+       const k = document.getElementById('konten-utama');
+       if(k) k.style.visibility = 'visible';
+       const l = document.getElementById('guard-loading');
+       if(l) l.remove();
+     }
+     setTimeout(__forceReveal, 4000);
+   </script>
+   <script src="../config.js" onerror="__forceReveal()"></script>
+   <script src="../guard.js" onerror="__forceReveal()"></script>
+   ```
+   Ganti `INF-XXX` dengan ID yang akan Anda pakai di Sheet. `onerror` pada dua tag `<script>` dan `setTimeout` 4 detik memastikan materi tidak pernah nyangkut kalau ada masalah jaringan/file — ini pelengkap fallback yang sudah ada di dalam `guard.js` sendiri (yang juga otomatis menutup overlay `#guard-loading` begitu status Sheet dipastikan, baik terkunci maupun terbuka).
 2. Upload file itu ke folder `modules/` di GitHub (commit langsung lewat GitHub web, atau upload file).
 3. Buka Google Sheet, tambahkan 1 baris baru di tab **Materi** dengan ID, judul, deskripsi, kategori, semester, icon, dan path file yang sama.
 4. Centang kolom **Tampilkan** kapan pun materi itu siap dibuka untuk siswa.
@@ -141,6 +187,14 @@ File `modules/kuis-jaringan-komputer.html` sudah jadi contoh lengkapnya. Untuk k
 2. Ganti `MODUL_ID` di bagian bawah file dengan ID kuis yang baru.
 3. Ganti isi soal (elemen `#soal` dan pilihan `.opsi`), sesuaikan logika `jawab()` dan hitungan skor totalnya kalau soal lebih dari satu.
 4. Bagian form data siswa (mode Individu/Kelompok, field Kelas/Nama/NIS/Absen/Anggota) dan fungsi `kirimHasil()` **tidak perlu diubah** — tinggal dipakai apa adanya karena sudah otomatis mengirim ke kolom yang sama di tab HasilKuis.
+
+## Catatan soal `guard.js`
+
+File `guard.js` di root repo **tidak perlu diedit** — cukup ikuti pola pemasangan di Langkah 5. Perilakunya:
+- Kalau materi terkunci (`Tampilkan` tidak dicentang) → seluruh halaman diganti dengan pesan "Materi belum dibuka" + tautan kembali ke portal.
+- Kalau materi terbuka → `#konten-utama` dibuat terlihat.
+- Di kedua kondisi itu, overlay `#guard-loading` (spinner "Memuat materi…") otomatis dihapus begitu status dari Sheet dipastikan.
+- Kalau fetch ke Sheet gagal (mis. offline), materi tetap ditampilkan apa adanya supaya tidak mengunci siswa karena masalah jaringan.
 
 ## Catatan jujur soal batasan
 
