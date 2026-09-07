@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pemetaan Profil Pola Pikir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F4EC;
+    --card:#FFFFFF;
+    --text:#1F2E23;
+    --muted:#647063;
+    --border:#E3DDC8;
+    --green:#3F7D58;
+    --green-soft:#E4EEE3;
+    --soil:#A8683A;
+    --soil-soft:#F3E4D3;
+    --amber:#C98A2E;
+    --amber-soft:#FBF0DC;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text)}
+  body{
+    font-family:'Public Sans',ui-sans-serif,system-ui,sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:36px 18px 80px;
+    line-height:1.55;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif}
+  .wrap{width:100%;max-width:600px}
+
+  /* ---------- header / soil line ---------- */
+  .brand{
+    display:flex;align-items:center;gap:10px;margin-bottom:26px;color:var(--muted);
+    font-size:13.5px;font-weight:500;
+  }
+  .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+
+  .screen{display:none}
+  .screen.active{display:block}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:34px 30px;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:5px;
+    background:linear-gradient(90deg,var(--soil) 0%, var(--green) 100%);
+  }
+
+  h1{font-size:28px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+  h2{font-size:20px;font-weight:600;margin-bottom:12px}
+  .lede{color:var(--muted);font-size:15px;margin-bottom:24px}
+
+  /* ---------- form intro ---------- */
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:6px}
+  .field input{
+    width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:10px;
+    font-family:inherit;font-size:14.5px;background:#FCFBF7;color:var(--text);
+  }
+  .field input:focus{outline:none;border-color:var(--green)}
+  .field select{
+    width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:10px;
+    font-family:inherit;font-size:14.5px;background:#FCFBF7;color:var(--text);
+    appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23647063' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;background-size:16px;
+  }
+  .field select:focus{outline:none;border-color:var(--green)}
+  .field select:invalid{color:var(--muted)}
+  .field-row{display:flex;gap:12px}
+  .field-row .field{flex:1}
+
+  .hint{
+    background:var(--green-soft);border-radius:10px;padding:12px 14px;
+    font-size:13px;color:#2E5940;margin-bottom:24px;
+  }
+
+  button{font-family:inherit;cursor:pointer;border:none}
+  .btn-primary{
+    width:100%;background:var(--green);color:#fff;font-size:15px;font-weight:600;
+    padding:13px 18px;border-radius:10px;transition:background .12s;
+  }
+  .btn-primary:hover{background:#356B4A}
+  .btn-primary:disabled{background:#B9C7BC;cursor:not-allowed}
+
+  .btn-row{display:flex;gap:10px;margin-top:22px}
+  .btn-row .btn-primary{flex:1}
+  .btn-ghost{
+    background:transparent;color:var(--muted);font-size:14.5px;font-weight:600;
+    padding:13px 16px;border-radius:10px;border:1px solid var(--border);
+  }
+  .btn-ghost:hover{background:var(--bg)}
+  .btn-ghost:disabled{opacity:.4;cursor:not-allowed}
+
+  /* ---------- progress ---------- */
+  .progress-wrap{margin-bottom:26px}
+  .progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+  .progress-label{font-size:12.5px;color:var(--muted);font-weight:600}
+  .stage-icon{font-size:17px}
+  .progress-track{height:7px;background:var(--green-soft);border-radius:20px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--green);border-radius:20px;transition:width .25s ease}
+
+  /* ---------- question ---------- */
+  .q-text{font-size:18.5px;font-weight:500;margin-bottom:22px;line-height:1.5}
+  .opsi{
+    display:block;width:100%;text-align:left;background:#FCFBF7;
+    border:1.5px solid var(--border);border-radius:11px;
+    padding:13px 16px;margin-bottom:10px;font-size:14.5px;color:var(--text);
+    transition:border-color .12s, background .12s;
+  }
+  .opsi:hover{border-color:#C9CBB8}
+  .opsi.selected{border-color:var(--green);background:var(--green-soft);font-weight:600}
+
+  /* ---------- loading ---------- */
+  .loading{display:flex;flex-direction:column;align-items:center;gap:14px;padding:30px 0}
+  .spin{
+    width:36px;height:36px;border-radius:50%;
+    border:3px solid var(--green-soft);border-top-color:var(--green);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ---------- hasil ---------- */
+  .hasil-top{text-align:center;padding:10px 0 22px}
+  .hasil-icon{font-size:54px;line-height:1;margin-bottom:14px}
+  .hasil-kategori{font-size:23px;font-weight:600;margin-bottom:6px}
+  .hasil-skor{color:var(--muted);font-size:14px}
+  .hasil-skor b{color:var(--text)}
+
+  .divider{border:none;border-top:1px solid var(--border);margin:22px 0}
+
+  .penjelasan{font-size:14.5px;color:var(--text);margin-bottom:18px}
+  .penjelasan strong{font-weight:600}
+
+  .motivasi{
+    border-radius:12px;padding:16px 18px;font-size:14.5px;
+  }
+  .motivasi.tone-warm{background:var(--amber-soft);color:#7A5216}
+  .motivasi.tone-green{background:var(--green-soft);color:#2E5940}
+
+  .kirim-gagal{
+    background:var(--soil-soft);color:#7A4620;border-radius:10px;
+    padding:12px 14px;font-size:13.5px;margin-top:16px;
+  }
+
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}
+
+  /* ---------- Guard loading (cek status Tampilkan dari Sheet) ---------- */
+  #guard-loading{
+    position:fixed; inset:0; background:var(--bg); z-index:999;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    font-family:'Public Sans',sans-serif; color:var(--muted); font-size:13px;
+  }
+  #guard-loading .spin{
+    width:34px; height:34px; border-radius:50%;
+    border:3px solid var(--green-soft); border-top-color:var(--green);
+    animation:guardspin .8s linear infinite;
+  }
+  @keyframes guardspin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div id="guard-loading">
+  <div class="spin"></div>
+  <div>Memuat…</div>
+</div>
+
+<div id="konten-utama" style="visibility:hidden">
+<div class="wrap">
+
+  <div class="brand"><span class="dot"></span>Pemetaan Profil Pola Pikir</div>
+
+  <!-- ===== SCREEN 1: INTRO + DATA SISWA ===== -->
+  <div class="screen active" id="screen-intro">
+    <div class="card">
+      <h1>Bagaimana pola pikirmu tentang kemampuan diri?</h1>
+      <p class="lede">Kuesioner singkat ini terdiri dari 20 pernyataan tentang cara kamu memandang kemampuan, bakat, dan usaha. Tidak ada jawaban benar atau salah — jawab sejujurnya sesuai pendapatmu sendiri.</p>
+      <div class="hint">Waktu pengerjaan sekitar 5–10 menit. Isi datamu dulu, lalu klik mulai.</div>
+
+      <div class="field">
+        <label for="in-nama">Nama Lengkap</label>
+        <input id="in-nama" type="text" placeholder="Nama kamu">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="in-kelas">Kelas</label>
+          <select id="in-kelas">
+            <option value="" disabled selected>Pilih kelas</option>
+            <option value="XI 7 P2">XI 7 P2</option>
+            <option value="XI 8 P2">XI 8 P2</option>
+            <option value="XI 9 P2">XI 9 P2</option>
+            <option value="XII 1 P1">XII 1 P1</option>
+            <option value="XII 2 P2">XII 2 P2</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="in-absen">No. Absen</label>
+          <input id="in-absen" type="text" placeholder="Contoh: 14">
+        </div>
+      </div>
+      <div class="field">
+        <label for="in-nis">NIS <span style="font-weight:400;text-transform:none">(opsional)</span></label>
+        <input id="in-nis" type="text" placeholder="Nomor induk siswa">
+      </div>
+
+      <button class="btn-primary" id="btn-mulai">Mulai Kuesioner</button>
+      <div id="intro-error" style="color:#B3451E;font-size:13px;margin-top:10px;display:none"></div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 2: KUESIONER ===== -->
+  <div class="screen" id="screen-kuis">
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span class="progress-label" id="progress-label">Soal 1 dari 20</span>
+        <span class="stage-icon" id="stage-icon">🌰</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="card">
+      <div class="q-text" id="q-text"></div>
+      <div id="q-opsi"></div>
+      <div class="btn-row">
+        <button class="btn-ghost" id="btn-kembali">Kembali</button>
+        <button class="btn-primary" id="btn-lanjut" disabled>Lanjut</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 3: MENGIRIM ===== -->
+  <div class="screen" id="screen-kirim">
+    <div class="card">
+      <div class="loading">
+        <div class="spin"></div>
+        <div style="color:var(--muted);font-size:14px">Menghitung dan menyimpan hasil…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 4: HASIL ===== -->
+  <div class="screen" id="screen-hasil">
+    <div class="card">
+      <div class="hasil-top">
+        <div class="hasil-icon" id="hasil-icon">🌱</div>
+        <div class="hasil-kategori" id="hasil-kategori-label"></div>
+        <div class="hasil-skor" id="hasil-skor"></div>
+      </div>
+
+      <hr class="divider">
+
+      <h2>Apa itu pola pikir bertumbuh?</h2>
+      <p class="penjelasan">
+        <strong>Pola pikir bertumbuh (growth mindset)</strong> adalah keyakinan bahwa kemampuan dan kecerdasan bisa terus berkembang lewat usaha, strategi belajar yang tepat, dan masukan dari orang lain — bukan sesuatu yang sudah ditentukan sejak lahir. Sebaliknya, <strong>pola pikir tetap (fixed mindset)</strong> memandang kemampuan sebagai bawaan yang sulit diubah, sehingga tantangan dan kegagalan sering terasa mengancam, bukan kesempatan untuk belajar.
+      </p>
+
+      <div class="motivasi" id="motivasi-box"></div>
+
+      <div class="kirim-gagal" id="kirim-gagal" style="display:none">
+        Hasil ini sudah dihitung, tapi belum berhasil tersimpan ke sistem guru (koneksi bermasalah). Tunjukkan layar ini ke gurumu atau coba muat ulang dan isi ulang jika diminta.
+      </div>
+    </div>
+    <footer>Pemetaan Profil Pola Pikir — Paket 20 Soal</footer>
+  </div>
+
+</div>
+</div><!-- /#konten-utama -->
+
+<script>
+// ============================================================
+// KONFIGURASI — tempel URL Web App Apps Script di sini
+// (lihat instruksi setup Google Sheet di bawah)
+// ============================================================
+const APPS_SCRIPT_URL = "GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_ANDA";
+
+// ---------- data soal ----------
+// poin = [Sangat Setuju, Setuju, Tidak Setuju, Sangat Tidak Setuju]
+const SOAL = [
+  { teks: "Kemampuan Anda adalah sesuatu yang sangat mendasar yang tidak banyak dapat Anda ubah lagi.", poin: [0,1,2,3] },
+  { teks: "Tidak peduli seberapapun tingkat kemampuan Anda saat ini, Anda bisa mengubahnya walaupun sedikit.", poin: [3,2,1,0] },
+  { teks: "Anda akan selalu dapat mengubah kemampuan Anda.", poin: [3,2,1,0] },
+  { teks: "Anda adalah seseorang yang unik, tidak banyak yang dapat dilakukan untuk mengubahnya.", poin: [0,1,2,3] },
+  { teks: "Anda akan selalu dapat mengubah diri Anda sendiri.", poin: [3,2,1,0] },
+  { teks: "Kemampuan dalam bidang seni dan musik dapat dipelajari oleh siapapun.", poin: [3,2,1,0] },
+  { teks: "Hanya sedikit orang yang benar-benar mahir dalam olahraga, Anda harus membawa bakat ini sejak lahir.", poin: [0,1,2,3] },
+  { teks: "Matematika lebih mudah dipelajari oleh pria atau seseorang yang berada dalam lingkungan yang menyukainya.", poin: [0,1,2,3] },
+  { teks: "Makin keras Anda mengerjakan sesuatu makin mahir Anda dalam hal ini.", poin: [3,2,1,0] },
+  { teks: "Tidak peduli tipe apapun Anda saat ini, Anda akan selalu dapat mengubahnya.", poin: [3,2,1,0] },
+  { teks: "Mencoba sesuatu yang baru akan sangat menyulitkan Anda sehingga Anda ingin menghindarinya.", poin: [0,1,2,3] },
+  { teks: "Sebagian orang baik dan pintar, sebagian lagi tidak. Tidak banyak yang dapat berubah.", poin: [0,1,2,3] },
+  { teks: "Saya sangat menghargai kritik dan saran dari siapapun juga terkait dengan kinerja saya saat ini.", poin: [3,2,1,0] },
+  { teks: "Saya kurang senang bila ada kritik dan saran dari orang lain.", poin: [0,1,2,3] },
+  { teks: "Semua orang yang tidak memiliki hambatan kognitif memiliki kemampuan yang sama dalam belajar.", poin: [3,2,1,0] },
+  { teks: "Anda bisa mempelajari sesuatu yang baru, tapi Anda tidak bisa mengubah kemampuan Anda.", poin: [0,1,2,3] },
+  { teks: "Anda dapat melakukan sesuatu secara berbeda, tapi sebenarnya Anda tetap tidak dapat mengubah kemampuan Anda.", poin: [0,1,2,3] },
+  { teks: "Semua orang pada dasarnya baik, tapi kadang-kadang membuat keputusan yang salah.", poin: [3,2,1,0] },
+  { teks: "Alasan terpenting mengapa Anda melakukan pekerjaan Anda adalah keinginan untuk mempelajari sesuatu yang baru.", poin: [3,2,1,0] },
+  { teks: "Orang yang benar-benar cerdas, tidak perlu bekerja keras.", poin: [0,1,2,3] }
+];
+
+const OPSI_LABEL = ["Sangat Setuju", "Setuju", "Tidak Setuju", "Sangat Tidak Setuju"];
+const STAGE_ICON = ["🌰","🌱","🌿","🌳"]; // muncul sesuai progres pengerjaan
+
+const KATEGORI = {
+  F:  { label: "Pola Pikir Tetap",              icon: "🌰", tone: "tone-warm" },
+  FG: { label: "Cenderung Pola Pikir Tetap",    icon: "🌱", tone: "tone-warm" },
+  GF: { label: "Cenderung Pola Pikir Bertumbuh",icon: "🌿", tone: "tone-green" },
+  G:  { label: "Pola Pikir Bertumbuh",          icon: "🌳", tone: "tone-green" }
+};
+
+const MOTIVASI = {
+  F: "Hasil ini bukan vonis permanen — justru inti dari pola pikir bertumbuh adalah bahwa cara pandang ini sendiri bisa dilatih. Mulai dari langkah kecil: coba anggap satu kesulitan minggu ini sebagai latihan, bukan ujian atas bakatmu. Setiap kali kamu memilih mencoba lagi setelah gagal, kamu sedang menanam benih baru.",
+  FG: "Kamu sudah punya beberapa benih pola pikir bertumbuh. Perkuat dengan lebih sering bertanya 'strategi apa yang bisa kucoba lain kali?' daripada 'apakah aku memang tidak bisa?' — pertanyaan kecil ini mengubah cara otakmu merespons kegagalan.",
+  GF: "Pola pikirmu sudah condong bertumbuh. Pertahankan dengan tetap terbuka pada kritik dan sesekali memilih tantangan yang sedikit di luar zona nyamanmu — di situlah kemampuan baru terbentuk.",
+  G: "Pola pikir bertumbuhmu sudah kuat. Tantangan berikutnya: bagikan cara pandang ini ke teman yang sedang kesulitan. Mengajarkan sesuatu ke orang lain adalah salah satu cara terbaik untuk memperkuatnya pada diri sendiri."
+};
+
+// ---------- state ----------
+let dataSiswa = {};
+let jawaban = new Array(SOAL.length).fill(null);
+let idxSoal = 0;
+
+const screens = {
+  intro: document.getElementById('screen-intro'),
+  kuis: document.getElementById('screen-kuis'),
+  kirim: document.getElementById('screen-kirim'),
+  hasil: document.getElementById('screen-hasil')
+};
+function tampilkan(nama){
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  screens[nama].classList.add('active');
+}
+
+// ---------- screen 1 ----------
+document.getElementById('btn-mulai').onclick = () => {
+  const nama = document.getElementById('in-nama').value.trim();
+  const kelas = document.getElementById('in-kelas').value.trim();
+  const absen = document.getElementById('in-absen').value.trim();
+  const nis = document.getElementById('in-nis').value.trim();
+  const err = document.getElementById('intro-error');
+
+  if(!nama || !kelas || !absen){
+    err.textContent = "Nama, kelas, dan nomor absen wajib diisi.";
+    err.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
+  dataSiswa = { nama, kelas, absen, nis };
+  idxSoal = 0;
+  jawaban = new Array(SOAL.length).fill(null);
+  tampilkan('kuis');
+  renderSoal();
+};
+
+// ---------- screen 2 ----------
+function renderSoal(){
+  const soal = SOAL[idxSoal];
+  document.getElementById('progress-label').textContent = `Soal ${idxSoal+1} dari ${SOAL.length}`;
+  document.getElementById('progress-fill').style.width = `${((idxSoal)/SOAL.length)*100}%`;
+  document.getElementById('stage-icon').textContent = STAGE_ICON[Math.min(3, Math.floor((idxSoal/SOAL.length)*4))];
+  document.getElementById('q-text').textContent = soal.teks;
+
+  const wrap = document.getElementById('q-opsi');
+  wrap.innerHTML = OPSI_LABEL.map((label, i) => `
+    <button class="opsi ${jawaban[idxSoal]===i ? 'selected' : ''}" data-i="${i}">${label}</button>
+  `).join('');
+
+  wrap.querySelectorAll('.opsi').forEach(btn => {
+    btn.onclick = () => {
+      jawaban[idxSoal] = parseInt(btn.dataset.i, 10);
+      renderSoal();
+    };
+  });
+
+  document.getElementById('btn-kembali').disabled = idxSoal === 0;
+  const lanjut = document.getElementById('btn-lanjut');
+  lanjut.disabled = jawaban[idxSoal] === null;
+  lanjut.textContent = idxSoal === SOAL.length - 1 ? "Lihat Hasil" : "Lanjut";
+}
+
+document.getElementById('btn-kembali').onclick = () => {
+  if(idxSoal > 0){ idxSoal--; renderSoal(); }
+};
+
+document.getElementById('btn-lanjut').onclick = () => {
+  if(jawaban[idxSoal] === null) return;
+  if(idxSoal < SOAL.length - 1){
+    idxSoal++;
+    renderSoal();
+  } else {
+    prosesHasil();
+  }
+};
+
+// ---------- hitung + kirim ----------
+function kategoriDari(total){
+  if(total <= 20) return 'F';
+  if(total <= 33) return 'FG';
+  if(total <= 44) return 'GF';
+  return 'G';
+}
+
+async function prosesHasil(){
+  tampilkan('kirim');
+
+  const skorPerSoal = SOAL.map((s, i) => s.poin[jawaban[i]]);
+  const grandTotal = skorPerSoal.reduce((a,b) => a+b, 0);
+  const kode = kategoriDari(grandTotal);
+
+  const payload = {
+    waktu: new Date().toLocaleString('id-ID'),
+    nama: dataSiswa.nama,
+    kelas: dataSiswa.kelas,
+    absen: dataSiswa.absen,
+    nis: dataSiswa.nis || "",
+    skor: skorPerSoal,
+    grandTotal: grandTotal,
+    kategori: kode
+  };
+
+  let gagalKirim = false;
+  if(APPS_SCRIPT_URL.startsWith("http")){
+    try{
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+    }catch(err){
+      console.warn('Gagal mengirim hasil ke Sheet:', err);
+      gagalKirim = true;
+    }
+  } else {
+    gagalKirim = true;
+  }
+
+  tampilkanHasil(grandTotal, kode, gagalKirim);
+}
+
+function tampilkanHasil(total, kode, gagalKirim){
+  const k = KATEGORI[kode];
+  document.getElementById('hasil-icon').textContent = k.icon;
+  document.getElementById('hasil-kategori-label').textContent = k.label;
+  document.getElementById('hasil-skor').innerHTML = `Skor total kamu: <b>${total}</b> dari 60`;
+
+  const box = document.getElementById('motivasi-box');
+  box.className = `motivasi ${k.tone}`;
+  box.textContent = MOTIVASI[kode];
+
+  document.getElementById('kirim-gagal').style.display = gagalKirim ? 'block' : 'none';
+
+  tampilkan('hasil');
+}
+</script>
+
+<script>
+  const MODUL_ID = "INF-105";
+  // Jaring pengaman: kalau config.js/guard.js belum ada di folder yang sama,
+  // atau pengecekan ke Google Sheet lambat/menggantung, halaman tetap otomatis
+  // ditampilkan — tidak nyangkut selamanya di layar "Memuat...".
+  let __revealed = false;
+  function __forceReveal(){
+    if(__revealed) return;
+    __revealed = true;
+    const k = document.getElementById('konten-utama');
+    if(k) k.style.visibility = 'visible';
+    const l = document.getElementById('guard-loading');
+    if(l) l.remove();
+  }
+  setTimeout(__forceReveal, 4000);
+</script>
+<script src="../config.js" onerror="__forceReveal()"></script>
+<script src="../guard.js" onerror="__forceReveal()"></script>
+</body>
+</html>
