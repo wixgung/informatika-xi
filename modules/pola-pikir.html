@@ -283,7 +283,7 @@
 // KONFIGURASI — tempel URL Web App Apps Script di sini
 // (lihat instruksi setup Google Sheet di bawah)
 // ============================================================
-const APPS_SCRIPT_URL = "GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_ANDA";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyvVxCtdGqHyQHbDvTmEtTK513QpYyHGjOVvVgYLleEWS1YkMSUAlg5OvF1QpenCz6q/exec";
 
 // ---------- data soal ----------
 // poin = [Sangat Setuju, Setuju, Tidak Setuju, Sangat Tidak Setuju]
@@ -435,6 +435,7 @@ async function prosesHasil(){
     try{
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       });
