@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informatika XI — Kuis Debug: Variabel dan Tipe Data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0E14;
+  --bg-soft:#0E121C;
+  --surface:#161B27;
+  --surface-2:#1D2333;
+  --surface-3:#242B3D;
+  --border:#2A3145;
+  --border-soft:#1E2434;
+  --text:#E7EAF3;
+  --text-dim:#97A0B8;
+  --text-faint:#5C6478;
+  --amber:#F0A860;
+  --amber-soft:rgba(240,168,96,.12);
+  --mint:#7FDBB6;
+  --mint-soft:rgba(127,219,182,.12);
+  --violet:#9CA8FF;
+  --violet-soft:rgba(156,168,255,.12);
+  --coral:#FF6B6B;
+  --coral-soft:rgba(255,107,107,.12);
+  --font-display:'Space Grotesk', sans-serif;
+  --font-body:'Inter', sans-serif;
+  --font-mono:'JetBrains Mono', monospace;
+  --statusbar-h:34px;
+  --topbar-h:56px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--font-body);
+  line-height:1.65; -webkit-font-smoothing:antialiased; padding-bottom:var(--statusbar-h);
+  user-select:none; -webkit-user-select:none; -moz-user-select:none;
+}
+input, textarea{ user-select:text !important; -webkit-user-select:text !important; -moz-user-select:text !important; }
+::selection{background:var(--amber-soft); color:var(--amber);}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:700; margin:0 0 .5em; letter-spacing:-.01em;}
+p{margin:0 0 1em; color:var(--text-dim);}
+strong{color:var(--text); font-weight:600;}
+code{font-family:var(--font-mono); font-size:.9em; background:var(--surface-2); color:var(--mint); padding:.15em .4em; border-radius:4px;}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:var(--bg-soft);}
+::-webkit-scrollbar-thumb{background:var(--surface-3); border-radius:6px;}
+
+code, .code-line, .filename, .field label, .eyebrow, .q-progress,
+.btn, .statusbar, .status-btn, .concept-tag, .mcq-option, .board-cell, .streak-badge{
+  font-variant-ligatures: none;
+  -webkit-font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0, "dlig" 0, "clig" 0;
+}
+
+/* ---------- TOPBAR ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50; height:var(--topbar-h);
+  display:flex; align-items:center; gap:12px; padding:0 18px;
+  background:var(--bg-soft); border-bottom:1px solid var(--border-soft);
+}
+.topbar .dots{display:flex; gap:6px;}
+.topbar .dots span{width:11px; height:11px; border-radius:50%; display:inline-block;}
+.topbar .dots span:nth-child(1){background:#FF6B6B;}
+.topbar .dots span:nth-child(2){background:#F0A860;}
+.topbar .dots span:nth-child(3){background:#7FDBB6;}
+.topbar .filename{font-family:var(--font-mono); font-size:13px; color:var(--text-dim);}
+.topbar .filename b{color:var(--text); font-weight:500;}
+
+/* ---------- LAYOUT ---------- */
+main{padding:0 0 60px;}
+.wrap{max-width:680px; margin:0 auto; padding:44px 24px 20px;}
+.eyebrow{
+  font-family:var(--font-mono); font-size:12px; color:var(--amber); text-transform:uppercase;
+  letter-spacing:.1em; margin-bottom:10px; display:flex; align-items:center; gap:8px;
+}
+.eyebrow::before{content:''; width:18px; height:1px; background:var(--amber);}
+
+/* ---------- CARDS ---------- */
+.intro-card{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px 26px; margin-bottom:22px;}
+.intro-card ul{margin:12px 0 0; padding-left:20px;}
+.intro-card li{font-size:14px; color:var(--text-dim); margin-bottom:7px;}
+.quiz-card{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin:10px 0;}
+.q-progress{font-family:var(--font-mono); font-size:12px; color:var(--text-faint); margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;}
+
+/* ---------- PAPAN PERMAINAN ---------- */
+.board-wrap{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 16px 14px; margin:10px 0;
+  position:sticky; top:var(--topbar-h); z-index:40; box-shadow:0 8px 16px -10px rgba(0,0,0,0);
+  transition:box-shadow .2s ease;
+}
+.board-wrap.stuck{box-shadow:0 10px 18px -9px rgba(0,0,0,.4);}
+.board-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;}
+.board-title{font-family:var(--font-mono); font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em;}
+.streak-badge{
+  font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); display:flex; align-items:center; gap:6px;
+}
+.streak-dot{width:8px; height:8px; border-radius:50%; background:var(--border-soft); display:inline-block;}
+.streak-dot.on{background:var(--amber);}
+.board-track{display:flex; gap:6px; overflow-x:auto; padding:6px 2px 10px; scroll-behavior:smooth;}
+.board-cell{
+  flex:0 0 auto; width:38px; height:38px; border-radius:9px; background:var(--surface-2); border:1.5px solid var(--border);
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:11px; color:var(--text-faint);
+  position:relative; transition:background .2s ease, border-color .2s ease;
+}
+.board-cell.start{width:52px; font-size:10px; color:var(--text-dim);}
+.board-cell.done{background:var(--mint-soft); border-color:var(--mint); color:var(--mint);}
+.board-cell.finish{background:var(--amber-soft); border-color:var(--amber); color:var(--amber); font-weight:700; width:44px;}
+.board-cell.active{border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-soft);}
+.player-token{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; animation:tokenland .3s ease;}
+.player-token svg{width:24px; height:24px;}
+@keyframes tokenland{0%{transform:scale(.4) translateY(-6px); opacity:0;}100%{transform:scale(1) translateY(0); opacity:1;}}
+.bonus-flash{
+  position:absolute; top:-9px; right:-4px; background:var(--amber); color:#1a1305; font-family:var(--font-mono);
+  font-size:9.5px; font-weight:700; padding:2px 5px; border-radius:20px; animation:bonuspop .6s ease;
+}
+@keyframes bonuspop{0%{transform:scale(0) rotate(-10deg);}60%{transform:scale(1.25) rotate(4deg);}100%{transform:scale(1) rotate(0);}}
+
+/* ---------- CODE BLOCK (reuses site convention, no copy) ---------- */
+.code-block{background:#0D1119; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin:16px 0;}
+.code-head{
+  display:flex; justify-content:space-between; align-items:center; padding:9px 14px;
+  background:var(--surface-2); border-bottom:1px solid var(--border);
+  font-family:var(--font-mono); font-size:12px; color:var(--text-faint);
+}
+.code-body{padding:16px 0; overflow-x:auto; user-select:none; -webkit-user-select:none; -moz-user-select:none;}
+.no-copy-badge{font-family:var(--font-mono); font-size:10.5px; color:var(--coral); border:1px solid var(--coral); padding:3px 8px; border-radius:20px;}
+.code-blur{filter:blur(14px); transition:filter .15s ease;}
+.code-line{
+  position:relative; padding:1px 18px 1px 62px; font-family:var(--font-mono); font-size:14px;
+  white-space:pre; line-height:1.65; min-height:1.65em; color:var(--text-dim);
+}
+.code-line::before{content:attr(data-ln); position:absolute; left:18px; top:1px; width:28px; color:var(--text-faint); user-select:none; text-align:right;}
+.tk-pre{color:var(--violet);}
+.tk-kw{color:var(--amber);}
+.tk-type{color:#7FB3DB;}
+.tk-str{color:var(--mint);}
+.tk-fn{color:#C9A0FF;}
+
+/* ---------- PROMPT / CHOICES ---------- */
+.prompt-text{font-size:14.5px; color:var(--text-dim); margin:16px 0;}
+.prompt-text strong{color:var(--text);}
+.status-choice-row{display:flex; gap:10px; margin:14px 0; flex-wrap:wrap;}
+.status-btn{
+  flex:1; min-width:150px; padding:13px 16px; border-radius:8px; border:1.5px solid var(--border);
+  background:var(--surface-2); color:var(--text-dim); font-family:var(--font-body); font-weight:600;
+  font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:.15s;
+}
+.status-btn svg{width:15px; height:15px;}
+.status-btn:hover:not(:disabled){border-color:var(--violet);}
+.status-btn.run.selected{border-color:var(--mint); background:var(--mint-soft); color:var(--mint);}
+.status-btn.error.selected{border-color:var(--coral); background:var(--coral-soft); color:var(--coral);}
+.status-btn:disabled{cursor:default; opacity:.75;}
+
+.mcq-list{display:grid; gap:9px; margin:14px 0;}
+.mcq-option{
+  text-align:left; padding:12px 14px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface-2);
+  color:var(--text); font-family:var(--font-mono); font-size:13.5px; cursor:pointer; transition:.15s; line-height:1.5;
+}
+.mcq-option:hover:not(:disabled){border-color:var(--violet);}
+.mcq-option:disabled{cursor:default;}
+.mcq-option.picked{border-color:var(--amber);}
+.mcq-option.correct{border-color:var(--mint); background:var(--mint-soft); color:var(--mint);}
+.mcq-option.wrong{border-color:var(--coral); background:var(--coral-soft); color:var(--coral);}
+
+.debug-feedback{margin-top:16px; padding:14px 16px; border-radius:8px; background:var(--bg-soft); border:1px dashed var(--border); border-left:3px solid var(--border); font-size:13.5px; color:var(--text-dim); display:none; line-height:1.65;}
+.debug-feedback.show{display:block;}
+.debug-feedback.ok{border-left-color:var(--mint); background:var(--mint-soft);}
+.debug-feedback.partial{border-left-color:var(--amber); background:var(--amber-soft);}
+.debug-feedback.wrong{border-left-color:var(--coral); background:var(--coral-soft);}
+.debug-feedback .verdict{font-family:var(--font-mono); font-weight:700; font-size:13px; margin-bottom:6px; display:block;}
+.debug-feedback.ok .verdict{color:var(--mint);}
+.debug-feedback.partial .verdict{color:var(--amber);}
+.debug-feedback.wrong .verdict{color:var(--coral);}
+.debug-feedback .concept-tag{display:block; margin-top:9px; font-family:var(--font-mono); font-size:11px; color:var(--text-faint);}
+
+.q-nav{display:flex; justify-content:flex-end; align-items:center; margin-top:18px;}
+.btn{font-family:var(--font-mono); font-size:13px; border-radius:7px; padding:9px 16px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); cursor:pointer; text-decoration:none; display:inline-block;}
+.btn:hover{border-color:var(--amber); color:var(--amber);}
+.btn.primary{background:var(--amber); border-color:var(--amber); color:#1a1305; font-weight:600;}
+.btn.primary:hover{opacity:.9; color:#1a1305;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+
+/* ---------- RESULT ---------- */
+.quiz-result{display:none; text-align:center; padding:26px 20px;}
+.quiz-result .score{font-family:var(--font-display); font-size:40px; color:var(--amber);}
+.quiz-result .stat-row{display:flex; justify-content:center; gap:22px; margin-top:10px; flex-wrap:wrap;}
+.quiz-result .stat-row div{font-family:var(--font-mono); font-size:13px; color:var(--text-dim);}
+.quiz-result .stat-row b{display:block; font-size:20px; color:var(--text); font-family:var(--font-display);}
+.quiz-result .rmsg{margin-top:14px; font-size:14.5px;}
+.quiz-result .ractions{margin-top:18px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+.hidden{display:none;}
+
+/* ---------- IDENTITAS ---------- */
+.idform{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0 20px;}
+@media (max-width:520px){.idform{grid-template-columns:1fr;}}
+.field label{display:block; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; color:var(--text-faint);}
+.field input{width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:var(--surface-2); color:var(--text); font-family:var(--font-body); font-size:14px;}
+.field input:focus{outline:none; border-color:var(--amber);}
+#submitResult{margin-top:16px; padding:14px 16px; border-radius:8px; background:var(--mint-soft); border:1px solid var(--mint); color:var(--mint); font-size:13.5px; display:none;}
+
+/* ---------- Ringkasan / recap (untuk screenshot) ---------- */
+.recap-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; background:var(--bg-soft); border:1px solid var(--border-soft); border-radius:10px; padding:16px 18px;}
+@media (max-width:520px){.recap-grid{grid-template-columns:1fr 1fr; gap:12px 14px; padding:14px;}}
+.recap-grid .recap-label{display:block; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); margin-bottom:4px;}
+.recap-grid b{display:block; font-size:16px; color:var(--text); font-family:var(--font-display); word-break:break-word;}
+
+/* ---------- STATUS BAR ---------- */
+.statusbar{
+  position:fixed; left:0; right:0; bottom:0; height:var(--statusbar-h); z-index:60;
+  background:var(--amber); color:#1a1305; font-family:var(--font-mono); font-size:12px; font-weight:600;
+  display:flex; align-items:center; padding:0 16px; gap:22px; overflow-x:auto; white-space:nowrap;
+}
+.statusbar span b{font-weight:700;}
+
+@media (max-width:520px){
+  .wrap{padding:32px 18px 10px;}
+  .statusbar{font-size:10px; gap:12px;}
+  .status-choice-row{flex-direction:column;}
+}
+
+/* ---------- Confetti & banner efek ---------- */
+.confetti-piece{
+  position:fixed; top:-12px; width:8px; height:14px; opacity:.95; z-index:500; pointer-events:none;
+  animation-name:confetti-fall; animation-timing-function:linear; animation-fill-mode:forwards;
+}
+@keyframes confetti-fall{ to{ transform:translateY(112vh) rotate(760deg); opacity:.25; } }
+.game-banner{
+  position:fixed; top:20%; left:50%; z-index:600; text-align:center; pointer-events:none;
+  transform:translate(-50%,-50%) scale(.3); font-family:var(--font-display); font-weight:700;
+  font-size:20px; padding:16px 28px; border-radius:14px; background:var(--surface);
+  border:2px solid var(--amber); color:var(--amber); box-shadow:0 14px 46px rgba(0,0,0,.45);
+  animation:bannerIn .45s cubic-bezier(.34,1.56,.64,1) forwards; max-width:88vw;
+}
+.game-banner.streak{border-color:var(--violet); color:var(--violet);}
+.game-banner.finish{border-color:var(--mint); color:var(--mint); font-size:25px;}
+.game-banner.out{animation:bannerOut .35s ease forwards;}
+@keyframes bannerIn{to{transform:translate(-50%,-50%) scale(1);}}
+@keyframes bannerOut{to{transform:translate(-50%,-50%) scale(.55); opacity:0;}}
+
+/* ---------- Guard loading ---------- */
+#guard-loading{
+  position:fixed; inset:0; background:var(--bg); z-index:999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  font-family:var(--font-mono); color:var(--text-dim); font-size:13px;
+}
+#guard-loading .spin{width:34px; height:34px; border-radius:50%; border:3px solid var(--surface-2); border-top-color:var(--amber); animation:guardspin .8s linear infinite;}
+@keyframes guardspin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div id="guard-loading">
+  <div class="spin"></div>
+  <div>Memuat kuis…</div>
+</div>
+
+<div id="konten-utama" style="visibility:hidden">
+
+<div class="topbar">
+  <div class="dots"><span></span><span></span><span></span></div>
+  <div class="filename"><a href="../index.html" style="color:inherit; text-decoration:none; opacity:.7;">💻 Portal Informatika XI</a> &nbsp;›&nbsp; <b>Kuis Debug: Variabel dan Tipe Data</b></div>
+</div>
+
+<main>
+  <div class="wrap">
+
+    <div class="eyebrow">Kuis Debug · Variabel dan Tipe Data</div>
+    <h2 style="font-size:24px;">Petualangan Debug: Berjalan atau Error?</h2>
+
+    <div class="intro-card" id="quizIntro">
+      <p style="margin-bottom:0;">Setiap soal menampilkan potongan program C++ seputar <strong>deklarasi &amp; inisialisasi variabel</strong>, <strong>tipe data</strong>, dan sintaks <code>cout</code>/<code>endl</code>. Kamu akan berjalan di papan sepanjang 18 petak sampai ke garis <strong>FINISH</strong>.</p>
+      <ul>
+        <li>Untuk setiap soal, pilih dulu <strong>Program Berjalan</strong> atau <strong>Program Error</strong>.</li>
+        <li>Lalu pilih salah satu dari <strong>4 pilihan jawaban</strong> — output programnya (jika berjalan) atau baris kode yang sudah diperbaiki (jika error).</li>
+        <li><strong>Benar semua (status + pilihan)</strong> → maju <strong>2 petak</strong>.</li>
+        <li><strong>Status benar tapi pilihan jawaban salah</strong> → maju <strong>1 petak</strong>.</li>
+        <li><strong>Status salah</strong> → tidak maju.</li>
+        <li>Benar sepenuhnya <strong>3 kali beruntun</strong> (win streak) → dapat bonus maju <strong>3 petak ekstra</strong>, dan bisa berulang setiap kelipatan 3 win streak.</li>
+      </ul>
+    </div>
+
+    <div class="intro-card" id="contohCard">
+      <h4 style="font-size:14.5px; color:var(--text); margin-bottom:10px;">Contoh</h4>
+      <div class="code-block" style="margin:0 0 14px;">
+        <div class="code-head"><span>contoh.cpp</span></div>
+        <div class="code-body" id="contohCodeSlot"></div>
+      </div>
+      <p style="margin-bottom:8px; font-size:13.5px;">Program ini <strong>error</strong> karena baris <code>int nilai = 90</code> tidak diakhiri titik koma. Maka jawabannya:</p>
+      <ol style="padding-left:18px; margin:0 0 12px; font-size:13.5px; color:var(--text-dim);">
+        <li style="margin-bottom:6px;">Klik tombol <strong>"Program Error"</strong>.</li>
+        <li>Dari 4 pilihan yang muncul, klik yang sudah diperbaiki dengan benar: <code>int nilai = 90;</code></li>
+      </ol>
+    </div>
+
+    <div class="intro-card" id="startCard" style="text-align:center;">
+      <button class="btn primary" id="btnMulaiKuis">Mulai Bermain →</button>
+    </div>
+
+    <div id="boardSentinel" style="height:1px;"></div>
+    <div class="board-wrap hidden" id="boardWrap">
+      <div class="board-head">
+        <span class="board-title">Posisi: <span id="boardPosLabel">0</span>/18</span>
+        <div class="streak-badge">
+          Win streak
+          <span class="streak-dot" id="sd0"></span>
+          <span class="streak-dot" id="sd1"></span>
+          <span class="streak-dot" id="sd2"></span>
+        </div>
+      </div>
+      <div class="board-track" id="boardTrack"></div>
+    </div>
+
+    <div class="quiz-card hidden" id="qCard">
+      <div id="qCodeSlot"></div>
+      <div class="prompt-text">Apakah program ini <strong>dapat dijalankan</strong>, atau <strong>error</strong>?</div>
+      <div class="status-choice-row" id="statusChoiceRow">
+        <button class="status-btn run" data-status="run">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>
+          Program Berjalan
+        </button>
+        <button class="status-btn error" data-status="error">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          Program Error
+        </button>
+      </div>
+      <div id="mcqSlot"></div>
+      <div class="debug-feedback" id="qFeedback"></div>
+      <div class="q-nav">
+        <button class="btn primary hidden" id="qNextBtn">Lanjut</button>
+      </div>
+    </div>
+
+    <div class="quiz-result" id="qResult">
+      <div class="score" id="qResultScore">🏁</div>
+      <div class="stat-row">
+        <div>Soal keluar<b id="statAsked">0</b></div>
+        <div>Jawaban benar<b id="statCorrect">0</b></div>
+        <div>Jawaban salah<b id="statWrong">0</b></div>
+      </div>
+      <p class="rmsg" id="qResultMsg"></p>
+      <div class="ractions">
+        <button class="btn" id="qRetryBtn">Main Lagi</button>
+      </div>
+    </div>
+
+    <div id="identitySection" class="hidden">
+      <h3 style="font-size:17px; margin-top:30px;">Kirim Hasil ke Guru</h3>
+      <p>Isi data berikut untuk mengirim hasil permainanmu (<b id="idBestScoreLabel">0</b> jawaban benar).</p>
+      <div class="quiz-card">
+        <div class="idform">
+          <div class="field"><label for="qNama">Nama Lengkap</label><input id="qNama" type="text" placeholder="Nama kamu"></div>
+          <div class="field"><label for="qKelas">Kelas</label><input id="qKelas" type="text" placeholder="Contoh: XI 1"></div>
+          <div class="field"><label for="qNis">NIS</label><input id="qNis" type="text" placeholder="Nomor Induk Siswa"></div>
+          <div class="field"><label for="qAbsen">No. Absen</label><input id="qAbsen" type="text" placeholder="Nomor absen"></div>
+        </div>
+        <button class="btn primary" id="submitHasil">Kirim Hasil</button>
+        <div id="submitResult"></div>
+      </div>
+    </div>
+
+    <div class="quiz-card hidden" id="recapCard">
+      <h4 style="font-size:14.5px; color:var(--text); margin-bottom:14px;">📋 Ringkasan Hasil</h4>
+      <div class="recap-grid" id="recapGrid">
+        <div><span class="recap-label">Nama</span><b id="recapNama">-</b></div>
+        <div><span class="recap-label">Kelas</span><b id="recapKelas">-</b></div>
+        <div><span class="recap-label">NIS</span><b id="recapNis">-</b></div>
+        <div><span class="recap-label">No. Absen</span><b id="recapAbsen">-</b></div>
+        <div><span class="recap-label">Soal Keluar</span><b id="recapAsked">0</b></div>
+        <div><span class="recap-label">Jawaban Benar</span><b id="recapCorrect">0</b></div>
+        <div><span class="recap-label">Jawaban Salah</span><b id="recapWrong">0</b></div>
+      </div>
+      <button class="btn" id="btnScreenshot" style="margin-top:16px;">📸 Screenshot Hasil</button>
+    </div>
+
+  </div>
+</main>
+
+</div>
+<!-- /#konten-utama -->
+
+<div class="statusbar">
+  <span>📘 <b>Informatika XI</b></span>
+  <span style="margin-left:auto;">Kuis · Debug Variabel dan Tipe Data</span>
+</div>
+
+<script>
+  const MODUL_ID = "INF-107";
+  // Jaring pengaman: kalau config.js/guard.js belum ada di folder yang sama,
+  // atau pengecekan ke Google Sheet lambat/menggantung, kuis tetap otomatis
+  // ditampilkan — tidak nyangkut selamanya di layar "Memuat kuis...".
+  let __revealed = false;
+  function __forceReveal(){
+    if(__revealed) return;
+    __revealed = true;
+    const k = document.getElementById('konten-utama');
+    if(k) k.style.visibility = 'visible';
+    const l = document.getElementById('guard-loading');
+    if(l) l.remove();
+  }
+  setTimeout(__forceReveal, 4000);
+</script>
+<script src="../config.js" onerror="__forceReveal()"></script>
+<script src="../guard.js" onerror="__forceReveal()"></script>
+<script>
+  // Untuk tombol "Screenshot Hasil" di layar akhir. Kalau gagal dimuat (mis. tidak ada
+  // internet), tombol screenshot otomatis akan memberi tahu murid untuk memakai
+  // screenshot bawaan HP/laptop sebagai gantinya — tidak memengaruhi jalannya kuis.
+  window.__html2canvasFailed = false;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" onerror="window.__html2canvasFailed = true"></script>
+
+<script>
+/* ---------------- Proteksi salin kode ----------------
+   Catatan penting: ini hanya menghambat cara-cara umum (klik kanan, Ctrl+C,
+   Ctrl+P/S/U, buka DevTools) dan mengaburkan kode saat jendela kehilangan
+   fokus (misalnya saat membuka alat screenshot/perekam layar terpisah).
+   TIDAK ADA situs web yang bisa benar-benar mencegah screenshot lewat
+   kamera HP atau alat tangkapan layar tingkat sistem operasi — proteksi ini
+   hanya membuat penyalinan/screenshot langsung dari browser jadi merepotkan,
+   bukan mustahil. */
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => {
+  const tag = (e.target && e.target.tagName) || '';
+  if(tag !== 'INPUT' && tag !== 'TEXTAREA') e.preventDefault();
+});
+document.addEventListener('cut', e => {
+  const tag = (e.target && e.target.tagName) || '';
+  if(tag !== 'INPUT' && tag !== 'TEXTAREA') e.preventDefault();
+});
+document.addEventListener('keydown', e => {
+  const k = e.key ? e.key.toLowerCase() : '';
+  const blockedCombo = (e.ctrlKey || e.metaKey) && ['c','x','s','p','u'].includes(k);
+  const blockedDevtools = k === 'f12' || ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i','j','c'].includes(k));
+  const tag = (e.target && e.target.tagName) || '';
+  const isTextField = tag === 'INPUT' || tag === 'TEXTAREA';
+  if(blockedDevtools || (blockedCombo && !isTextField)){
+    e.preventDefault();
+  }
+});
+function __blurCode(on){
+  document.querySelectorAll('.code-body').forEach(el => el.classList.toggle('code-blur', on));
+}
+document.addEventListener('visibilitychange', () => __blurCode(document.hidden));
+window.addEventListener('blur', () => __blurCode(true));
+window.addEventListener('focus', () => __blurCode(false));
+
+/* ---------------- Bank Soal ----------------
+   Materi yang diuji: deklarasi & inisialisasi variabel, tipe data, dan sintaks
+   cout/endl SAJA — tidak ada operator (+ - * / ++ dst.) dan tidak ada if/perulangan,
+   karena belum diajarkan. Setiap soal punya 4 pilihan jawaban (opts[0] selalu versi
+   yang benar — diacak saat ditampilkan). */
+const SOAL_BANK = [
+  {
+    status:'run',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int umur = 17;\n    cout << \"Umur: \" << umur << endl;\n    return 0;\n}",
+    opts:["Umur: 17", "Umur: 0", "17", "Umur = 17"],
+    explanation:"Variabel \"umur\" bertipe int dideklarasikan dan diinisialisasi sekaligus dengan nilai 17, lalu ditampilkan lewat cout.",
+    concept:"Deklarasi & inisialisasi variabel int"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int nilai = 85\n    cout << nilai << endl;\n    return 0;\n}",
+    opts:["int nilai = 85;", "int nilai = 85", "int nilai = 85.", "int nilai == 85;"],
+    explanation:"Baris \"int nilai = 85\" tidak diakhiri titik koma, sehingga terjadi compile error.",
+    concept:"Sintaks dasar: titik koma"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int umur = 17;\n    cout << tinggi << endl;\n    return 0;\n}",
+    opts:["cout << umur << endl;", "cout << tinggi << endl;", "cout << Umur << endl;", "cout << \"umur\" << endl;"],
+    explanation:"Variabel \"tinggi\" belum pernah dideklarasikan — yang ada hanya \"umur\".",
+    concept:"Deklarasi variabel sebelum digunakan"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int skor = 80;\n    int skor = 95;\n    cout << skor << endl;\n    return 0;\n}",
+    opts:["skor = 95;", "int skor = 95;", "Int skor = 95;", "skor == 95;"],
+    explanation:"\"skor\" sudah dideklarasikan di baris sebelumnya, jadi baris ini tidak boleh menulis \"int\" lagi — cukup mengisi ulang nilainya.",
+    concept:"Redeklarasi variabel"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int nama = \"Made\";\n    cout << nama << endl;\n    return 0;\n}",
+    opts:["string nama = \"Made\";", "int nama = \"Made\";", "string nama = Made;", "String nama = \"Made\";"],
+    explanation:"\"Made\" adalah teks, jadi tipe datanya harus string, bukan int.",
+    concept:"Ketidakcocokan tipe data (string vs int)"
+  },
+  {
+    status:'run',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    float suhu = 36.6;\n    cout << \"Suhu: \" << suhu << endl;\n    return 0;\n}",
+    opts:["Suhu: 36.6", "Suhu: 36", "36.6", "Suhu = 36.6"],
+    explanation:"Variabel bertipe float dapat menyimpan angka desimal dengan benar.",
+    concept:"Tipe data float"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    char kelas = \"A\";\n    cout << kelas << endl;\n    return 0;\n}",
+    opts:["char kelas = 'A';", "char kelas = \"A\";", "char kelas = 'AA';", "Char kelas = 'A';"],
+    explanation:"char wajib memakai petik satu dan hanya satu karakter, bukan petik dua.",
+    concept:"char (petik satu) vs string (petik dua)"
+  },
+  {
+    status:'run',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    bool lulus = true;\n    cout << \"Lulus: \" << lulus << endl;\n    return 0;\n}",
+    opts:["Lulus: 1", "Lulus: true", "Lulus: 0", "Lulus: True"],
+    explanation:"cout menampilkan nilai bool sebagai angka: 1 untuk true, 0 untuk false — bukan kata \"true\"/\"false\".",
+    concept:"Tipe data bool"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    string pesan = 'Halo';\n    cout << pesan << endl;\n    return 0;\n}",
+    opts:["string pesan = \"Halo\";", "string pesan = 'Halo';", "String pesan = \"Halo\";", "string pesan = Halo;"],
+    explanation:"string (lebih dari satu karakter) wajib memakai petik dua, bukan petik satu.",
+    concept:"string (petik dua) vs char (petik satu)"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int int = 10;\n    cout << int << endl;\n    return 0;\n}",
+    opts:["int nilai = 10;", "int int = 10;", "int return = 10;", "int 10 = 10;"],
+    explanation:"\"int\" adalah kata kunci C++ dan tidak boleh dipakai sebagai nama variabel — nama lain seperti \"return\" juga tetap kata kunci dan tetap salah.",
+    concept:"Aturan penamaan: tidak boleh memakai kata kunci C++"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int 2kelas = 5;\n    cout << 2kelas << endl;\n    return 0;\n}",
+    opts:["int kelas2 = 5;", "int 2kelas = 5;", "int kelas 2 = 5;", "2int kelas = 5;"],
+    explanation:"Nama variabel tidak boleh diawali angka — pindahkan angkanya ke belakang.",
+    concept:"Aturan penamaan: tidak boleh diawali angka"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int nilai ujian = 90;\n    cout << nilai ujian << endl;\n    return 0;\n}",
+    opts:["int nilaiUjian = 90;", "int nilai ujian = 90;", "int Nilai Ujian = 90;", "int 90nilaiUjian = 90;"],
+    explanation:"Nama variabel tidak boleh mengandung spasi — gabungkan jadi satu kata (misalnya pakai gaya camelCase).",
+    concept:"Aturan penamaan: tidak boleh mengandung spasi"
+  },
+  {
+    status:'run',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int hari, bulan, tahun;\n    hari = 17;\n    bulan = 8;\n    tahun = 1945;\n    cout << hari << endl;\n    cout << bulan << endl;\n    cout << tahun << endl;\n    return 0;\n}",
+    opts:["17<br>8<br>1945", "8<br>17<br>1945", "17<br>8<br>19", "1945<br>8<br>17"],
+    explanation:"Tiga variabel int dideklarasikan sekaligus (dipisah koma), lalu diinisialisasi dan ditampilkan satu per satu sesuai urutan cout-nya.",
+    concept:"Mendeklarasikan beberapa variabel bertipe sama sekaligus"
+  },
+  {
+    status:'run',
+    code:"#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    int umur = 15;\n    char kelas = 'A';\n    string nama = \"Ayu\";\n    cout << \"Nama: \" << nama << endl;\n    cout << \"Kelas: \" << kelas << endl;\n    cout << \"Umur: \" << umur << endl;\n    return 0;\n}",
+    opts:["Nama: Ayu<br>Kelas: A<br>Umur: 15", "Nama: ayu<br>Kelas: a<br>Umur: 15", "Nama: Ayu<br>Kelas: A<br>Umur: 15.0", "Kelas: A<br>Nama: Ayu<br>Umur: 15"],
+    explanation:"Tiga tipe data berbeda (string, char, int) dideklarasikan dan ditampilkan sesuai urutan cout-nya, dengan huruf besar/kecil dan tipe yang tetap sama seperti aslinya.",
+    concept:"Menggabungkan beberapa tipe data dalam satu program"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    String nama = \"Ayu\";\n    cout << nama << endl;\n    return 0;\n}",
+    opts:["string nama = \"Ayu\";", "String nama = \"Ayu\";", "string Nama = \"Ayu\";", "string nama = Ayu;"],
+    explanation:"Tidak ada tipe data bernama \"String\" (S besar) — yang benar adalah \"string\" huruf kecil semua, karena C++ case-sensitive termasuk untuk nama tipe data.",
+    concept:"C++ case-sensitive (termasuk nama tipe data)"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int tinggi = 160;\n    Cout << tinggi << endl;\n    return 0;\n}",
+    opts:["cout << tinggi << endl;", "Cout << tinggi << endl;", "cout << Tinggi << endl;", "COUT << tinggi << endl;"],
+    explanation:"C++ bersifat case-sensitive — \"Cout\" (C besar) berbeda dengan \"cout\" yang dikenali kompiler.",
+    concept:"C++ case-sensitive (huruf besar/kecil berbeda)"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int jumlahBuku = 25;\n    cout << jumlahbuku << endl;\n    return 0;\n}",
+    opts:["cout << jumlahBuku << endl;", "cout << jumlahbuku << endl;", "cout << JumlahBuku << endl;", "cout << jumlah_buku << endl;"],
+    explanation:"Yang dideklarasikan adalah \"jumlahBuku\" (huruf B besar) — nama ini harus ditulis persis sama saat dipanggil.",
+    concept:"Debugging: penulisan nama variabel harus konsisten"
+  },
+  {
+    status:'run',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    short jumlahKursi = 40;\n    long jumlahPenduduk = 3000000;\n    cout << \"Jumlah Kursi: \" << jumlahKursi << endl;\n    cout << \"Jumlah Penduduk: \" << jumlahPenduduk << endl;\n    return 0;\n}",
+    opts:["Jumlah Kursi: 40<br>Jumlah Penduduk: 3000000", "Jumlah Kursi: 40<br>Jumlah Penduduk: 300000", "Jumlah Penduduk: 3000000<br>Jumlah Kursi: 40", "Jumlah Kursi: 40.0<br>Jumlah Penduduk: 3000000.0"],
+    explanation:"short dan long sama-sama untuk bilangan bulat, bedanya hanya jatah memori — keduanya ditampilkan apa adanya sesuai urutan cout.",
+    concept:"Tipe data short dan long"
+  },
+  {
+    status:'error',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    char inisial = 'AB';\n    cout << inisial << endl;\n    return 0;\n}",
+    opts:["char inisial = 'A';", "char inisial = 'AB';", "char inisial = \"A\";", "Char inisial = 'A';"],
+    explanation:"Tipe char hanya bisa menampung satu karakter. 'AB' berisi dua karakter, sehingga ini menyebabkan compile error.",
+    concept:"char hanya boleh diisi satu karakter"
+  },
+  {
+    status:'run',
+    code:"#include <iostream>\nusing namespace std;\n\nint main() {\n    int umur;\n    umur = 16;\n    cout << \"Umur: \" << umur << endl;\n    return 0;\n}",
+    opts:["Umur: 16", "Umur: 0", "16", "Umur = 16"],
+    explanation:"\"umur\" dideklarasikan dulu tanpa nilai, lalu diinisialisasi di baris berikutnya.",
+    concept:"Deklarasi dan inisialisasi di baris berbeda"
+  }
+];
+
+const TOTAL_TILES = 18;
+const COOLDOWN = 3;
+const MATERI_LABEL = 'Informatika XI — Kuis Debug Variabel dan Tipe Data';
+
+/* ---------- Efek suara (synth sederhana, tanpa file audio eksternal) ---------- */
+let __audioCtx = null;
+function __getAudioCtx(){
+  if(__audioCtx) return __audioCtx;
+  try{ __audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ __audioCtx = null; }
+  return __audioCtx;
+}
+function beep(freq, dur, type, delay, vol){
+  const ctx = __getAudioCtx();
+  if(!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  const t0 = ctx.currentTime + (delay || 0);
+  gain.gain.setValueAtTime(vol || .16, t0);
+  gain.gain.exponentialRampToValueAtTime(.001, t0 + dur);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(t0); osc.stop(t0 + dur + .02);
+}
+function playSound(name){
+  if(name === 'correct'){ beep(880,.11,'sine',0,.15); beep(1175,.16,'sine',.09,.13); }
+  else if(name === 'partial'){ beep(600,.16,'triangle',0,.14); }
+  else if(name === 'wrong'){ beep(300,.22,'sawtooth',0,.11); beep(190,.24,'sawtooth',.05,.09); }
+  else if(name === 'streak'){ beep(660,.1,'sine',0,.15); beep(880,.1,'sine',.1,.15); beep(1175,.18,'sine',.2,.16); }
+  else if(name === 'finish'){ beep(523,.15,'sine',0,.15); beep(659,.15,'sine',.15,.15); beep(784,.15,'sine',.3,.15); beep(1047,.32,'sine',.45,.17); }
+}
+
+/* ---------- Confetti & banner ---------- */
+function launchConfetti(count, duration){
+  const colors = ['#F0A860','#7FDBB6','#9CA8FF','#FF6B6B','#E7EAF3'];
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = (Math.random()*100)+'vw';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.borderRadius = Math.random() < .5 ? '50%' : '2px';
+    const dur = (duration/1000) + Math.random()*0.9;
+    el.style.animationDuration = dur+'s';
+    el.style.animationDelay = (Math.random()*0.25)+'s';
+    el.style.transform = 'rotate('+Math.floor(Math.random()*360)+'deg)';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), (dur+0.3)*1000 + 300);
+  }
+}
+function showBanner(text, cssClass, duration){
+  duration = duration || 1600;
+  const b = document.createElement('div');
+  b.className = 'game-banner' + (cssClass ? ' '+cssClass : '');
+  b.textContent = text;
+  document.body.appendChild(b);
+  setTimeout(() => b.classList.add('out'), duration - 350);
+  setTimeout(() => b.remove(), duration);
+}
+
+let pos = 0, streak = 0, questionsAsked = 0, correctFull = 0, wrongOrPartial = 0;
+let pool = [], history = [], curIdx = -1, curOpts = [], curCorrectIdx = -1, chosenStatus = null, chosenOptIdx = -1, qPhase = 'idle';
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; }
+  return a;
+}
+
+/* ---------- Highlight kode (memakai kelas tk-* yang sama dengan materi) ---------- */
+function tokenizeLine(line){
+  let esc = line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const strings = [];
+  esc = esc.replace(/("([^"\\]|\\.)*"|'([^'\\]|\\.)*')/g, m => { strings.push(m); return '\u0000'+(strings.length-1)+'\u0000'; });
+  esc = esc.replace(/(#include)(\s+)(&lt;[^&]+&gt;)/, '<span class="tk-pre">$1</span>$2<span class="tk-str">$3</span>');
+  esc = esc.replace(/\b(using|namespace|return|true|false)\b/g, '<span class="tk-kw">$1</span>');
+  esc = esc.replace(/\b(int|short|long|float|double|char|bool|string|void)\b/g, '<span class="tk-type">$1</span>');
+  esc = esc.replace(/\bmain\b/g, '<span class="tk-fn">main</span>');
+  esc = esc.replace(/\u0000(\d+)\u0000/g, (_, i) => '<span class="tk-str">'+strings[i]+'</span>');
+  return esc;
+}
+function codeBlockHtml(filename, code){
+  const lines = code.split('\n');
+  const body = lines.map((l, idx) => '<div class="code-line" data-ln="'+(idx+1)+'">'+(l.trim()==='' ? '' : tokenizeLine(l))+'</div>').join('');
+  return '<div class="code-block"><div class="code-head"><span>'+filename+'</span><span class="no-copy-badge">🔒 dilindungi</span></div><div class="code-body">'+body+'</div></div>';
+}
+
+document.getElementById('contohCodeSlot').innerHTML = "#include <iostream>\nusing namespace std;\n\nint main() {\n    int nilai = 90\n    cout << nilai << endl;\n    return 0;\n}".split('\n').map((l, idx) => '<div class="code-line" data-ln="'+(idx+1)+'">'+(l.trim()==='' ? '' : tokenizeLine(l))+'</div>').join('');
+
+/* ---------- Papan permainan ---------- */
+const playerSvg = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#F0A860"/><circle cx="9" cy="10" r="1.6" fill="#1a1305"/><circle cx="15" cy="10" r="1.6" fill="#1a1305"/><path d="M8 15c1.2 1.3 2.6 2 4 2s2.8-.7 4-2" stroke="#1a1305" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>';
+
+function renderBoard(bonus){
+  const track = document.getElementById('boardTrack');
+  track.innerHTML = '';
+  const start = document.createElement('div');
+  start.className = 'board-cell start' + (pos === 0 ? ' active' : '');
+  start.textContent = 'MULAI';
+  if(pos === 0) start.innerHTML = playerSvg;
+  track.appendChild(start);
+  for(let i=1;i<=TOTAL_TILES;i++){
+    const cell = document.createElement('div');
+    let cls = 'board-cell';
+    if(i === TOTAL_TILES) cls += ' finish';
+    if(i < pos) cls += ' done';
+    if(i === pos) cls += ' active';
+    cell.className = cls;
+    cell.textContent = (i === TOTAL_TILES) ? '🏁' : String(i);
+    if(i === pos){
+      const token = document.createElement('div');
+      token.className = 'player-token';
+      token.innerHTML = playerSvg;
+      if(bonus){
+        const flash = document.createElement('div');
+        flash.className = 'bonus-flash';
+        flash.textContent = '+' + bonus;
+        cell.appendChild(flash);
+      }
+      cell.appendChild(token);
+    }
+    track.appendChild(cell);
+  }
+  document.getElementById('boardPosLabel').textContent = pos;
+  const activeCell = track.querySelector('.active');
+  if(activeCell) activeCell.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+}
+
+function renderStreakDots(){
+  const shown = streak % 3;
+  for(let i=0;i<3;i++){
+    document.getElementById('sd'+i).classList.toggle('on', i < shown);
+  }
+}
+
+/* ---------- Efek visual saat papan posisi menempel (sticky) di atas ---------- */
+(function(){
+  const sentinel = document.getElementById('boardSentinel');
+  const boardWrap = document.getElementById('boardWrap');
+  if(!sentinel || !boardWrap || typeof IntersectionObserver === 'undefined') return;
+  const topbarH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 56;
+  const observer = new IntersectionObserver(
+    ([entry]) => { boardWrap.classList.toggle('stuck', !entry.isIntersecting); },
+    { rootMargin: '-' + (topbarH + 1) + 'px 0px 0px 0px', threshold: 0 }
+  );
+  observer.observe(sentinel);
+})();
+
+/* ---------- Pemilihan soal (acak, hindari 3 soal terakhir) ---------- */
+function pickNext(){
+  if(pool.length === 0) pool = SOAL_BANK.map((_, i) => i);
+  const cooldownSet = new Set(history.slice(-COOLDOWN));
+  let candidates = pool.filter(i => !cooldownSet.has(i));
+  if(candidates.length === 0) candidates = pool.slice();
+  const pick = candidates[Math.floor(Math.random() * candidates.length)];
+  history.push(pick);
+  if(history.length > 12) history.shift();
+  return pick;
+}
+
+/* ---------- Alur permainan ---------- */
+document.getElementById('btnMulaiKuis').addEventListener('click', () => {
+  document.getElementById('startCard').classList.add('hidden');
+  document.getElementById('quizIntro').classList.add('hidden');
+  document.getElementById('contohCard').classList.add('hidden');
+  document.getElementById('boardWrap').classList.remove('hidden');
+  startGame();
+});
+
+function startGame(){
+  pos = 0; streak = 0; questionsAsked = 0; correctFull = 0; wrongOrPartial = 0;
+  pool = SOAL_BANK.map((_, i) => i);
+  history = [];
+  document.getElementById('qResult').style.display = 'none';
+  document.getElementById('qCard').classList.remove('hidden');
+  renderBoard();
+  renderStreakDots();
+  nextQuestion();
+}
+
+function nextQuestion(){
+  curIdx = pickNext();
+  questionsAsked++;
+  const q = SOAL_BANK[curIdx];
+  chosenStatus = null; chosenOptIdx = -1; curCorrectIdx = -1; qPhase = 'choosingStatus';
+
+  document.getElementById('qCodeSlot').innerHTML = codeBlockHtml('soal_'+questionsAsked+'.cpp', q.code);
+  document.getElementById('mcqSlot').innerHTML = '';
+  const fb = document.getElementById('qFeedback');
+  fb.className = 'debug-feedback'; fb.innerHTML = '';
+  document.getElementById('qNextBtn').classList.add('hidden');
+
+  document.querySelectorAll('.status-btn').forEach(btn => {
+    btn.classList.remove('selected');
+    btn.disabled = false;
+  });
+}
+
+document.querySelectorAll('.status-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if(qPhase !== 'choosingStatus') return;
+    document.querySelectorAll('.status-btn').forEach(b => { b.classList.remove('selected'); b.disabled = true; });
+    btn.classList.add('selected');
+    chosenStatus = btn.getAttribute('data-status');
+    const q = SOAL_BANK[curIdx];
+    // Pilihan jawaban (output vs baris kode) hanya pernah ditampilkan kalau status yang
+    // dipilih murid sudah cocok dengan jenis soal sebenarnya — supaya murid yang memilih
+    // "Program Berjalan" TIDAK PERNAH melihat pilihan berisi baris kode, dan sebaliknya.
+    // Kalau status yang dipilih sudah salah, soal langsung dinilai (tidak maju) tanpa
+    // perlu menampilkan pilihan jawaban tambahan.
+    if(chosenStatus === q.status){
+      showOptions();
+    } else {
+      chosenOptIdx = -1;
+      qPhase = 'reviewing';
+      evaluateAnswer();
+    }
+  });
+});
+
+function showOptions(){
+  qPhase = 'choosingOption';
+  const q = SOAL_BANK[curIdx];
+  const shuffled = shuffle(q.opts.map((text, i) => ({text, isCorrect: i === 0})));
+  curOpts = shuffled;
+  curCorrectIdx = shuffled.findIndex(o => o.isCorrect);
+
+  // Label ikut jenis soal yang SEBENARNYA (q.status), bukan status yang dipilih murid —
+  // supaya kalau murid salah pilih status, label & jenis pilihan tetap konsisten
+  // (tidak pernah menampilkan "pilih output" tapi isinya baris kode, atau sebaliknya).
+  const label = q.status === 'run'
+    ? 'Pilih output yang benar:'
+    : 'Pilih baris yang sudah diperbaiki dengan benar:';
+  const list = document.createElement('div');
+  const heading = document.createElement('div');
+  heading.className = 'prompt-text';
+  heading.innerHTML = '<strong>' + label + '</strong>';
+  const mcq = document.createElement('div');
+  mcq.className = 'mcq-list';
+  shuffled.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.className = 'mcq-option';
+    b.innerHTML = opt.text;
+    b.addEventListener('click', () => chooseOption(i));
+    mcq.appendChild(b);
+  });
+  const slot = document.getElementById('mcqSlot');
+  slot.innerHTML = '';
+  slot.appendChild(heading);
+  slot.appendChild(mcq);
+}
+
+function chooseOption(i){
+  if(qPhase !== 'choosingOption') return;
+  chosenOptIdx = i;
+  qPhase = 'reviewing';
+  evaluateAnswer();
+}
+
+function evaluateAnswer(){
+  const q = SOAL_BANK[curIdx];
+  const statusOk = chosenStatus === q.status;
+  const optOk = chosenOptIdx === curCorrectIdx;
+
+  document.querySelectorAll('.mcq-option').forEach((btn, i) => {
+    btn.disabled = true;
+    if(i === curCorrectIdx) btn.classList.add('correct');
+    if(i === chosenOptIdx && i !== curCorrectIdx) btn.classList.add('wrong');
+    if(i === chosenOptIdx) btn.classList.add('picked');
+  });
+
+  let move = 0, bonus = 0, verdictClass, verdictText;
+  if(statusOk && optOk){
+    correctFull++;
+    move = 2;
+    streak++;
+    pool = pool.filter(idx => idx !== curIdx);
+    if(streak % 3 === 0) bonus = 3;
+    verdictClass = 'ok'; verdictText = '✓ Benar semua! Maju ' + move + (bonus ? ' + bonus ' + bonus : '') + ' petak';
+    playSound(bonus ? 'streak' : 'correct');
+    if(bonus){
+      showBanner('🔥 Win Streak x' + streak + '! +' + bonus + ' petak bonus', 'streak', 1900);
+      launchConfetti(36, 1300);
+    }
+  } else if(statusOk && !optOk){
+    wrongOrPartial++;
+    move = 1;
+    streak = 0;
+    verdictClass = 'partial'; verdictText = '± Status benar, pilihan jawaban belum tepat. Maju ' + move + ' petak';
+    playSound('partial');
+  } else {
+    wrongOrPartial++;
+    move = 0;
+    streak = 0;
+    verdictClass = 'wrong'; verdictText = '✕ Status program keliru. Tidak maju';
+    playSound('wrong');
+  }
+
+  pos = Math.min(TOTAL_TILES, pos + move + bonus);
+  renderBoard(bonus || null);
+  renderStreakDots();
+
+  const fb = document.getElementById('qFeedback');
+  fb.className = 'debug-feedback show ' + verdictClass;
+  fb.innerHTML = '<span class="verdict">'+verdictText+'</span>' + q.explanation + '<br><span class="concept-tag">'+q.concept+'</span>';
+
+  const nextBtn = document.getElementById('qNextBtn');
+  nextBtn.classList.remove('hidden');
+  nextBtn.textContent = (pos >= TOTAL_TILES) ? 'Lihat Hasil 🏁' : 'Lanjut';
+}
+
+document.getElementById('qNextBtn').addEventListener('click', () => {
+  if(pos >= TOTAL_TILES){
+    finishGame();
+  } else {
+    nextQuestion();
+  }
+});
+
+function finishGame(){
+  document.getElementById('qCard').classList.add('hidden');
+  const result = document.getElementById('qResult');
+  result.style.display = 'block';
+  playSound('finish');
+  showBanner('🎉 Selamat! Sampai FINISH!', 'finish', 2400);
+  launchConfetti(110, 2800);
+  document.getElementById('statAsked').textContent = questionsAsked;
+  document.getElementById('statCorrect').textContent = correctFull;
+  document.getElementById('statWrong').textContent = wrongOrPartial;
+  const pct = Math.round((correctFull/questionsAsked)*100);
+  document.getElementById('qResultMsg').textContent = pct >= 70
+    ? 'Mantap! Kamu sampai FINISH dengan pemahaman yang kuat tentang deklarasi, tipe data, dan cout/endl. 🎯'
+    : pct >= 40
+    ? 'Sampai FINISH juga! Coba baca ulang materinya sekali lagi supaya makin mantap.'
+    : 'Sampai FINISH, tapi coba baca ulang materi Variabel dan Tipe Data, lalu main lagi ya.';
+  document.getElementById('idBestScoreLabel').textContent = correctFull;
+  document.getElementById('identitySection').classList.remove('hidden');
+}
+
+document.getElementById('qRetryBtn').addEventListener('click', () => {
+  document.getElementById('identitySection').classList.add('hidden');
+  document.getElementById('submitResult').style.display = 'none';
+  document.getElementById('submitHasil').disabled = false;
+  document.getElementById('submitHasil').textContent = 'Kirim Hasil';
+  document.getElementById('recapCard').classList.add('hidden');
+  startGame();
+});
+
+/* ---------------- Kirim hasil ke Google Sheet (lewat Apps Script di config.js) ---------------- */
+async function kirimKeSheet(materi, skor, total, identitas){
+  if(typeof CONTROL_URL === 'undefined'){
+    console.warn('CONTROL_URL belum tersedia — lewati pengiriman ke Sheet.');
+    return;
+  }
+  const payload = {
+    waktu: new Date().toLocaleString('id-ID'),
+    mode: identitas.mode,
+    nama: identitas.nama,
+    nis: identitas.nis || '',
+    absen: identitas.absen || '',
+    kelas: identitas.kelas,
+    anggota: identitas.anggota || '',
+    materi: materi,
+    skor: skor,
+    total: total
+  };
+  try{
+    await fetch(CONTROL_URL, { method: 'POST', body: JSON.stringify(payload) });
+  }catch(err){
+    console.error('Gagal mengirim hasil ke spreadsheet:', materi, err);
+  }
+}
+
+document.getElementById('submitHasil').addEventListener('click', async () => {
+  const nama = document.getElementById('qNama').value.trim();
+  const kelas = document.getElementById('qKelas').value.trim();
+  const nis = document.getElementById('qNis').value.trim();
+  const absen = document.getElementById('qAbsen').value.trim();
+  if(!nama || !kelas || !nis || !absen){
+    alert('Isi dulu Nama, Kelas, NIS, dan No. Absen ya.');
+    return;
+  }
+  const identitas = { mode: 'Individu', nama, kelas, nis, absen };
+  const submitBtn = document.getElementById('submitHasil');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Mengirim...';
+
+  await kirimKeSheet(MATERI_LABEL, correctFull, questionsAsked, identitas);
+
+  const resultBox = document.getElementById('submitResult');
+  resultBox.style.display = 'block';
+  resultBox.textContent = `Hasil (${correctFull} benar dari ${questionsAsked} soal) berhasil dikirim ke guru. Terima kasih! 🎉`;
+  submitBtn.textContent = 'Terkirim ✓';
+
+  // Isi ringkasan (nama, kelas, NIS, absen, statistik) lalu tampilkan tombol screenshot,
+  // supaya murid punya bukti hasil sendiri selain data yang terkirim ke spreadsheet.
+  document.getElementById('recapNama').textContent = nama;
+  document.getElementById('recapKelas').textContent = kelas;
+  document.getElementById('recapNis').textContent = nis;
+  document.getElementById('recapAbsen').textContent = absen;
+  document.getElementById('recapAsked').textContent = questionsAsked;
+  document.getElementById('recapCorrect').textContent = correctFull;
+  document.getElementById('recapWrong').textContent = wrongOrPartial;
+  document.getElementById('recapCard').classList.remove('hidden');
+});
+
+/* ---------------- Screenshot hasil (untuk arsip murid) ---------------- */
+document.getElementById('btnScreenshot').addEventListener('click', () => {
+  const btn = document.getElementById('btnScreenshot');
+  if(window.__html2canvasFailed || typeof html2canvas === 'undefined'){
+    alert('Screenshot otomatis tidak tersedia saat ini (mungkin tidak ada koneksi internet). Silakan gunakan fitur screenshot bawaan HP/laptop kamu untuk menyimpan ringkasan ini.');
+    return;
+  }
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Menyiapkan...';
+  const target = document.getElementById('recapCard');
+  html2canvas(target, { backgroundColor: '#161B27', scale: 2 }).then(canvas => {
+    const link = document.createElement('a');
+    const namaFile = (document.getElementById('recapNama').textContent || 'hasil').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+    link.download = 'hasil-kuis-debug-variabel-' + namaFile + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent = 'Tersimpan ✓';
+    setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 1800);
+  }).catch(() => {
+    alert('Gagal membuat screenshot otomatis. Silakan gunakan fitur screenshot bawaan HP/laptop kamu.');
+    btn.textContent = original;
+    btn.disabled = false;
+  });
+});
+</script>
+</body>
+</html>
