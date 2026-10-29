@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informatika XI — Percabangan IF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0E14;
+  --bg-soft:#0E121C;
+  --surface:#161B27;
+  --surface-2:#1D2333;
+  --surface-3:#242B3D;
+  --border:#2A3145;
+  --border-soft:#1E2434;
+  --text:#E7EAF3;
+  --text-dim:#97A0B8;
+  --text-faint:#5C6478;
+  --amber:#F0A860;
+  --amber-soft:rgba(240,168,96,.12);
+  --mint:#7FDBB6;
+  --mint-soft:rgba(127,219,182,.12);
+  --violet:#9CA8FF;
+  --violet-soft:rgba(156,168,255,.12);
+  --coral:#FF6B6B;
+  --coral-soft:rgba(255,107,107,.12);
+  --font-display:'Space Grotesk', sans-serif;
+  --font-body:'Inter', sans-serif;
+  --font-mono:'JetBrains Mono', monospace;
+  --sidebar-w:280px;
+  --statusbar-h:34px;
+  --topbar-h:56px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--font-body);
+  line-height:1.65; -webkit-font-smoothing:antialiased; padding-bottom:var(--statusbar-h);
+}
+::selection{background:var(--amber-soft); color:var(--amber);}
+a{color:var(--violet);}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:700; margin:0 0 .5em; letter-spacing:-.01em;}
+p{margin:0 0 1em; color:var(--text-dim);}
+strong{color:var(--text); font-weight:600;}
+code{font-family:var(--font-mono); font-size:.9em; background:var(--surface-2); color:var(--mint); padding:.15em .4em; border-radius:4px;}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:var(--bg-soft);}
+::-webkit-scrollbar-thumb{background:var(--surface-3); border-radius:6px;}
+
+code, .code-line, .console-body, .console-head, .terminal .body, .no-copy-badge,
+.tag, .q-progress, .btn, .statusbar, .toast, .filename, .sidebar nav a,
+.field label, .eyebrow, .sources h3, .menu-toggle, .sidebar .group-label,
+.term-note, .match-chip, .op-sym{
+  font-variant-ligatures: none;
+  -webkit-font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0, "dlig" 0, "clig" 0;
+}
+
+/* ---------- TOPBAR ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50; height:var(--topbar-h);
+  display:flex; align-items:center; gap:12px; padding:0 18px;
+  background:var(--bg-soft); border-bottom:1px solid var(--border-soft);
+}
+.topbar .dots{display:flex; gap:6px;}
+.topbar .dots span{width:11px; height:11px; border-radius:50%; display:inline-block;}
+.topbar .dots span:nth-child(1){background:#FF6B6B;}
+.topbar .dots span:nth-child(2){background:#F0A860;}
+.topbar .dots span:nth-child(3){background:#7FDBB6;}
+.topbar .filename{font-family:var(--font-mono); font-size:13px; color:var(--text-dim);}
+.topbar .filename b{color:var(--text); font-weight:500;}
+.guru-badge{
+  font-family:var(--font-mono); font-size:10.5px; color:#1a1305; background:var(--amber);
+  padding:2px 8px; border-radius:20px; margin-left:8px; font-weight:700;
+}
+body.guru-mode .code-body{user-select:text !important; -webkit-user-select:text !important; -moz-user-select:text !important;}
+body.guru-mode .no-copy-badge{border-color:var(--mint); color:var(--mint);}
+body.guru-mode .no-copy-badge::before{content:'🔓 ';}
+.guru-only{display:none;}
+body.guru-mode .guru-only{display:block;}
+.guru-extra{display:none;}
+body.guru-mode .guru-extra{display:block; border-left:3px dashed var(--amber); padding-left:16px; margin:26px 0;}
+.guru-extra-label{font-family:var(--font-mono); font-size:11.5px; color:var(--amber); margin-bottom:6px;}
+.menu-toggle{
+  margin-left:auto; display:none; background:var(--surface-2); border:1px solid var(--border);
+  color:var(--text); font-family:var(--font-mono); font-size:12px; padding:7px 12px; border-radius:6px; cursor:pointer;
+}
+
+/* ---------- LAYOUT ---------- */
+.shell{display:flex; min-height:calc(100vh - var(--topbar-h) - var(--statusbar-h));}
+.sidebar{
+  width:var(--sidebar-w); flex-shrink:0; background:var(--bg-soft);
+  border-right:1px solid var(--border-soft); position:sticky; top:var(--topbar-h);
+  height:calc(100vh - var(--topbar-h)); overflow-y:auto; padding:18px 0 30px;
+}
+.sidebar .group-label{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--text-faint); padding:6px 20px; margin-top:10px;
+}
+.sidebar nav a{
+  display:flex; align-items:center; gap:9px; padding:8px 20px; font-family:var(--font-mono);
+  font-size:13px; color:var(--text-dim); text-decoration:none; border-left:2px solid transparent; transition:.15s;
+}
+.sidebar nav a:hover{background:var(--surface); color:var(--text);}
+.sidebar nav a.active{background:var(--surface-2); color:var(--amber); border-left-color:var(--amber);}
+.sidebar nav a .num{color:var(--text-faint); font-size:11px; width:16px; flex-shrink:0;}
+.sidebar nav a.active .num{color:var(--amber);}
+
+main{flex:1; min-width:0; padding:0 0 60px;}
+.section{max-width:880px; margin:0 auto; padding:64px 32px 20px; scroll-margin-top:80px;}
+.eyebrow{
+  font-family:var(--font-mono); font-size:12px; color:var(--amber); text-transform:uppercase;
+  letter-spacing:.1em; margin-bottom:10px; display:flex; align-items:center; gap:8px;
+}
+.eyebrow::before{content:''; width:18px; height:1px; background:var(--amber);}
+.section h2{font-size:clamp(24px,3.4vw,34px);}
+.lead{font-size:17px; color:var(--text-dim);}
+.term{color:var(--text); font-style:normal; font-weight:600;}
+.term-note{font-size:13.5px; color:var(--text-faint);}
+
+/* ---------- HERO ---------- */
+.hero{max-width:880px; margin:0 auto; padding:70px 32px 40px;}
+.terminal{
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  overflow:hidden; box-shadow:0 20px 60px -20px rgba(0,0,0,.6);
+}
+.terminal .bar{
+  display:flex; align-items:center; gap:6px; padding:10px 14px;
+  background:var(--surface-2); border-bottom:1px solid var(--border);
+}
+.terminal .bar span{width:10px; height:10px; border-radius:50%;}
+.terminal .bar span:nth-child(1){background:#FF6B6B;}
+.terminal .bar span:nth-child(2){background:#F0A860;}
+.terminal .bar span:nth-child(3){background:#7FDBB6;}
+.terminal .bar .tt{margin-left:8px; font-family:var(--font-mono); font-size:12px; color:var(--text-faint);}
+.terminal .body{padding:26px 24px; font-family:var(--font-mono); font-size:15px; min-height:110px;}
+.terminal .qline{color:var(--mint); white-space:pre-wrap; line-height:1.7;}
+.terminal .qauthor{color:var(--text-faint); margin-top:10px;}
+.cursor{display:inline-block; width:8px; height:16px; background:var(--amber); vertical-align:middle; animation:blink 1s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+.hero h1{font-size:clamp(28px,4.6vw,42px); margin-top:26px; line-height:1.15;}
+.hero h1 .hl{color:var(--amber);}
+.hero .sub{font-size:16.5px; color:var(--text-dim); max-width:640px;}
+.hero-tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:18px;}
+.tag{font-family:var(--font-mono); font-size:12px; color:var(--text-dim); border:1px solid var(--border); padding:5px 10px; border-radius:20px;}
+
+/* ---------- TP BOX ---------- */
+.tp-box{
+  background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--violet);
+  border-radius:10px; padding:20px 22px; margin:28px 0 0; max-width:100%;
+}
+.tp-box h4{
+  font-family:var(--font-mono); font-size:12px; color:var(--violet); text-transform:uppercase;
+  letter-spacing:.06em; margin-bottom:10px;
+}
+.tp-box p{font-size:13.5px; margin-bottom:8px;}
+.tp-box p:last-child{margin-bottom:0;}
+.tp-box b{color:var(--text);}
+
+/* ---------- CARDS / GRID ---------- */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.mini-card{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px;}
+.mini-card .ic{font-family:var(--font-mono); color:var(--amber); font-size:13px; margin-bottom:8px;}
+.mini-card h4{font-size:15px; margin-bottom:6px;}
+.mini-card p{font-size:14px; margin:0;}
+
+/* ---------- TABLE ---------- */
+.table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:10px; margin:18px 0;}
+table{width:100%; border-collapse:collapse; font-size:14px; min-width:480px;}
+th,td{padding:12px 14px; text-align:left; border-bottom:1px solid var(--border-soft);}
+thead th{background:var(--surface-2); font-family:var(--font-mono); font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface);}
+
+/* ---------- CODE BLOCK ---------- */
+.code-block{background:#0D1119; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin:18px 0;}
+.code-head{
+  display:flex; justify-content:space-between; align-items:center; padding:9px 14px;
+  background:var(--surface-2); border-bottom:1px solid var(--border);
+  font-family:var(--font-mono); font-size:12px; color:var(--text-faint);
+}
+.no-copy-badge{font-family:var(--font-mono); font-size:10.5px; color:var(--coral); border:1px solid var(--coral); padding:3px 8px; border-radius:20px;}
+.code-body{padding:16px 0; overflow-x:auto; user-select:none; -webkit-user-select:none; -moz-user-select:none;}
+.code-line{
+  position:relative; padding:1px 18px 1px 62px; font-family:var(--font-mono); font-size:14px;
+  white-space:pre; line-height:1.65; min-height:1.65em;
+}
+.code-line::before{content:attr(data-ln); position:absolute; left:18px; top:1px; width:28px; color:var(--text-faint); user-select:none; text-align:right;}
+.tk-pre{color:var(--violet);}
+.tk-kw{color:var(--amber);}
+.tk-type{color:#7FB3DB;}
+.tk-str{color:var(--mint);}
+.tk-fn{color:#C9A0FF;}
+.tk-com{color:var(--text-faint); font-style:italic;}
+.tk-punc{color:var(--text-dim);}
+
+/* console */
+.console-block{background:#050607; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin:14px 0 18px;}
+.console-head{
+  padding:9px 14px; background:var(--surface-2); border-bottom:1px solid var(--border);
+  font-family:var(--font-mono); font-size:12px; color:var(--text-faint); display:flex; align-items:center; gap:8px;
+}
+.console-head::before{content:'▶'; color:var(--mint); font-size:10px;}
+.console-head span{flex:1; min-width:0;}
+.console-replay{padding:5px 10px; font-size:11px; flex-shrink:0; margin-left:auto;}
+.console-body{padding:18px 20px; font-family:var(--font-mono); font-size:14px; color:#D9DCE3; overflow-x:auto; min-height:28px;}
+.console-body .cline{margin-bottom:4px; white-space:pre;}
+.console-body .cin-val{color:var(--amber); font-weight:600;}
+.console-body .cmeta{color:var(--text-faint); margin-top:10px; font-size:12.5px;}
+.console-cursor{display:inline-block; width:8px; margin-left:1px; color:var(--amber); animation:blink 1s step-end infinite;}
+.console-label{font-family:var(--font-mono); font-size:12.5px; color:var(--text-faint); margin:20px 0 -8px;}
+
+/* explain */
+.explain-list{margin:24px 0;}
+.explain-item{display:grid; grid-template-columns:44px minmax(0,1fr); gap:14px; padding:14px 0; border-top:1px solid var(--border-soft); max-width:100%;}
+.explain-item:first-child{border-top:none;}
+.explain-item .badge{font-family:var(--font-mono); font-size:12px; color:var(--amber); background:var(--amber-soft); min-width:32px; width:fit-content; height:32px; padding:0 6px; border-radius:8px; display:flex; align-items:center; justify-content:center;}
+.explain-item code.line-code{display:block; background:var(--surface-2); padding:6px 10px; border-radius:6px; margin-bottom:6px; color:var(--mint); font-size:13px; width:fit-content;}
+.explain-item p{margin:0; font-size:14.5px;}
+
+.try-it{display:flex; align-items:center; gap:10px; background:var(--mint-soft); border:1px dashed var(--mint); color:var(--mint); border-radius:8px; padding:10px 14px; font-size:13.5px; margin:10px 0 22px;}
+
+/* callout */
+.callout-list{margin:20px 0; display:grid; gap:12px;}
+.callout{display:grid; grid-template-columns:34px minmax(0,1fr); gap:14px; align-items:start; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; max-width:100%;}
+.callout > div:last-child{min-width:0; overflow-wrap:break-word; word-break:break-word;}
+.callout.highlight{border-color:var(--amber); background:var(--amber-soft);}
+.callout.warn{border-color:var(--coral); background:var(--coral-soft);}
+.callout .cnum{width:30px; height:30px; border-radius:50%; background:var(--violet-soft); color:var(--violet); font-family:var(--font-mono); font-weight:700; display:flex; align-items:center; justify-content:center; font-size:13px;}
+.callout.highlight .cnum{background:var(--amber); color:#1a1305;}
+.callout.warn .cnum{background:var(--coral); color:#2a0e0e;}
+.callout h4{font-size:14.5px; margin-bottom:4px;}
+.callout p{font-size:13.5px; margin:0;}
+
+/* matching game */
+.match-wrap{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:22px; margin:18px 0; max-width:100%; box-sizing:border-box;}
+.match-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;}
+.game-stat{font-family:var(--font-mono); font-size:13px; color:var(--text-dim);}
+.game-stat b{color:var(--amber);}
+.match-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:20px;}
+@media (max-width:600px){.match-grid{grid-template-columns:1fr;}}
+.match-col-label{font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); margin-bottom:8px;}
+.match-chip{display:block; width:100%; text-align:left; padding:12px 14px; margin-bottom:8px; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:var(--font-mono); font-size:13.5px; cursor:pointer; transition:.12s;}
+.match-chip:hover{border-color:var(--violet);}
+.match-chip.selected{border-color:var(--amber); background:var(--amber-soft); color:var(--amber);}
+.match-chip.matched{border-color:var(--mint); background:var(--mint-soft); color:var(--mint); cursor:default;}
+.match-chip.wrong{border-color:var(--coral); background:var(--coral-soft); color:var(--coral);}
+.match-chip:disabled{opacity:.55; cursor:default;}
+.match-actions{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;}
+.game-feedback{margin-top:14px; font-size:14px; color:var(--text-dim); display:none; padding:12px 14px; border-radius:8px; background:var(--bg-soft); border:1px dashed var(--border);}
+
+.btn{font-family:var(--font-mono); font-size:13px; border-radius:7px; padding:9px 16px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); cursor:pointer; text-decoration:none; display:inline-block;}
+.btn:hover{border-color:var(--amber); color:var(--amber);}
+.btn.primary{background:var(--amber); border-color:var(--amber); color:#1a1305; font-weight:600;}
+.btn.primary:hover{opacity:.9; color:#1a1305;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+.hidden{display:none !important;}
+
+/* CTA kuis */
+.next-box{background:var(--amber-soft); border:1px solid var(--amber); border-radius:12px; padding:26px 24px; margin:32px 0 8px; text-align:center;}
+.next-box h3{color:var(--amber); font-size:19px; margin-bottom:8px;}
+.next-box p{font-size:14.5px; margin-bottom:18px;}
+
+/* sumber */
+.sources{max-width:880px; margin:0 auto; padding:40px 32px 80px; border-top:1px solid var(--border-soft);}
+.sources h3{font-size:15px; font-family:var(--font-mono); color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em;}
+.sources ul{list-style:none; padding:0; margin:14px 0 0; display:grid; gap:8px;}
+.sources li{font-size:13.5px; color:var(--text-dim);}
+.sources li a{color:var(--violet); text-decoration:none;}
+.sources li a:hover{text-decoration:underline;}
+
+/* statusbar */
+.statusbar{
+  position:fixed; left:0; right:0; bottom:0; height:var(--statusbar-h); z-index:60;
+  background:var(--amber); color:#1a1305; font-family:var(--font-mono); font-size:12px; font-weight:600;
+  display:flex; align-items:center; padding:0 16px; gap:22px; overflow-x:auto; white-space:nowrap;
+}
+.statusbar span b{font-weight:700;}
+
+@media (max-width:900px){
+  .grid2{grid-template-columns:1fr;}
+  .sidebar{position:fixed; top:var(--topbar-h); left:0; height:calc(100vh - var(--topbar-h)); width:78vw; max-width:300px; transform:translateX(-100%); transition:.2s; z-index:70; box-shadow:20px 0 40px rgba(0,0,0,.4);}
+  .sidebar.open{transform:translateX(0);}
+  .menu-toggle{display:block;}
+  .section{padding:46px 20px 10px;}
+  .hero{padding:40px 20px 20px;}
+  .sources{padding:40px 20px 80px;}
+}
+@media (max-width:520px){
+  .statusbar{font-size:10px; gap:12px;}
+  .console-body{font-size:12.5px; padding:14px 16px;}
+}
+
+/* ---------- OVERLAY KUIS ---------- */
+#quizOverlay{display:none; position:fixed; inset:0; z-index:500; background:var(--bg); overflow-y:auto; padding:48px 24px 80px;}
+#quizOverlay .wrap{max-width:680px; margin:0 auto;}
+.intro-card{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:22px 24px; margin-bottom:26px;}
+.intro-card ul{margin:10px 0 0; padding-left:20px;}
+.intro-card li{font-size:14px; color:var(--text-dim); margin-bottom:6px;}
+.quiz-card{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin:10px 0;}
+.q-progress{font-family:var(--font-mono); font-size:12px; color:var(--text-faint); margin-bottom:10px;}
+.q-text{font-size:16px; font-weight:600; margin-bottom:18px; font-family:var(--font-display); color:var(--text);}
+.q-text code{font-size:.85em;}
+.q-options{display:grid; gap:10px;}
+.q-opt{text-align:left; background:var(--surface-2); border:1px solid var(--border); color:var(--text); padding:13px 16px; border-radius:8px; font-family:var(--font-body); font-size:14.5px; cursor:pointer; transition:.15s;}
+.q-opt code{background:transparent; padding:0; color:inherit; font-size:.95em;}
+.q-opt:hover{border-color:var(--violet);}
+.q-opt.correct{border-color:var(--mint); background:var(--mint-soft); color:var(--mint);}
+.q-opt.wrong{border-color:var(--coral); background:var(--coral-soft); color:var(--coral);}
+.q-opt:disabled{cursor:default;}
+.q-explain{margin-top:14px; padding:12px 14px; border-radius:8px; background:var(--bg-soft); border:1px dashed var(--border); font-size:13.5px; color:var(--text-dim); display:none; white-space:pre-line; line-height:1.7;}
+.q-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+.quiz-result{display:none; text-align:center; padding:26px 20px;}
+.quiz-result .score{font-family:var(--font-display); font-size:40px; color:var(--amber);}
+.quiz-result .best{font-family:var(--font-mono); font-size:13px; color:var(--mint); margin-top:6px;}
+.quiz-result .rmsg{margin-top:8px; font-size:14.5px;}
+.quiz-result .ractions{margin-top:18px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+.idform{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0 20px;}
+@media (max-width:520px){.idform{grid-template-columns:1fr;}}
+.field label{display:block; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; color:var(--text-faint);}
+.field input{width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:var(--surface-2); color:var(--text); font-family:var(--font-body); font-size:14px;}
+.field input:focus{outline:none; border-color:var(--amber);}
+#submitResult{margin-top:16px; padding:14px 16px; border-radius:8px; background:var(--mint-soft); border:1px solid var(--mint); color:var(--mint); font-size:13.5px; display:none;}
+.best-banner{background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:10px 14px; font-family:var(--font-mono); font-size:12.5px; color:var(--amber); margin-bottom:16px;}
+
+/* guard loading */
+#guard-loading{
+  position:fixed; inset:0; background:var(--bg); z-index:999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  font-family:var(--font-mono); color:var(--text-dim); font-size:13px;
+}
+#guard-loading .spin{width:34px; height:34px; border-radius:50%; border:3px solid var(--surface-2); border-top-color:var(--amber); animation:guardspin .8s linear infinite;}
+@keyframes guardspin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div id="guard-loading">
+  <div class="spin"></div>
+  <div>Memuat materi…</div>
+</div>
+
+<div id="konten-utama" style="visibility:hidden">
+
+<div class="topbar">
+  <div class="dots"><span></span><span></span><span></span></div>
+  <div class="filename"><a href="../index.html" style="color:inherit; text-decoration:none; opacity:.7;">⌨️ Informatika XI</a> &nbsp;›&nbsp; <b>Percabangan IF, IF-ELSE, dan IF Bertingkat</b> <span class="guru-badge guru-only">🔓 Mode Guru</span></div>
+  <button class="menu-toggle" id="menuToggle">☰ Daftar Isi</button>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="group-label">Daftar Isi</div>
+    <nav id="stepnav">
+      <a href="#beranda" data-target="beranda"><span class="num">00</span>Beranda</a>
+      <a href="#s1" data-target="s1"><span class="num">01</span>Mengenal Percabangan</a>
+      <a href="#s2" data-target="s2"><span class="num">02</span>if (satu jalur)</a>
+      <a href="#s3" data-target="s3"><span class="num">03</span>if-else (dua jalur)</a>
+      <a href="#s4" data-target="s4"><span class="num">04</span>else if (bertingkat)</a>
+      <a href="#s5" data-target="s5"><span class="num">05</span>if Bersarang</a>
+      <a href="#s6" data-target="s6"><span class="num">06</span>if vs switch-case</a>
+      <a href="#s7" data-target="s7"><span class="num">07</span>Contoh Gabungan</a>
+      <a href="#s8" data-target="s8"><span class="num">08</span>Lanjut ke Kuis</a>
+    </nav>
+  </aside>
+
+  <main>
+
+    <!-- ============ BERANDA ============ -->
+    <section class="section" id="beranda" style="padding-top:0;">
+      <div class="hero" style="padding-left:0; padding-right:0;">
+        <div class="terminal">
+          <div class="bar"><span></span><span></span><span></span><div class="tt">quote.txt</div></div>
+          <div class="body" id="quoteTerminal"></div>
+        </div>
+        <h1>Percabangan <span class="hl">if</span>, if-else, dan else if</h1>
+        <p class="sub">Program yang kamu tulis selama ini berjalan lurus dari atas ke bawah. Sekarang program belajar <strong>mengambil keputusan</strong> seperti penjaga gerbang Taman Seru: boleh masuk atau belum, tarif berapa, dapat potongan atau tidak. Baca materinya, coba simulasinya, lalu uji pemahamanmu lewat kuis di bagian akhir.</p>
+        <div class="hero-tags">
+          <span class="tag">if</span>
+          <span class="tag">if-else</span>
+          <span class="tag">else if</span>
+          <span class="tag">if bersarang</span>
+          <span class="tag">kondisi &amp; operator</span>
+        </div>
+
+        <div class="tp-box">
+          <h4>Tujuan Pembelajaran</h4>
+          <p><b>Capaian Pembelajaran (Elemen Algoritma dan Pemrograman — Fase F):</b> peserta didik mampu mengembangkan program terstruktur dan menuliskannya sebagai kode program sesuai kaidah bahasa pemrograman yang dipakai.</p>
+          <p><b>Tujuan Pembelajaran:</b> melalui pengamatan, permainan, dan praktik menulis program C++ sederhana, peserta didik mampu (1) menjelaskan fungsi percabangan dan menulis program dengan <code>if</code> dan <code>if-else</code> memakai kondisi dari operator perbandingan, (2) menulis <code>if</code> bertingkat (<code>else if</code>) untuk memilih satu dari beberapa rentang nilai dan menjelaskan pentingnya urutan kondisi, (3) menulis <code>if</code> bersarang sederhana, (4) membedakan <code>if</code> dari <code>switch-case</code> serta memilih struktur yang tepat, dan (5) menggabungkan <code>cin</code>, operator, dan percabangan <code>if</code> dalam program yang dapat dikompilasi dan dijalankan.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 01 — MENGENAL PERCABANGAN ============ -->
+    <section class="section" id="s1">
+      <div class="eyebrow">01 · Konsep Dasar</div>
+      <h2>Mengenal Percabangan</h2>
+      <p class="lead">Dalam kehidupan sehari-hari kita terus mengambil keputusan: <strong>jika</strong> hujan, <strong>maka</strong> bawa payung. Program juga bisa begitu. <strong>Percabangan</strong> membuat program memilih tindakan berbeda tergantung kondisi yang sedang benar atau salah.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bahasa sehari-hari</th><th>Bahasa C++</th></tr></thead>
+          <tbody>
+            <tr><td>Jika total ≥ 50.000</td><td><code>if (total &gt;= 50000)</code></td></tr>
+            <tr><td>maka ...</td><td><code>{ ... }</code> (isi di dalam kurung kurawal)</td></tr>
+            <tr><td>jika tidak, maka ...</td><td><code>else { ... }</code></td></tr>
+            <tr><td>jika tidak, tetapi jika ...</td><td><code>else if (kondisi) { ... }</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Kondisi</strong> ditulis dengan operator perbandingan. Hasilnya selalu <em>benar</em> atau <em>salah</em>.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Operator</th><th>Artinya</th><th>Contoh (nilai = 80)</th><th>Hasil</th></tr></thead>
+          <tbody>
+            <tr><td><code>==</code></td><td>sama dengan</td><td><code>nilai == 80</code></td><td>benar</td></tr>
+            <tr><td><code>!=</code></td><td>tidak sama dengan</td><td><code>nilai != 80</code></td><td>salah</td></tr>
+            <tr><td><code>&gt;</code> <code>&lt;</code></td><td>lebih besar / lebih kecil</td><td><code>nilai &gt; 90</code></td><td>salah</td></tr>
+            <tr><td><code>&gt;=</code> <code>&lt;=</code></td><td>lebih besar atau sama / lebih kecil atau sama</td><td><code>nilai &gt;= 75</code></td><td>benar</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout-list">
+        <div class="callout warn">
+          <div class="cnum">!</div>
+          <div>
+            <h4><code>=</code> dan <code>==</code> itu berbeda</h4>
+            <p>Satu tanda sama dengan (<code>=</code>) berarti <strong>mengisi nilai</strong>. Dua tanda sama dengan (<code>==</code>) berarti <strong>membandingkan</strong>. Pada kondisi, selalu tulis <code>if (nilai == 100)</code>, bukan <code>if (nilai = 100)</code>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 — IF ============ -->
+    <section class="section" id="s2">
+      <div class="eyebrow">02 · Satu Jalur</div>
+      <h2>Percabangan <code>if</code></h2>
+      <p class="lead"><code>if</code> saja menjalankan isinya <strong>hanya bila kondisi benar</strong>. Bila kondisi salah, isinya dilewati dan program lanjut ke baris berikutnya.</p>
+
+      <h3 style="font-size:18px; margin-top:28px;">Struktur dan Cara Kerja</h3>
+      <div class="code-block" data-src="src-struk-if" data-file="struktur-if.cpp"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bagian</th><th>Fungsi</th></tr></thead>
+          <tbody><tr><td><code>if (kondisi)</code></td><td>Kondisi yang diperiksa, ditulis di dalam kurung. Hasilnya benar atau salah.</td></tr><tr><td><code>{ ... }</code></td><td>Isi keputusan. Hanya dijalankan bila kondisi benar.</td></tr><tr><td>Baris setelah <code>}</code></td><td>Berada di luar <code>if</code>, jadi selalu dijalankan.</td></tr></tbody>
+        </table>
+      </div>
+      <div class="callout-list">
+        <div class="callout warn">
+          <div class="cnum">!</div>
+          <div>
+            <h4>Jangan beri titik koma setelah kondisi</h4>
+            <p><code>if (kondisi);</code> membuat isi <code>if</code> tidak lagi terkait dengan kondisinya. Pastikan juga setiap <code>{</code> punya <code>}</code> penutup.</p>
+          </div>
+        </div>
+      </div>
+      <h3 style="font-size:18px; margin-top:34px;">Contoh Program: Diskon Belanja</h3>
+      <div class="code-block" data-src="src-diskon" data-file="diskon.cpp"></div>
+
+      <p class="console-label">Percobaan 1 — total belanja 60000 (kondisi benar)</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoDiskon1">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoDiskon1"></div>
+      </div>
+
+      <p class="console-label">Percobaan 2 — total belanja 30000 (kondisi salah)</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoDiskon2">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoDiskon2"></div>
+      </div>
+
+      <h3 style="margin-top:34px; font-size:18px;">Penjelasan Bagian Penting</h3>
+      <div class="explain-list">
+        <div class="explain-item"><div class="badge">9</div><div><code class="line-code">cin &gt;&gt; total;</code><p>Nilai total belanja dibaca lebih dulu, supaya ada yang bisa diperiksa oleh kondisi.</p></div></div>
+        <div class="explain-item"><div class="badge">11</div><div><code class="line-code">if (total &gt;= 50000) {</code><p>Kondisi ditulis <strong>di dalam kurung</strong> setelah kata <code>if</code>. Bacalah dengan suara: "jika total lebih besar atau sama dengan 50000, maka ...".</p></div></div>
+        <div class="explain-item"><div class="badge">12–13</div><div><code class="line-code">cout &lt;&lt; "Selamat! ..." &lt;&lt; endl;<br>}</code><p>Isi keputusan ditulis di dalam <strong>kurung kurawal</strong> <code>{ }</code>. Baris ini hanya dijalankan kalau kondisinya benar.</p></div></div>
+        <div class="explain-item"><div class="badge">14</div><div><code class="line-code">cout &lt;&lt; "Terima kasih ..." &lt;&lt; endl;</code><p>Baris ini berada <strong>di luar</strong> <code>if</code>, jadi selalu tampil, baik total 60000 maupun 30000.</p></div></div>
+      </div>
+
+      <div class="try-it">✏️ Ketik program ini sendiri di Dev-C++. Sebelum menjalankan, <strong>tebak dulu</strong> keluarannya untuk total 50000 (tepat di batas), lalu bandingkan.</div>
+    </section>
+
+    <!-- ============ 03 — IF-ELSE ============ -->
+    <section class="section" id="s3">
+      <div class="eyebrow">03 · Dua Jalur</div>
+      <h2>Percabangan <code>if-else</code></h2>
+      <p class="lead"><code>if-else</code> menyediakan <strong>dua jalur</strong>: satu bila kondisi benar, satu lagi bila kondisi salah. Program pasti menjalankan salah satunya, tidak pernah keduanya.</p>
+
+      <h3 style="font-size:18px; margin-top:28px;">Struktur dan Cara Kerja</h3>
+      <div class="code-block" data-src="src-struk-ifelse" data-file="struktur-if-else.cpp"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bagian</th><th>Fungsi</th></tr></thead>
+          <tbody><tr><td><code>if (kondisi) { ... }</code></td><td>Jalur pertama, dijalankan bila kondisi benar.</td></tr><tr><td><code>else { ... }</code></td><td>Jalur kedua ("jika tidak"), dijalankan bila kondisi salah. <code>else</code> tidak punya kondisi.</td></tr><tr><td>Hasil akhir</td><td>Tepat satu dari dua jalur yang dijalankan, tidak pernah keduanya.</td></tr></tbody>
+        </table>
+      </div>
+      <div class="callout-list">
+        <div class="callout highlight">
+          <div class="cnum">★</div>
+          <div>
+            <h4>Dua jalur, pasti satu yang jalan</h4>
+            <p>Program selalu memilih salah satu: jalur <code>if</code> atau jalur <code>else</code>. Cocok untuk keputusan ya atau tidak, misalnya lulus atau belum lulus.</p>
+          </div>
+        </div>
+      </div>
+      <h3 style="font-size:18px; margin-top:34px;">Contoh Program: Lulus atau Belum</h3>
+      <div class="code-block" data-src="src-lulus" data-file="lulus.cpp"></div>
+
+      <p class="console-label">Percobaan 1 — nilai 80</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoLulus1">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoLulus1"></div>
+      </div>
+
+      <p class="console-label">Percobaan 2 — nilai 60</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoLulus2">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoLulus2"></div>
+      </div>
+
+      <div class="explain-list">
+        <div class="explain-item"><div class="badge">11</div><div><code class="line-code">if (nilai &gt;= 75) {</code><p>Kalau nilai 75 atau lebih, jalur pertama dijalankan.</p></div></div>
+        <div class="explain-item"><div class="badge">13</div><div><code class="line-code">} else {</code><p><code>else</code> berarti "jika tidak". Perhatikan bahwa <code>else</code> <strong>tidak punya kondisi</strong>; ia menangkap semua yang tidak lolos kondisi <code>if</code>.</p></div></div>
+      </div>
+
+      <div class="try-it">✏️ Ketik program ini sendiri, lalu ubah syarat lulus menjadi 70 dan ganti pesannya sesuai kreativitasmu.</div>
+
+      <div class="guru-extra"><div class="guru-extra-label">🔓 Contoh tambahan — hanya tampil di Mode Guru (?guru=1)</div>
+<h3 style="margin-top:34px; font-size:18px;">Contoh lain: Genap atau Ganjil</h3>
+      <p>Operator <code>%</code> memberi sisa bagi. Angka genap bersisa 0 bila dibagi 2.</p>
+
+      <div class="code-block" data-src="src-genap" data-file="genap.cpp"></div>
+
+      <p class="console-label">Percobaan — angka 7</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoGenap">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoGenap"></div>
+      </div>
+
+      <div class="explain-list">
+        <div class="explain-item"><div class="badge">11</div><div><code class="line-code">if (angka % 2 == 0) {</code><p>Sisa bagi angka oleh 2 dihitung lebih dulu (<code>angka % 2</code>), lalu dibandingkan dengan 0 memakai <code>==</code>. Untuk angka 7, sisanya 1, jadi kondisi salah dan jalur <code>else</code> yang jalan.</p></div></div>
+      </div></div>
+
+      
+    </section>
+
+    <!-- ============ 04 — ELSE IF ============ -->
+    <section class="section" id="s4">
+      <div class="eyebrow">04 · Banyak Jalur</div>
+      <h2><code>if</code> Bertingkat: <code>else if</code></h2>
+      <p class="lead">Bila kemungkinannya lebih dari dua, kondisi disusun bertingkat seperti <strong>anak tangga</strong> memakai <code>else if</code>. Program memeriksa dari atas ke bawah dan <strong>berhenti pada kondisi pertama yang benar</strong>.</p>
+
+      <h3 style="font-size:18px; margin-top:28px;">Struktur dan Cara Kerja</h3>
+      <div class="code-block" data-src="src-struk-elseif" data-file="struktur-else-if.cpp"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bagian</th><th>Fungsi</th></tr></thead>
+          <tbody><tr><td><code>if (kondisi1)</code></td><td>Anak tangga paling atas. Diperiksa lebih dulu.</td></tr><tr><td><code>else if (kondisi2)</code></td><td>Anak tangga berikutnya. <strong>Punya kondisi</strong> dan hanya diperiksa bila kondisi di atasnya salah. Boleh ditulis berkali-kali.</td></tr><tr><td><code>else</code></td><td>Lantai paling bawah, untuk semua yang tidak lolos kondisi di atas. <strong>Tidak punya kondisi</strong> dan boleh tidak ditulis.</td></tr></tbody>
+        </table>
+      </div>
+      <div class="callout-list">
+        <div class="callout highlight">
+          <div class="cnum">★</div>
+          <div>
+            <h4>Berhenti pada kondisi pertama yang benar</h4>
+            <p>Program memeriksa dari atas ke bawah. Begitu ada kondisi yang benar, isinya dijalankan dan sisa anak tangga di bawahnya dilewati.</p>
+          </div>
+        </div>
+      </div>
+      <h3 style="font-size:18px; margin-top:34px;">Contoh Program: Predikat Nilai</h3>
+      <div class="code-block" data-src="src-predikat" data-file="predikat_if.cpp"></div>
+
+      <p class="console-label">Percobaan 1 — nilai 85</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoPred1">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoPred1"></div>
+      </div>
+
+      <p class="console-label">Percobaan 2 — nilai 40</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoPred2">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoPred2"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nilai</th><th>Kondisi pertama yang benar</th><th>Keluaran</th></tr></thead>
+          <tbody>
+            <tr><td>95</td><td><code>nilai &gt;= 90</code></td><td>Predikat A</td></tr>
+            <tr><td>85</td><td><code>nilai &gt;= 80</code></td><td>Predikat B</td></tr>
+            <tr><td>65</td><td><code>nilai &gt;= 60</code></td><td>Predikat D</td></tr>
+            <tr><td>40</td><td>tidak ada, masuk <code>else</code></td><td>Predikat E</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="explain-list">
+        <div class="explain-item"><div class="badge">11</div><div><code class="line-code">if (nilai &gt;= 90) {</code><p>Anak tangga paling atas, kondisi yang paling ketat.</p></div></div>
+        <div class="explain-item"><div class="badge">13</div><div><code class="line-code">} else if (nilai &gt;= 80) {</code><p>Setiap <code>else if</code> adalah satu anak tangga baru. Berbeda dari <code>else</code>, <code>else if</code> <strong>punya kondisi</strong>. Baris ini hanya diperiksa kalau kondisi di atasnya salah.</p></div></div>
+        <div class="explain-item"><div class="badge">19–20</div><div><code class="line-code">} else {<br>&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Predikat E" &lt;&lt; endl;</code><p><code>else</code> adalah lantai paling bawah, untuk semua nilai di bawah 60.</p></div></div>
+      </div>
+
+      <div class="try-it">✏️ Ketik program ini sendiri, lalu uji dengan nilai 95, 90, 85, 70, 65, dan 40. Tebak dulu hasilnya sebelum menjalankan.</div>
+
+      <div class="callout-list">
+        <div class="callout warn">
+          <div class="cnum">!</div>
+          <div>
+            <h4>Urutan kondisi itu penting</h4>
+            <p>Susun kondisi dari yang <strong>paling ketat</strong> (nilai tertinggi) ke yang paling longgar. Bila disusun terbalik (dari 60 ke 90), nilai 95 sudah benar pada kondisi pertama (<code>nilai &gt;= 60</code>) dan berhenti di sana dengan Predikat D, sementara kondisi lain tidak pernah diperiksa.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="guru-extra"><div class="guru-extra-label">🔓 Contoh tambahan (salah_urutan.cpp dan tiket.cpp) — hanya tampil di Mode Guru (?guru=1)</div>
+<div class="code-block" data-src="src-salah" data-file="salah_urutan.cpp (potongan)"></div>
+
+      <p class="console-label">Percobaan — nilai 95 pada urutan yang terbalik</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoSalah">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoSalah"></div>
+      </div>
+
+      <p>Nilai 95 sudah benar pada kondisi pertama (<code>nilai &gt;= 60</code>), sehingga program berhenti di sana dan menampilkan Predikat D. Kondisi lain tidak pernah diperiksa. Karena itu, mulailah dari anak tangga paling atas.</p>
+
+      <h3 style="margin-top:34px; font-size:18px;">Contoh: Tarif Tiket Berdasarkan Umur</h3>
+      <div class="code-block" data-src="src-tiket" data-file="tiket.cpp"></div>
+
+      <p class="console-label">Percobaan — umur 10</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoTiket">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoTiket"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Umur</th><th>Tarif</th></tr></thead>
+          <tbody>
+            <tr><td>4</td><td>Rp 0</td></tr>
+            <tr><td>10</td><td>Rp 10000</td></tr>
+            <tr><td>30</td><td>Rp 20000</td></tr>
+            <tr><td>65</td><td>Rp 10000</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="explain-list">
+        <div class="explain-item"><div class="badge">6</div><div><code class="line-code">int umur, tarif;</code><p>Dua variabel dideklarasikan sekaligus. <code>tarif</code> diisi oleh salah satu cabang, lalu ditampilkan di baris 21 setelah semua cabang selesai.</p></div></div>
+        <div class="explain-item"><div class="badge">13</div><div><code class="line-code">} else if (umur &lt;= 12) {</code><p>Kita tidak perlu menulis <code>umur &gt;= 6</code>, karena baris ini hanya sampai bila umur sudah lebih dari 5 (kondisi pertama salah).</p></div></div>
+      </div>
+
+      <div class="try-it">✏️ Uji <code>tiket.cpp</code> dengan umur 4, 10, 30, dan 65. Lalu coba tukar urutan kondisinya dan jelaskan apa akibatnya.</div></div>
+    </section>
+
+    <!-- ============ 05 — IF BERSARANG ============ -->
+    <section class="section" id="s5">
+      <div class="eyebrow">05 · Pengenalan Singkat</div>
+      <h2><code>if</code> Bersarang</h2>
+      <p class="lead"><code>if</code> bersarang berarti <strong><code>if</code> di dalam <code>if</code></strong>. Keputusan kedua hanya diperiksa bila keputusan pertama lolos, seperti dua pintu berlapis: pintu 2 baru dijumpai setelah lolos pintu 1.</p>
+
+      <h3 style="font-size:18px; margin-top:28px;">Struktur dan Cara Kerja</h3>
+      <div class="code-block" data-src="src-struk-nested" data-file="struktur-if-bersarang.cpp"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bagian</th><th>Fungsi</th></tr></thead>
+          <tbody><tr><td><code>if (kondisiLuar)</code></td><td>Pintu pertama. Diperiksa lebih dulu.</td></tr><tr><td><code>if (kondisiDalam)</code></td><td>Pintu kedua, ditulis di dalam kurung kurawal pintu pertama. Hanya diperiksa bila pintu pertama lolos.</td></tr><tr><td><code>else</code> masing-masing</td><td>Setiap <code>if</code> boleh punya <code>else</code> sendiri untuk kasus ketika pintunya tidak lolos.</td></tr></tbody>
+        </table>
+      </div>
+      <div class="callout-list">
+        <div class="callout warn">
+          <div class="cnum">!</div>
+          <div>
+            <h4>Pasangkan kurung kurawal dengan teliti</h4>
+            <p>Setiap <code>{</code> harus punya <code>}</code> penutup. Rapikan indentasi (menjorok ke dalam) supaya jelas <code>else</code> milik <code>if</code> yang mana.</p>
+          </div>
+        </div>
+      </div>
+      <h3 style="font-size:18px; margin-top:34px;">Contoh Program: Wahana (umur lalu tinggi)</h3>
+      <div class="code-block" data-src="src-wahana" data-file="wahana.cpp"></div>
+
+      <p class="console-label">Percobaan 1 — umur 8, tinggi 130</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoWahana1">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoWahana1"></div>
+      </div>
+
+      <p class="console-label">Percobaan 2 — umur 5, tinggi 130</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoWahana2">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoWahana2"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Umur</th><th>Tinggi</th><th>Keluaran</th></tr></thead>
+          <tbody>
+            <tr><td>8</td><td>130</td><td>Silakan naik wahana!</td></tr>
+            <tr><td>8</td><td>110</td><td>Maaf, tinggi badan belum cukup.</td></tr>
+            <tr><td>5</td><td>130</td><td>Maaf, umur belum cukup.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="explain-list">
+        <div class="explain-item"><div class="badge">13–14</div><div><code class="line-code">if (umur &gt;= 7) {<br>&nbsp;&nbsp;&nbsp;&nbsp;if (tinggi &gt;= 120) {</code><p><code>if</code> kedua berada di dalam kurung kurawal <code>if</code> pertama. Ia hanya diperiksa bila umur sudah cukup. Pada data (5, 130), tinggi 130 sebenarnya cukup, tetapi tidak pernah diperiksa karena pintu pertama sudah tertutup.</p></div></div>
+        <div class="explain-item"><div class="badge">16–19</div><div><code class="line-code">} else { ... }<br>} else { ... }</code><p>Setiap <code>if</code> punya <code>else</code>-nya sendiri. Pasangkan kurung kurawal dengan teliti: setiap <code>{</code> harus punya <code>}</code> penutup.</p></div></div>
+      </div>
+
+      <div class="try-it">✏️ Ketik <code>wahana.cpp</code>, uji dengan data (8, 130), (8, 110), dan (5, 130), lalu gambar jalur keputusannya di kertas.</div>
+    </section>
+
+    <!-- ============ 06 — IF VS SWITCH ============ -->
+    <section class="section" id="s6">
+      <div class="eyebrow">06 · Memilih Struktur</div>
+      <h2><code>if</code> atau <code>switch-case</code>?</h2>
+      <p class="lead">Kamu sudah mengenal dua cara mengambil keputusan. Keduanya punya keunggulan masing-masing.</p>
+
+      <div class="grid2">
+        <div class="mini-card">
+          <div class="ic">🔀 if</div>
+          <h4>Untuk <strong>rentang nilai</strong></h4>
+          <p>Contoh: nilai ≥ 75, umur &lt; 12, tinggi ≥ 120. Bisa dipakai pada banyak tipe data dan kondisi yang bebas.</p>
+        </div>
+        <div class="mini-card">
+          <div class="ic">🎛️ switch-case</div>
+          <h4>Untuk <strong>pilihan tetap</strong></h4>
+          <p>Contoh: menu 1–3, huruf A–D, angka 1–12 menjadi nama bulan. Hanya menerima <code>int</code> atau <code>char</code>.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Aspek</th><th>if</th><th>switch-case</th></tr></thead>
+          <tbody>
+            <tr><td>Cocok untuk</td><td>Rentang nilai</td><td>Pilihan tetap</td></tr>
+            <tr><td>Tipe data</td><td>Banyak tipe (bilangan bulat, desimal, string)</td><td>Hanya <code>int</code> atau <code>char</code></td></tr>
+            <tr><td>Kondisi</td><td>Bebas, termasuk operator perbandingan dan logika</td><td>Mencocokkan nilai yang sama persis</td></tr>
+            <tr><td>Contoh</td><td>Nilai ujian menjadi lulus atau belum</td><td>Nomor menu menjadi nama makanan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Untuk pilihan tetap, keduanya menghasilkan keluaran yang sama, misalnya menu 1–3 bisa ditulis dengan <code>switch-case</code> atau dengan <code>if</code> dan <code>else if</code>. Tetapi untuk "nilai ≥ 75", <code>switch-case</code> tidak praktis karena harus menuliskan satu per satu angka 75, 76, 77, sampai 100.</p>
+
+      <div class="callout-list">
+        <div class="callout highlight">
+          <div class="cnum">★</div>
+          <div>
+            <h4>Cara cepat memilih</h4>
+            <p><strong>Pilihan tetap, pakai <code>switch-case</code>. Rentang nilai, pakai <code>if</code>.</strong></p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:34px; font-size:18px;">Hal Penting Lainnya</h3>
+      <div class="grid2">
+        <div class="mini-card"><div class="ic">⚠️ =  vs ==</div><h4>Pembanding yang benar</h4><p><code>=</code> mengisi nilai, <code>==</code> membandingkan. Gunakan <code>==</code> di dalam kondisi.</p></div>
+        <div class="mini-card"><div class="ic">⚠️ titik koma</div><h4>Jangan beri <code>;</code> setelah kondisi</h4><p><code>if (nilai &gt;= 75);</code> membuat isi <code>if</code> tidak lagi terkait dengan kondisinya.</p></div>
+        <div class="mini-card"><div class="ic">⚠️ kurung kurawal</div><h4>Harus berpasangan</h4><p>Setiap <code>{</code> punya <code>}</code> penutup. Kurung kurawal yang hilang adalah galat yang sangat umum.</p></div>
+        <div class="mini-card"><div class="ic">⚠️ else if</div><h4>Urutan dan kondisi</h4><p><code>else if</code> punya kondisi, <code>else</code> tidak. Mulai dari kondisi yang paling ketat.</p></div>
+      </div>
+
+      <h3 style="font-size:16px; margin-top:30px;">Latihan Santai: Cocokkan Deskripsi dengan Istilahnya</h3>
+      <p style="font-size:14px;">Klik satu <strong>deskripsi</strong> di kiri, lalu klik <strong>istilah</strong> yang cocok di kanan. Latihan ini tidak dinilai, hanya untuk melatih intuisi sebelum kuis.</p>
+      <div class="match-wrap">
+        <div class="match-top">
+          <div class="game-stat">Cocok: <b id="matchFound">0</b> / <span id="matchTotal">5</span></div>
+          <div class="game-stat">Salah pilih: <b id="matchWrong">0</b></div>
+        </div>
+        <div class="match-grid">
+          <div><div class="match-col-label">Deskripsi</div><div id="matchValues"></div></div>
+          <div><div class="match-col-label">Istilah</div><div id="matchTypes"></div></div>
+        </div>
+        <div class="match-actions"><button class="btn" id="matchReset">Acak Ulang</button></div>
+        <div class="game-feedback" id="matchFeedback"></div>
+      </div>
+    </section>
+
+    <!-- ============ 07 — CONTOH GABUNGAN ============ -->
+    <section class="section" id="s7">
+      <div class="eyebrow">07 · Praktik Gabungan</div>
+      <h2>Contoh Program: Loket Tiket Wahana</h2>
+      <p class="lead">Sekarang semuanya digabung. Program <strong>loket.cpp</strong> memakai <code>if</code> bersarang untuk memeriksa umur yang valid, <code>else if</code> untuk menentukan tarif, dan operator logika <code>&amp;&amp;</code> untuk memberi potongan Rp2.000 bagi member yang tarifnya tidak gratis.</p>
+
+      <div class="code-block" data-src="src-loket" data-file="loket.cpp"></div>
+
+      <p class="console-label">Percobaan — umur 10, anggota member</p>
+      <div class="console-block">
+        <div class="console-head"><span>Simulasi jendela Console setelah ditekan F11</span><button class="btn console-replay" data-replay="demoLoket">↻ Putar Ulang</button></div>
+        <div class="console-body" id="consoleBodydemoLoket"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Umur</th><th>Member</th><th>Tarif</th></tr></thead>
+          <tbody>
+            <tr><td>4</td><td>1</td><td>Rp 0 (member tidak mengubah tarif gratis)</td></tr>
+            <tr><td>10</td><td>1</td><td>Rp 8000</td></tr>
+            <tr><td>30</td><td>0</td><td>Rp 20000</td></tr>
+            <tr><td>30</td><td>1</td><td>Rp 18000</td></tr>
+            <tr><td>70</td><td>1</td><td>Rp 8000</td></tr>
+            <tr><td>-1</td><td>0</td><td>Umur tidak valid</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="explain-list">
+        <div class="explain-item"><div class="badge">13</div><div><code class="line-code">if (umur &lt; 0) {</code><p>Pemeriksaan pertama: umur negatif dianggap tidak valid dan langsung ditolak.</p></div></div>
+        <div class="explain-item"><div class="badge">16–24</div><div><code class="line-code">if (umur &lt;= 5) { ... }<br>else if (umur &lt;= 12) { ... }</code><p>Di dalam <code>else</code>, tarif ditentukan memakai <code>else if</code> bertingkat, persis seperti <code>tiket.cpp</code>.</p></div></div>
+        <div class="explain-item"><div class="badge">26</div><div><code class="line-code">if (member == 1 &amp;&amp; tarif &gt; 0) {</code><p>Dua syarat harus benar sekaligus: statusnya member <strong>dan</strong> tarifnya lebih dari 0. Karena itu umur 4 tahun tetap gratis meskipun member.</p></div></div>
+      </div>
+
+      <div class="try-it">✏️ Ketik <code>loket.cpp</code>, uji dengan keenam data di tabel, lalu tambahkan satu aturan baru buatanmu sendiri (misalnya tarif khusus hari libur).</div>
+    </section>
+
+    <!-- ============ 08 — LANJUT KE KUIS ============ -->
+    <section class="section" id="s8">
+      <div class="next-box">
+        <h3>Sudah paham materinya?</h3>
+        <p>Klik tombol di bawah untuk mulai kuis. Materi akan terkunci penuh layar selama kuis berlangsung, jadi kamu tidak bisa menggulir kembali untuk melihat materi ini. Kuis boleh dikerjakan berkali-kali, hanya skor tertinggi yang akan dikirim ke guru.</p>
+        <button class="btn primary" id="btnMulaiKuis">Mulai Kuis →</button>
+      </div>
+    </section>
+
+    <div class="sources">
+      <h3>Sumber Materi</h3>
+      <ul>
+        <li>GeeksforGeeks — <a href="https://www.geeksforgeeks.org/cpp/cpp-if-else-statement/" target="_blank" rel="noopener">if-else Statement in C++</a></li>
+        <li>W3Schools — <a href="https://www.w3schools.com/cpp/cpp_conditions.asp" target="_blank" rel="noopener">C++ If ... Else</a></li>
+        <li>cppreference — <a href="https://en.cppreference.com/w/cpp/language/if.html" target="_blank" rel="noopener">if statement</a></li>
+      </ul>
+    </div>
+
+  </main>
+</div>
+</div><!-- /#konten-utama -->
+
+<!-- ============ OVERLAY KUIS ============ -->
+<div id="quizOverlay">
+  <div class="wrap">
+    <div class="eyebrow">Kuis · Percabangan IF</div>
+    <h2 style="font-size:24px;">Uji Pemahaman: if, if-else, else if</h2>
+
+    <div class="intro-card" id="quizIntro">
+      <p style="margin-bottom:0;">Soal muncul satu per satu. Setelah menjawab, jawaban tidak bisa diubah dan soal berikutnya baru terbuka.</p>
+      <ul>
+        <li>20 soal pilihan ganda, dikerjakan berurutan (tidak bisa mundur)</li>
+        <li>Boleh mengulang kuis berkali-kali — <strong>skor tertinggi</strong> yang akan dikirim ke guru</li>
+        <li>Isi identitas di akhir untuk mengirim hasil</li>
+      </ul>
+    </div>
+
+    <button class="btn guru-only" id="btnTutupKuis" style="margin-bottom:16px;">✕ Tutup Kuis (Mode Guru)</button>
+
+    <div class="best-banner hidden" id="bestBanner">Skor tertinggi sejauh ini: <b id="bestBannerScore">0</b>/20</div>
+
+    <div class="quiz-card" id="qCard">
+      <div class="q-progress" id="qProgress"></div>
+      <div class="q-text" id="qText"></div>
+      <div class="q-options" id="qOptions"></div>
+      <div class="q-explain" id="qExplain"></div>
+      <div class="q-nav">
+        <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-faint);" id="qScoreLabel">Skor: 0</span>
+        <button class="btn primary" id="qNextBtn" disabled>Soal Berikutnya →</button>
+      </div>
+    </div>
+
+    <div class="quiz-result" id="qResult">
+      <div class="score" id="qResultScore">0/20</div>
+      <div class="best" id="qResultBest"></div>
+      <p class="rmsg" id="qResultMsg"></p>
+      <div class="ractions">
+        <button class="btn" id="qRetryBtn">Coba Lagi</button>
+      </div>
+    </div>
+
+    <div id="identitySection" class="hidden">
+      <h3 style="font-size:17px; margin-top:30px;">Kirim Skor Tertinggi ke Guru</h3>
+      <p>Isi data berikut untuk mengirim skor tertinggimu (<b id="idBestScoreLabel">0/20</b>).</p>
+      <div class="quiz-card">
+        <div class="idform">
+          <div class="field"><label for="qNama">Nama Lengkap</label><input id="qNama" type="text" placeholder="Nama kamu"></div>
+          <div class="field"><label for="qKelas">Kelas</label><input id="qKelas" type="text" placeholder="Contoh: XI 7"></div>
+          <div class="field"><label for="qNis">NIS</label><input id="qNis" type="text" placeholder="Nomor Induk Siswa"></div>
+          <div class="field"><label for="qAbsen">No. Absen</label><input id="qAbsen" type="text" placeholder="Nomor absen"></div>
+        </div>
+        <button class="btn primary" id="submitHasil">Kirim Hasil</button>
+        <div id="submitResult"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="statusbar">
+  <span>⌨️ <b>Informatika XI</b></span>
+  <span style="margin-left:auto;">Percabangan · if, if-else, else if</span>
+</div>
+
+<!-- ============ SUMBER KODE CONTOH (dirender menjadi blok kode) ============ -->
+<script type="text/plain" id="src-diskon">#include <iostream>
+
+using namespace std;
+
+int main() {
+    int total;
+
+    cout << "Total belanja (Rp): ";
+    cin >> total;
+
+    if (total >= 50000) {
+        cout << "Selamat! Kamu dapat diskon." << endl;
+    }
+    cout << "Terima kasih sudah berbelanja." << endl;
+    return 0;
+}</script>
+
+<script type="text/plain" id="src-lulus">#include <iostream>
+
+using namespace std;
+
+int main() {
+    int nilai;
+
+    cout << "Masukkan nilai: ";
+    cin >> nilai;
+
+    if (nilai >= 75) {
+        cout << "Lulus" << endl;
+    } else {
+        cout << "Belum lulus, ayo coba lagi!" << endl;
+    }
+    return 0;
+}</script>
+
+<script type="text/plain" id="src-genap">#include <iostream>
+
+using namespace std;
+
+int main() {
+    int angka;
+
+    cout << "Masukkan angka: ";
+    cin >> angka;
+
+    if (angka % 2 == 0) {
+        cout << "Angka genap" << endl;
+    } else {
+        cout << "Angka ganjil" << endl;
+    }
+    return 0;
+}</script>
+
+<script type="text/plain" id="src-predikat">#include <iostream>
+
+using namespace std;
+
+int main() {
+    int nilai;
+
+    cout << "Masukkan nilai (0-100): ";
+    cin >> nilai;
+
+    if (nilai >= 90) {
+        cout << "Predikat A" << endl;
+    } else if (nilai >= 80) {
+        cout << "Predikat B" << endl;
+    } else if (nilai >= 70) {
+        cout << "Predikat C" << endl;
+    } else if (nilai >= 60) {
+        cout << "Predikat D" << endl;
+    } else {
+        cout << "Predikat E" << endl;
+    }
+    return 0;
+}</script>
+
+<script type="text/plain" id="src-salah">if (nilai >= 60) {
+    cout << "Predikat D" << endl;
+} else if (nilai >= 70) {
+    cout << "Predikat C" << endl;
+} else if (nilai >= 80) {
+    cout << "Predikat B" << endl;
+} else if (nilai >= 90) {
+    cout << "Predikat A" << endl;
+} else {
+    cout << "Predikat E" << endl;
+}</script>
+
+<script type="text/plain" id="src-tiket">#include <iostream>
+
+using namespace std;
+
+int main() {
+    int umur, tarif;
+
+    cout << "Masukkan umur: ";
+    cin >> umur;
+
+    if (umur <= 5) {
+        tarif = 0;
+    } else if (umur <= 12) {
+        tarif = 10000;
+    } else if (umur <= 59) {
+        tarif = 20000;
+    } else {
+        tarif = 10000;
+    }
+
+    cout << "Tarif tiket: Rp " << tarif << endl;
+    return 0;
+}</script>
+
+<script type="text/plain" id="src-wahana">#include <iostream>
+
+using namespace std;
+
+int main() {
+    int umur, tinggi;
+
+    cout << "Masukkan umur: ";
+    cin >> umur;
+    cout << "Masukkan tinggi badan (cm): ";
+    cin >> tinggi;
+
+    if (umur >= 7) {
+        if (tinggi >= 120) {
+            cout << "Silakan naik wahana!" << endl;
+        } else {
+            cout << "Maaf, tinggi badan belum cukup." << endl;
+        }
+    } else {
+        cout << "Maaf, umur belum cukup." << endl;
+    }
+    return 0;
+}</script>
+
+<script type="text/plain" id="src-loket">#include <iostream>
+
+using namespace std;
+
+int main() {
+    int umur, member, tarif;
+
+    cout << "Masukkan umur: ";
+    cin >> umur;
+    cout << "Anggota member? (1 = ya, 0 = tidak): ";
+    cin >> member;
+
+    if (umur < 0) {
+        cout << "Umur tidak valid" << endl;
+    } else {
+        if (umur <= 5) {
+            tarif = 0;
+        } else if (umur <= 12) {
+            tarif = 10000;
+        } else if (umur <= 59) {
+            tarif = 20000;
+        } else {
+            tarif = 10000;
+        }
+
+        if (member == 1 && tarif > 0) {
+            tarif = tarif - 2000;
+        }
+        cout << "Tarif tiket: Rp " << tarif << endl;
+    }
+    return 0;
+}</script>
+
+<script type="text/plain" id="src-struk-if">if (kondisi) {
+    // aksi kalau kondisi benar
+}
+// baris ini selalu dijalankan</script>
+
+<script type="text/plain" id="src-struk-ifelse">if (kondisi) {
+    // aksi kalau kondisi benar
+} else {
+    // aksi kalau kondisi salah
+}</script>
+
+<script type="text/plain" id="src-struk-elseif">if (kondisi1) {
+    // aksi kalau kondisi1 benar
+} else if (kondisi2) {
+    // aksi kalau kondisi1 salah, tetapi kondisi2 benar
+} else {
+    // aksi kalau semua kondisi di atas salah
+}</script>
+
+<script type="text/plain" id="src-struk-nested">if (kondisiLuar) {
+    if (kondisiDalam) {
+        // aksi kalau keduanya benar
+    } else {
+        // aksi kalau kondisiLuar benar, kondisiDalam salah
+    }
+} else {
+    // aksi kalau kondisiLuar salah
+}</script>
+
+<script>
+  const MODUL_ID = "INF-109";
+  let __revealed = false;
+  function __forceReveal(){
+    if(__revealed) return;
+    __revealed = true;
+    const k = document.getElementById('konten-utama');
+    if(k) k.style.visibility = 'visible';
+    const l = document.getElementById('guard-loading');
+    if(l) l.remove();
+  }
+  setTimeout(__forceReveal, 4000);
+</script>
+<script src="../config.js" onerror="__forceReveal()"></script>
+<script src="../guard.js" onerror="__forceReveal()"></script>
+
+<script>
+/* ---------------- Mode Guru (?guru=1) ---------------- */
+const urlParams = new URLSearchParams(window.location.search);
+const isGuru = urlParams.get('guru') === '1';
+if(isGuru) document.body.classList.add('guru-mode');
+
+/* ---------------- Render blok kode berwarna ---------------- */
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function highlightLine(line){
+  const re = /(\/\/.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(#include)|(<iostream>)|\b(if|else|using|namespace|return)\b|\b(int|double|char)\b|\b(main)\b|\b(\d+)\b|(<<|>>|&&|>=|<=|==|!=|[(){};=<>+\-*\/%,])/g;
+  let out = '', last = 0, m;
+  while((m = re.exec(line)) !== null){
+    out += escHtml(line.slice(last, m.index));
+    const t = m[0];
+    let cls = 'tk-punc';
+    if(m[1]) cls = 'tk-com';
+    else if(m[2]) cls = 'tk-str';
+    else if(m[3]) cls = 'tk-pre';
+    else if(m[4]) cls = 'tk-str';
+    else if(m[5]) cls = 'tk-kw';
+    else if(m[6]) cls = 'tk-type';
+    else if(m[7]) cls = 'tk-fn';
+    else if(m[8]) cls = 'tk-str';
+    out += '<span class="' + cls + '">' + escHtml(t) + '</span>';
+    last = m.index + t.length;
+  }
+  out += escHtml(line.slice(last));
+  return out;
+}
+document.querySelectorAll('.code-block[data-src]').forEach(block=>{
+  const src = document.getElementById(block.dataset.src);
+  if(!src) return;
+  const lines = src.textContent.replace(/^\n/, '').split('\n');
+  let html = '<div class="code-head"><span>' + escHtml(block.dataset.file) + '</span><span class="no-copy-badge">🔒 ketik sendiri</span></div><div class="code-body">';
+  lines.forEach((ln, i)=>{
+    html += '<div class="code-line" data-ln="' + (i+1) + '">' + highlightLine(ln) + '</div>';
+  });
+  html += '</div>';
+  block.innerHTML = html;
+});
+
+/* ---------------- Quote terminal ---------------- */
+(function(){
+  const el = document.getElementById('quoteTerminal');
+  const quote = '"Program yang baik tahu kapan harus berkata ya,\ndan punya jawaban cadangan saat jawabannya tidak."';
+  const author = '— refleksi belajar, Informatika XI';
+  let i = 0;
+  const lineEl = document.createElement('div');
+  lineEl.className = 'qline';
+  el.appendChild(lineEl);
+  function typeChar(){
+    if(i < quote.length){
+      lineEl.textContent = quote.slice(0, i+1);
+      i++;
+      setTimeout(typeChar, 18);
+    } else {
+      const a = document.createElement('div');
+      a.className = 'qauthor';
+      a.textContent = author;
+      el.appendChild(a);
+      const cur = document.createElement('span');
+      cur.className = 'cursor';
+      lineEl.appendChild(cur);
+    }
+  }
+  typeChar();
+})();
+
+/* ---------------- Util ---------------- */
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+/* ---------------- Animasi Console ---------------- */
+function animateConsole(bodyId, seq){
+  const body = document.getElementById(bodyId);
+  if(!body) return;
+  body.innerHTML = '';
+  let i = 0;
+
+  function typeInput(step, cb){
+    const line = document.createElement('div');
+    line.className = 'cline';
+    const promptSpan = document.createElement('span');
+    promptSpan.textContent = step.prompt;
+    const inputSpan = document.createElement('span');
+    inputSpan.className = 'cin-val';
+    const cursor = document.createElement('span');
+    cursor.className = 'console-cursor';
+    cursor.textContent = '_';
+    line.appendChild(promptSpan);
+    line.appendChild(inputSpan);
+    line.appendChild(cursor);
+    body.appendChild(line);
+    let k = 0;
+    function typeChar(){
+      if(k < step.value.length){
+        inputSpan.textContent += step.value[k];
+        k++;
+        setTimeout(typeChar, 85);
+      } else {
+        cursor.remove();
+        setTimeout(cb, 420);
+      }
+    }
+    setTimeout(typeChar, 350);
+  }
+
+  function showLines(lines, cb){
+    let idx = 0;
+    function next(){
+      if(idx < lines.length){
+        const l = document.createElement('div');
+        l.className = 'cline';
+        l.textContent = lines[idx];
+        body.appendChild(l);
+        idx++;
+        setTimeout(next, 300);
+      } else {
+        cb();
+      }
+    }
+    next();
+  }
+
+  function step(){
+    if(i >= seq.length) return;
+    const s = seq[i];
+    if(s.type === 'input'){
+      typeInput(s, ()=>{ i++; setTimeout(step, 250); });
+    } else if(s.type === 'lines'){
+      showLines(s.lines, ()=>{ i++; setTimeout(step, 150); });
+    } else if(s.type === 'meta'){
+      const meta = document.createElement('div');
+      meta.className = 'cmeta';
+      meta.innerHTML = s.text;
+      body.appendChild(meta);
+      i++; step();
+    }
+  }
+  step();
+}
+
+const consoleMeta = 'Process exited after 0.01 seconds with return value 0<br>Press any key to continue . . .';
+
+const consoleDemos = {
+  demoDiskon1: [
+    { type:'input', prompt:'Total belanja (Rp): ', value:'60000' },
+    { type:'lines', lines:['Selamat! Kamu dapat diskon.','Terima kasih sudah berbelanja.'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoDiskon2: [
+    { type:'input', prompt:'Total belanja (Rp): ', value:'30000' },
+    { type:'lines', lines:['Terima kasih sudah berbelanja.'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoLulus1: [
+    { type:'input', prompt:'Masukkan nilai: ', value:'80' },
+    { type:'lines', lines:['Lulus'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoLulus2: [
+    { type:'input', prompt:'Masukkan nilai: ', value:'60' },
+    { type:'lines', lines:['Belum lulus, ayo coba lagi!'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoGenap: [
+    { type:'input', prompt:'Masukkan angka: ', value:'7' },
+    { type:'lines', lines:['Angka ganjil'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoPred1: [
+    { type:'input', prompt:'Masukkan nilai (0-100): ', value:'85' },
+    { type:'lines', lines:['Predikat B'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoPred2: [
+    { type:'input', prompt:'Masukkan nilai (0-100): ', value:'40' },
+    { type:'lines', lines:['Predikat E'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoSalah: [
+    { type:'input', prompt:'Masukkan nilai (0-100): ', value:'95' },
+    { type:'lines', lines:['Predikat D'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoTiket: [
+    { type:'input', prompt:'Masukkan umur: ', value:'10' },
+    { type:'lines', lines:['Tarif tiket: Rp 10000'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoWahana1: [
+    { type:'input', prompt:'Masukkan umur: ', value:'8' },
+    { type:'input', prompt:'Masukkan tinggi badan (cm): ', value:'130' },
+    { type:'lines', lines:['Silakan naik wahana!'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoWahana2: [
+    { type:'input', prompt:'Masukkan umur: ', value:'5' },
+    { type:'input', prompt:'Masukkan tinggi badan (cm): ', value:'130' },
+    { type:'lines', lines:['Maaf, umur belum cukup.'] },
+    { type:'meta', text: consoleMeta }
+  ],
+  demoLoket: [
+    { type:'input', prompt:'Masukkan umur: ', value:'10' },
+    { type:'input', prompt:'Anggota member? (1 = ya, 0 = tidak): ', value:'1' },
+    { type:'lines', lines:['Tarif tiket: Rp 8000'] },
+    { type:'meta', text: consoleMeta }
+  ]
+};
+
+function putarDemo(key){
+  animateConsole('consoleBody' + key, consoleDemos[key]);
+}
+document.querySelectorAll('.console-replay').forEach(btn=>{
+  btn.addEventListener('click', ()=> putarDemo(btn.dataset.replay));
+});
+Object.keys(consoleDemos).forEach(key=> putarDemo(key));
+
+/* ---------------- Latihan santai: Cocokkan Deskripsi & Istilah ---------------- */
+const matchPool = {
+  ifKw: ['Menjalankan isinya hanya bila kondisi benar', 'Dasar keputusan: jika kondisi benar, maka isinya dijalankan'],
+  elseKw: ['Jalur untuk kondisi yang salah, tanpa kondisi sendiri', 'Berarti "jika tidak" dan tidak punya kondisi'],
+  elseifKw: ['Anak tangga tambahan untuk memeriksa rentang lain', 'Punya kondisi sendiri dan hanya diperiksa bila kondisi di atasnya salah'],
+  nested: ['if di dalam if, diperiksa hanya bila if luar benar', 'Dua pintu berlapis: pintu kedua baru dijumpai setelah lolos pintu pertama'],
+  eqeq: ['Operator untuk membandingkan dua nilai di dalam kondisi', 'Dipakai pada if (nilai == 100), bukan tanda sama dengan tunggal']
+};
+const matchTypeLabels = { ifKw:'if', elseKw:'else', elseifKw:'else if', nested:'if bersarang', eqeq:'==' };
+let matchRound = [], matchSelectedBtn = null, matchCompleted = false, matchFoundCount = 0, matchWrongCount = 0;
+
+function setupMatch(){
+  const types = Object.keys(matchPool);
+  matchRound = types.map(type=>{
+    const options = matchPool[type];
+    const value = options[Math.floor(Math.random()*options.length)];
+    return {type, value};
+  });
+  const shuffledValues = shuffle(matchRound);
+  const shuffledTypes = shuffle(types);
+  matchSelectedBtn = null; matchCompleted = false; matchFoundCount = 0; matchWrongCount = 0;
+  document.getElementById('matchFound').textContent = '0';
+  document.getElementById('matchWrong').textContent = '0';
+  document.getElementById('matchTotal').textContent = matchRound.length;
+  document.getElementById('matchFeedback').style.display = 'none';
+  const valuesWrap = document.getElementById('matchValues');
+  const typesWrap = document.getElementById('matchTypes');
+  valuesWrap.innerHTML = ''; typesWrap.innerHTML = '';
+  shuffledValues.forEach((item)=>{
+    const btn = document.createElement('button');
+    btn.className = 'match-chip'; btn.textContent = item.value; btn.dataset.type = item.type;
+    btn.addEventListener('click', ()=> selectMatchValue(btn));
+    valuesWrap.appendChild(btn);
+  });
+  shuffledTypes.forEach((type)=>{
+    const btn = document.createElement('button');
+    btn.className = 'match-chip'; btn.textContent = matchTypeLabels[type]; btn.dataset.type = type;
+    btn.addEventListener('click', ()=> selectMatchType(btn));
+    typesWrap.appendChild(btn);
+  });
+}
+function selectMatchValue(btn){
+  if(matchCompleted || btn.classList.contains('matched')) return;
+  document.querySelectorAll('#matchValues .match-chip').forEach(b=> b.classList.remove('selected'));
+  btn.classList.add('selected'); matchSelectedBtn = btn;
+}
+function selectMatchType(btn){
+  if(matchCompleted || btn.classList.contains('matched') || !matchSelectedBtn) return;
+  const valueBtn = matchSelectedBtn;
+  if(valueBtn.dataset.type === btn.dataset.type){
+    valueBtn.classList.remove('selected'); valueBtn.classList.add('matched'); valueBtn.disabled = true;
+    btn.classList.add('matched'); btn.disabled = true;
+    matchFoundCount++; document.getElementById('matchFound').textContent = matchFoundCount;
+  } else {
+    btn.classList.add('wrong'); valueBtn.classList.add('wrong');
+    matchWrongCount++; document.getElementById('matchWrong').textContent = matchWrongCount;
+    setTimeout(()=>{ btn.classList.remove('wrong'); valueBtn.classList.remove('wrong','selected'); }, 500);
+  }
+  matchSelectedBtn = null;
+  if(matchFoundCount === matchRound.length){
+    matchCompleted = true;
+    const fb = document.getElementById('matchFeedback');
+    fb.style.display = 'block';
+    fb.textContent = matchWrongCount === 0
+      ? 'Keren! Semua deskripsi berhasil dicocokkan tanpa salah pilih. 🎯'
+      : `Semua deskripsi berhasil dicocokkan (${matchWrongCount} kali salah pilih). Klik "Acak Ulang" untuk coba lagi.`;
+  }
+}
+document.getElementById('matchReset').addEventListener('click', setupMatch);
+setupMatch();
+
+/* ---------------- Overlay Kuis ---------------- */
+const quizOverlay = document.getElementById('quizOverlay');
+document.getElementById('btnMulaiKuis').addEventListener('click', ()=>{
+  quizOverlay.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  quizOverlay.scrollTop = 0;
+  startQuizAttempt();
+});
+const btnTutupKuis = document.getElementById('btnTutupKuis');
+if(btnTutupKuis){
+  btnTutupKuis.addEventListener('click', ()=>{
+    quizOverlay.style.display = 'none';
+    document.body.style.overflow = '';
+  });
+}
+
+/* ---------------- Bank Soal (20 soal) ---------------- */
+const quizData = [
+  { text:`Apa fungsi percabangan <code>if</code> dalam program?`, options:[
+      `Mengulang sebuah tindakan berkali-kali`,
+      `Menjalankan isinya hanya bila kondisi bernilai benar`,
+      `Menyimpan banyak nilai sekaligus`,
+      `Menghentikan program setelah baris pertama`
+    ], correct:1, explain:`if memeriksa sebuah kondisi. Bila kondisi benar, isi di dalam kurung kurawalnya dijalankan; bila salah, isinya dilewati.` },
+  { text:`Bagian mana yang dijalankan program kalau kondisi pada <code>if</code> bernilai salah?`, options:[
+      `Bagian <code>else</code>, bila ada`,
+      `Bagian <code>if</code> tetap dijalankan`,
+      `Program otomatis berhenti`,
+      `Program menampilkan pesan galat`
+    ], correct:0, explain:`else adalah jalur "jika tidak". Bila kondisi if salah, isi else dijalankan.` },
+  { text:`Operator yang dipakai untuk <strong>membandingkan</strong> dua nilai di dalam kondisi adalah...`, options:[
+      `<code>=</code>`, `<code>==</code>`, `<code>+</code>`, `<code>%</code>`
+    ], correct:1, explain:`== membandingkan dua nilai, sedangkan = hanya mengisi nilai ke variabel.` },
+  { text:`Pada <code>if (nilai &gt;= 75)</code>, apa hasil kondisi bila <code>nilai = 75</code>?`, options:[
+      `Benar`, `Salah`, `Galat`, `Tidak bisa ditentukan`
+    ], correct:0, explain:`Tanda >= berarti lebih besar atau sama dengan, jadi 75 memenuhi kondisi dan hasilnya benar.` },
+  { text:`Cara yang benar untuk menulis kondisi "angka adalah genap" adalah...`, options:[
+      `<code>angka % 2 = 0</code>`,
+      `<code>angka / 2 == 0</code>`,
+      `<code>angka % 2 == 0</code>`,
+      `<code>angka == 2</code>`
+    ], correct:2, explain:`Angka genap bersisa 0 bila dibagi 2. Sisa bagi dihitung dengan % dan dibandingkan memakai ==.` },
+  { text:`Pada program <code>diskon.cpp</code> (diskon bila total &gt;= 50000), apa yang tampil bila total = 30000?`, options:[
+      `Hanya "Selamat! Kamu dapat diskon."`,
+      `Hanya "Terima kasih sudah berbelanja."`,
+      `Kedua baris tampil`,
+      `Tidak ada yang tampil`
+    ], correct:1, explain:`Kondisi salah sehingga isi if dilewati. Baris "Terima kasih" berada di luar if, jadi tetap tampil.` },
+  { text:`Manakah penulisan <code>if</code> yang menimbulkan masalah karena ada tanda baca yang salah tempat?`, options:[
+      `<code>if (nilai &gt;= 75) {</code>`,
+      `<code>if (nilai &gt;= 75);</code> diikuti kurung kurawal`,
+      `<code>if (nilai == 75) {</code>`,
+      `<code>} else {</code>`
+    ], correct:1, explain:`Titik koma setelah kondisi membuat if "kosong", sehingga isi di bawahnya tidak lagi terkait dengan kondisinya.` },
+  { text:`Perbedaan <code>else if</code> dan <code>else</code> adalah...`, options:[
+      `else if tidak punya kondisi, else punya kondisi`,
+      `else if punya kondisi, else tidak punya kondisi`,
+      `Keduanya tidak punya kondisi`,
+      `Keduanya selalu punya kondisi`
+    ], correct:1, explain:`else if ditulis bersama kondisi dalam kurung. else tidak memakai kondisi; ia menangkap semua yang tidak lolos kondisi di atasnya.` },
+  { text:`Berapa jalur yang disediakan oleh sebuah <code>if-else</code> sederhana?`, options:[
+      `Satu jalur`, `Dua jalur`, `Tiga jalur`, `Sebanyak yang diinginkan`
+    ], correct:1, explain:`if-else menyediakan dua jalur: satu bila kondisi benar dan satu bila salah. Untuk lebih dari dua jalur dipakai else if.` },
+  { text:`Pada rangkaian <code>if</code> dan <code>else if</code>, program memeriksa kondisi dengan cara...`, options:[
+      `Memeriksa semua kondisi sekaligus`,
+      `Dari bawah ke atas`,
+      `Dari atas ke bawah dan berhenti pada kondisi pertama yang benar`,
+      `Secara acak`
+    ], correct:2, explain:`Seperti menuruni anak tangga: program berhenti pada kondisi pertama yang benar, sisanya tidak diperiksa lagi.` },
+  { text:`Pada <code>predikat_if.cpp</code>, nilai 85 menghasilkan...`, options:[
+      `Predikat A`, `Predikat B`, `Predikat C`, `Predikat D`
+    ], correct:1, explain:`85 tidak memenuhi nilai >= 90, tetapi memenuhi nilai >= 80, sehingga keluarannya Predikat B.` },
+  { text:`Pada <code>predikat_if.cpp</code>, nilai 40 menghasilkan...`, options:[
+      `Predikat D`, `Predikat C`, `Predikat E`, `Tidak ada keluaran`
+    ], correct:2, explain:`40 tidak memenuhi satu pun kondisi (>= 90, >= 80, >= 70, >= 60), sehingga bagian else dijalankan dan menampilkan Predikat E.` },
+  { text:`Potongan program: <code>if (nilai &gt;= 60) D; else if (nilai &gt;= 70) C; else if (nilai &gt;= 80) B; else if (nilai &gt;= 90) A; else E;</code>. Apa keluarannya bila nilai = 95?`, options:[
+      `Predikat A`, `Predikat D`, `Predikat B`, `Predikat E`
+    ], correct:1, explain:`Urutan kondisi terbalik. 95 sudah benar pada kondisi pertama (>= 60), sehingga program berhenti di sana dan menampilkan Predikat D.` },
+  { text:`Susunan kondisi <code>else if</code> pada predikat nilai sebaiknya diurutkan dari...`, options:[
+      `Yang paling longgar`,
+      `Yang paling ketat (nilai tertinggi)`,
+      `Acak`,
+      `Urutan tidak berpengaruh`
+    ], correct:1, explain:`Mulai dari kondisi paling ketat supaya setiap nilai berhenti pada anak tangga yang tepat.` },
+  { text:`Pada <code>tiket.cpp</code> (umur &lt;= 5 gratis; &lt;= 12 Rp10000; &lt;= 59 Rp20000; selebihnya Rp10000), berapa tarif untuk umur 65?`, options:[
+      `Rp 0`, `Rp 10000`, `Rp 20000`, `Rp 65000`
+    ], correct:1, explain:`65 tidak memenuhi tiga kondisi pertama, sehingga bagian else dijalankan dengan tarif Rp 10000.` },
+  { text:`Pada <code>if</code> bersarang, kapan <code>if</code> yang berada di dalam diperiksa?`, options:[
+      `Selalu, sebelum if yang di luar`,
+      `Hanya bila if yang di luar bernilai benar`,
+      `Hanya bila if yang di luar bernilai salah`,
+      `Tidak pernah diperiksa`
+    ], correct:1, explain:`if di dalam berada di kurung kurawal if luar, jadi baru diperiksa setelah if luar lolos, seperti pintu kedua setelah lolos pintu pertama.` },
+  { text:`Pada <code>wahana.cpp</code> (umur &gt;= 7, lalu tinggi &gt;= 120), apa keluarannya bila umur = 5 dan tinggi = 130?`, options:[
+      `Silakan naik wahana!`,
+      `Maaf, tinggi badan belum cukup.`,
+      `Maaf, umur belum cukup.`,
+      `Tidak ada keluaran`
+    ], correct:2, explain:`Umur 5 tidak memenuhi umur >= 7, sehingga if luar salah. Tinggi tidak pernah diperiksa dan jalur else luar menampilkan "Maaf, umur belum cukup."` },
+  { text:`Struktur yang paling cocok untuk menentukan "nilai &gt;= 75 dinyatakan lulus" adalah...`, options:[
+      `<code>switch-case</code>, karena nilai berupa angka`,
+      `<code>if</code>, karena kondisinya berupa rentang nilai`,
+      `<code>cout</code>`,
+      `<code>return</code>`
+    ], correct:1, explain:`Syarat berupa rentang cocok memakai if. switch-case harus menuliskan satu per satu angka 75, 76, ... 100 sehingga tidak praktis.` },
+  { text:`Perhatikan: <code>if (x &gt; 5) { cout &lt;&lt; "A"; } else if (x &gt; 3) { cout &lt;&lt; "B"; } else { cout &lt;&lt; "C"; }</code>. Bila <code>x = 7</code>, apa yang ditampilkan?`, options:[
+      `A`, `AB`, `B`, `C`
+    ], correct:0, explain:`7 &gt; 5 benar pada kondisi pertama, sehingga hanya A yang tampil. Kondisi else if tidak diperiksa lagi walaupun 7 &gt; 3 juga benar.` },
+  { text:`Pada <code>loket.cpp</code>, mengapa umur 4 tahun tetap membayar Rp 0 walaupun statusnya member?`, options:[
+      `Karena potongan hanya diberikan bila <code>member == 1 &amp;&amp; tarif &gt; 0</code>`,
+      `Karena member tidak pernah mendapat potongan`,
+      `Karena umur 4 dianggap tidak valid`,
+      `Karena program berhenti sebelum menghitung tarif`
+    ], correct:0, explain:`Operator && menuntut kedua syarat benar sekaligus. Tarif umur 4 adalah 0, sehingga syarat tarif &gt; 0 salah dan potongan tidak diberikan.` }
+];
+
+let qIndex = 0, qScore = 0, qAnswered = false, bestScore = 0;
+let activeQuiz = [];
+
+function shuffleQuizQuestions(){
+  activeQuiz = shuffle(quizData).map(q=>{
+    const withIdx = q.options.map((opt, idx)=>({opt, idx}));
+    const shuffledOpts = shuffle(withIdx);
+    return {
+      text: q.text,
+      options: shuffledOpts.map(o=> o.opt),
+      correct: shuffledOpts.findIndex(o=> o.idx === q.correct),
+      explain: q.explain
+    };
+  });
+}
+
+function startQuizAttempt(){
+  shuffleQuizQuestions();
+  qIndex = 0;
+  qScore = 0;
+  document.getElementById('qCard').style.display = 'block';
+  document.getElementById('qResult').style.display = 'none';
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = activeQuiz[qIndex];
+  document.getElementById('qProgress').textContent = `Soal ${qIndex+1} dari ${quizData.length}`;
+  document.getElementById('qText').innerHTML = q.text;
+  document.getElementById('qScoreLabel').textContent = 'Skor: ' + qScore;
+  const optWrap = document.getElementById('qOptions');
+  optWrap.innerHTML = '';
+  qAnswered = false;
+  document.getElementById('qExplain').style.display = 'none';
+  document.getElementById('qNextBtn').disabled = true;
+  document.getElementById('qNextBtn').textContent = qIndex === quizData.length - 1 ? 'Lihat Hasil →' : 'Soal Berikutnya →';
+  q.options.forEach((opt, idx)=>{
+    const btn = document.createElement('button');
+    btn.className = 'q-opt';
+    btn.innerHTML = opt;
+    btn.addEventListener('click', ()=> answerQuestion(idx));
+    optWrap.appendChild(btn);
+  });
+}
+
+function answerQuestion(idx){
+  if(qAnswered) return;
+  qAnswered = true;
+  const q = activeQuiz[qIndex];
+  const buttons = document.querySelectorAll('#qOptions .q-opt');
+  buttons.forEach((b,i)=>{
+    b.disabled = true;
+    if(i === q.correct) b.classList.add('correct');
+    else if(i === idx) b.classList.add('wrong');
+  });
+  if(idx === q.correct) qScore++;
+  document.getElementById('qScoreLabel').textContent = 'Skor: ' + qScore;
+  const exp = document.getElementById('qExplain');
+  exp.innerHTML = q.explain;
+  exp.style.display = 'block';
+  document.getElementById('qNextBtn').disabled = false;
+}
+
+document.getElementById('qNextBtn').addEventListener('click', ()=>{
+  qIndex++;
+  if(qIndex < quizData.length){
+    renderQuestion();
+  } else {
+    document.getElementById('qCard').style.display = 'none';
+    if(qScore > bestScore) bestScore = qScore;
+    const result = document.getElementById('qResult');
+    result.style.display = 'block';
+    document.getElementById('qResultScore').textContent = qScore + '/' + quizData.length;
+    document.getElementById('qResultBest').textContent = 'Skor tertinggi sejauh ini: ' + bestScore + '/' + quizData.length;
+    const pct = Math.round((qScore/quizData.length)*100);
+    document.getElementById('qResultMsg').textContent = pct >= 80
+      ? 'Mantap! Pemahamanmu tentang percabangan if sudah bagus. 🎯'
+      : 'Belum maksimal, dan itu wajar. Baca ulang materinya, lalu coba lagi untuk menaikkan skormu.';
+    const banner = document.getElementById('bestBanner');
+    banner.classList.remove('hidden');
+    document.getElementById('bestBannerScore').textContent = bestScore;
+    document.getElementById('idBestScoreLabel').textContent = bestScore + '/' + quizData.length;
+    document.getElementById('identitySection').classList.remove('hidden');
+  }
+});
+
+document.getElementById('qRetryBtn').addEventListener('click', ()=>{
+  startQuizAttempt();
+});
+
+/* ---------------- Kirim skor tertinggi ke Google Sheet ---------------- */
+const MATERI_LABEL = 'Informatika XI — Percabangan IF (if, if-else, else if) — Kuis';
+async function kirimKeSheet(materi, skor, total, identitas){
+  if(typeof CONTROL_URL === 'undefined'){
+    console.warn('CONTROL_URL belum tersedia — lewati pengiriman ke Sheet.');
+    return;
+  }
+  const payload = {
+    waktu: new Date().toLocaleString('id-ID'),
+    mode: identitas.mode,
+    nama: identitas.nama,
+    nis: identitas.nis || '',
+    absen: identitas.absen || '',
+    kelas: identitas.kelas,
+    anggota: identitas.anggota || '',
+    materi: materi,
+    skor: skor,
+    total: total
+  };
+  try{
+    await fetch(CONTROL_URL, { method: 'POST', body: JSON.stringify(payload) });
+  }catch(err){
+    console.error('Gagal mengirim hasil ke spreadsheet:', materi, err);
+  }
+}
+
+document.getElementById('submitHasil').addEventListener('click', async ()=>{
+  const nama = document.getElementById('qNama').value.trim();
+  const kelas = document.getElementById('qKelas').value.trim();
+  const nis = document.getElementById('qNis').value.trim();
+  const absen = document.getElementById('qAbsen').value.trim();
+  if(!nama || !kelas || !nis || !absen){
+    alert('Isi dulu Nama, Kelas, NIS, dan No. Absen ya.');
+    return;
+  }
+  const identitas = { mode: 'Individu', nama, kelas, nis, absen };
+  const submitBtn = document.getElementById('submitHasil');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Mengirim...';
+
+  await kirimKeSheet(MATERI_LABEL, bestScore, quizData.length, identitas);
+
+  const resultBox = document.getElementById('submitResult');
+  resultBox.style.display = 'block';
+  resultBox.textContent = `Skor tertinggi (${bestScore}/${quizData.length}) berhasil dikirim ke guru. Terima kasih! 🎉`;
+  submitBtn.textContent = 'Terkirim ✓';
+});
+
+/* ---------------- Sidebar: scrollspy + menu mobile ---------------- */
+const navLinks = document.querySelectorAll('#stepnav a');
+const sections = [...navLinks].map(a => document.getElementById(a.dataset.target)).filter(Boolean);
+function updateActive(){
+  let current = sections[0];
+  sections.forEach(sec=>{
+    if(sec.getBoundingClientRect().top - 100 <= 0) current = sec;
+  });
+  navLinks.forEach(a=>{
+    a.classList.toggle('active', a.dataset.target === current.id);
+  });
+}
+document.addEventListener('scroll', updateActive);
+updateActive();
+document.getElementById('menuToggle').addEventListener('click', ()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+});
+navLinks.forEach(a=> a.addEventListener('click', ()=> document.getElementById('sidebar').classList.remove('open')));
+</script>
+</body>
+</html>
